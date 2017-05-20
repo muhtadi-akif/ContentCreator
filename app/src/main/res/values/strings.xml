@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Content Creator</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <item name="image_id" type="id" />
+    <string name="action_previous">Previous</string>
+    <string name="action_next">Next</string>
+
+    <string name="action_finish">Finish</string>
+</resources>

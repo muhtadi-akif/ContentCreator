@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#C70039</color>
+    <color name="colorPrimaryDark">#900C3F</color>
+    <color name="colorAccent">#FF4081</color>
+
+
+    <color name="themeColor">#196E15</color>
+    <color name="statusBarColor">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="blue">#50a3ec</color>
+    <color name="black">#000000</color>
+    <color name="custom_progress_bg_color">#EEEEEE</color>
+    <color name="custom_progress_message_color">#6D6D6D</color>
+    <color name="image_selected">#96dde238</color>
+    <color name="custom_grey">#191919</color>
+    <color name="testThemeColor">#e98f6c</color>
+    <color name="testStatusBarColor">#c73030</color>
+
+
+    <color name="red">#F6402C</color>
+    <color name="pink">#EB1460</color>
+    <color name="purple">#9C1AB1</color>
+    <color name="deep_purple">#6633B9</color>
+    <color name="indigo">#3D4DB7</color>
+    <color name="light_blue">#00A6F6</color>
+    <color name="cyan">#00BBD5</color>
+    <color name="teal">#009687</color>
+    <color name="green">#46AF4A</color>
+    <color name="light_green">#88C440</color>
+    <color name="lime">#CCDD1E</color>
+    <color name="yellow">#FFEC16</color>
+    <color name="amber">#FFC100</color>
+    <color name="orange">#FF9800</color>
+    <color name="deep_orange">#FF5505</color>
+    <color name="brown">#7A5547</color>
+    <color name="grey">#9D9D9D</color>
+    <color name="blue_grey">#5E7C8B</color>
+</resources>

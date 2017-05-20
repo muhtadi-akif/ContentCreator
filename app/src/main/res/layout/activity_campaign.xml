@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/editTextOutcome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Expected Outcome" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/editTextAudience"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Audience" />
+        </android.support.design.widget.TextInputLayout>
+
+        <Spinner
+            android:id="@+id/spinnerHeadline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"></Spinner>
+
+        <EditText
+            android:id="@+id/editTextHeadline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Headline" />
+
+        <Spinner
+            android:id="@+id/spinnerSubHeadline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"></Spinner>
+
+        <EditText
+            android:id="@+id/editTextSubHeadline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Sub Headline" />
+
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
+
+            <EditText
+                android:id="@+id/editTextStory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Story/Details"
+                />
+        </android.support.design.widget.TextInputLayout>
+
+
+        <Spinner
+            android:id="@+id/spinnerFinePrints"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"></Spinner>
+
+        <EditText
+            android:id="@+id/editTextFinePrints"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Fine Prints" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <ImageView
+                android:id="@+id/imageViewLogo"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_margin="5dp" />
+        </LinearLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="20dp"
+            android:background="@color/colorPrimaryDark"
+            android:onClick="suggestionIntent"
+            android:padding="10dp"
+            android:text="DONE"
+            android:textColor="#FFFFFF"></Button>
+
+    </LinearLayout>
+</ScrollView>

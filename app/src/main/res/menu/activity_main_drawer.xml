@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/homeicon"
+            android:title="Home" />
+        <item
+            android:id="@+id/nav_brand"
+            android:icon="@drawable/brands"
+            android:title="Brands" />
+
+    </group>
+
+    <item android:title="Campaign">
+        <menu>
+            <item
+                android:id="@+id/nav_campagin_new"
+                android:icon="@drawable/campaign_plus"
+                android:title="Create New" />
+            <item
+                android:id="@+id/nav_campaign_existing"
+                android:icon="@drawable/campaigns"
+                android:title="Open Exisiting" />
+        </menu>
+    </item>
+
+</menu>
