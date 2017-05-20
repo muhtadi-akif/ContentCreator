@@ -9,8 +9,19 @@
     tools:context="multiplexer.contentcreator.MainListActivity"
     tools:showIn="@layout/app_bar_list">
 
-
+    <TextView
+        android:layout_alignParentTop="true"
+        android:padding="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:text="Your Campaign List"
+        android:textSize="22sp"
+        android:background="@color/colorPrimary"
+        android:textColor="@android:color/white"
+        />
     <android.support.v4.widget.NestedScrollView
+        android:layout_marginTop="16dp"
         android:id="@+id/myScrollingContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
