@@ -8,7 +8,9 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.net.Uri;
@@ -36,8 +38,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 
 import multiplexer.contentcreator.Database.DatabaseHelper;
@@ -112,7 +113,7 @@ public class BrandsActivity extends AppCompatActivity implements
             ArrayList<Brands> arrBrands = db.getAllBrandsData();
             edtTagline.setText(arrBrands.get(arrBrands.size()-1).getBrand_tagline());
             selectedImage = arrBrands.get(arrBrands.size()-1).getPicUri();
-            Bitmap bitmap = null;
+           /* //Bitmap bitmap = null;
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
                 logoImage.setImageBitmap(bitmap);
@@ -123,6 +124,12 @@ public class BrandsActivity extends AppCompatActivity implements
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+*/
+            File image = new File(getRealPathFromURI(selectedImage));
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(),bmOptions);
+            logoImage.setImageBitmap(bitmap);
+
             edtObject.setText(arrBrands.get(arrBrands.size()-1).getPersonality_object());
             edtCelebrity.setText(arrBrands.get(arrBrands.size()-1).getCelebrity_personality());
             edtProductName.setText(arrBrands.get(arrBrands.size()-1).getProduct_name());
@@ -325,7 +332,7 @@ public class BrandsActivity extends AppCompatActivity implements
                     alternative_name = edtAlternateName.getText().toString();
                     alternative_desc = edtAlternateDesc.getText().toString();
                     alter_links = edtAlternateLinks.getText().toString();
-                    picUri = selectedImage + "";
+                    picUri = getRealPathFromURI(selectedImage);
                     Brands b = new Brands(brand_tagline, audience_age_group, audience_gender, audience_situation, audience_purpose, audience_outcome, personality_object, celebrity_personality
                             , product_name, product_desc, product_job, product, product_compare, competitor_name, competitor_desc,
                             competitor_links, alternative_name, alternative_desc, alter_links, Uri.parse(picUri));
@@ -423,7 +430,7 @@ public class BrandsActivity extends AppCompatActivity implements
     }
 
     public void uploadImage(View view) {
-        startActivityForResult(new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI), 1);
+        startActivityForResult(new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), 1);
     }
 
     @Override
@@ -434,8 +441,8 @@ public class BrandsActivity extends AppCompatActivity implements
         //Detects request codes
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
             selectedImage = data.getData();
-            Bitmap bitmap = null;
-            try {
+            //Bitmap bitmap = null;
+            /*try {
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
                 logoImage.setImageBitmap(bitmap);
             } catch (FileNotFoundException e) {
@@ -444,10 +451,28 @@ public class BrandsActivity extends AppCompatActivity implements
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }
+            }*/
+
+            File image = new File(getRealPathFromURI(selectedImage));
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(),bmOptions);
+            logoImage.setImageBitmap(bitmap);
         }
     }
 
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
+    }
     public void animalChooser(View view) {
         showDialog(CATEGORY_ID);
     }

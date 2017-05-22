@@ -149,6 +149,7 @@
                         android:background="@color/blue" />
 
                     <LinearLayout
+
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -158,6 +159,7 @@
                         android:background="?android:attr/selectableItemBackground"
                         >
                         <ImageButton
+                            android:id="@+id/blur"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:layout_gravity="center"

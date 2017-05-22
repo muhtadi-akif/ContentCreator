@@ -121,6 +121,9 @@ public class GalleryImagesAdapter extends RecyclerView.Adapter<RecyclerView.View
                     editor.putString("picUri",entity.uri+"");
                     editor.commit();
                     Intent i = new Intent(activity.getBaseContext(),CreateContent.class);
+                    i.putExtra("headline",activity.getIntent().getStringExtra("headline"));
+                    i.putExtra("subHeadline",activity.getIntent().getStringExtra("subHeadline"));
+                    i.putExtra("frontLine",activity.getIntent().getStringExtra("frontLine"));
                     activity.startActivity(i);
                     activity.finish();
                     activity.overridePendingTransition(0,0);

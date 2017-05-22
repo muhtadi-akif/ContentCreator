@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
@@ -28,6 +29,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +61,7 @@ public class ImageEditor extends AppCompatActivity {
     private android.widget.RelativeLayout.LayoutParams layoutParams;
     AutoImageView imageView;
     RelativeLayout saveViewLayout;
+    ImageButton blur;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +73,7 @@ public class ImageEditor extends AppCompatActivity {
         }
         imageView = (AutoImageView) findViewById(R.id.imageView);
         saveViewLayout = (RelativeLayout) findViewById(R.id.actualView);
+        blur = (ImageButton) findViewById(R.id.blur);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
@@ -91,10 +95,19 @@ public class ImageEditor extends AppCompatActivity {
                 .error(R.drawable.no_image)
                 .into(imageView);
 
+        blur.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                seekEdit();
+            }
+        });
+
         txtHeadline = (TextView) findViewById(R.id.text);
         txtSubHeadline = (TextView) findViewById(R.id.subHeadlineText);
         txtFrontLine = (TextView) findViewById(R.id.frontLineText);
-
+        txtHeadline.setText(getIntent().getStringExtra("headline"));
+        txtSubHeadline.setText(getIntent().getStringExtra("subHeadline"));
+        txtFrontLine.setText(getIntent().getStringExtra("frontLine"));
         txtHeadline.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
@@ -115,9 +128,12 @@ public class ImageEditor extends AppCompatActivity {
                         break;
 
                     case MotionEvent.ACTION_UP:
-                        if (lastAction == MotionEvent.ACTION_DOWN)
-                            //Toast.makeText(getBaseContext(), "Clicked!", Toast.LENGTH_SHORT).show();
+                       /* if (lastAction == MotionEvent.ACTION_DOWN){
+                            editDialog("headline");
+                        }*/
                         editDialog("headline");
+                            //Toast.makeText(getBaseContext(), "Clicked!", Toast.LENGTH_SHORT).show();
+
                         break;
 
                     default:
@@ -147,7 +163,7 @@ public class ImageEditor extends AppCompatActivity {
                         break;
 
                     case MotionEvent.ACTION_UP:
-                        if (lastAction == MotionEvent.ACTION_DOWN)
+                      /*  if (lastAction == MotionEvent.ACTION_DOWN)*/
                             //Toast.makeText(getBaseContext(), "Clicked!", Toast.LENGTH_SHORT).show();
                         editDialog("sub headline");
                         break;
@@ -179,7 +195,7 @@ public class ImageEditor extends AppCompatActivity {
                         break;
 
                     case MotionEvent.ACTION_UP:
-                        if (lastAction == MotionEvent.ACTION_DOWN)
+                      /*  if (lastAction == MotionEvent.ACTION_DOWN)*/
                             //Toast.makeText(getBaseContext(), "Clicked!", Toast.LENGTH_SHORT).show();
                         editDialog("front line");
                         break;
@@ -192,6 +208,89 @@ public class ImageEditor extends AppCompatActivity {
         });
     }
 
+    public void seekEdit(){
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.editor_slider);
+
+        AppCompatSeekBar seekBar = (AppCompatSeekBar) dialog.findViewById(R.id.seekBar);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                dialog.dismiss();
+            }
+        });
+        /*final EditText edt_unit = (EditText) dialog.findViewById(R.id.input_unit);
+        TextView title_dialog = (TextView) dialog.findViewById(R.id.text_dialog);
+        if(position=="headline"){
+            title_dialog.setText("Change your headline here");
+            if(txtHeadline.getText().equals("Your Headline")){
+                edt_unit.setHint("Your headline here");
+            } else {
+                edt_unit.setText(txtHeadline.getText());
+                edt_unit.append("");
+            }
+
+        } else if(position=="sub headline"){
+            title_dialog.setText("Change your sub headline here");
+            if(txtSubHeadline.getText().equals("Your Sub Headline")){
+                edt_unit.setHint("Your sub headline here");
+            } else {
+                edt_unit.setText(txtSubHeadline.getText());
+                edt_unit.append("");
+            }
+
+
+        } else if(position=="front line"){
+            title_dialog.setText("Change your front line here");
+            if(txtFrontLine.getText().equals("Your Front Line")){
+                edt_unit.setHint("Your front line here");
+            } else {
+                edt_unit.setText(txtFrontLine.getText());
+                edt_unit.append("");
+            }
+        }
+        Button neg_dialogButton = (Button) dialog.findViewById(R.id.btn_neg);
+        neg_dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        Button pos_dialogButton = (Button) dialog.findViewById(R.id.btn_pos);
+        pos_dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (edt_unit.getText().toString().equals("")){
+                    dialog.dismiss();
+                }else {
+                    if(position=="headline"){
+                        txtHeadline.setText(edt_unit.getText().toString());
+                    } else if(position=="sub headline"){
+                        txtSubHeadline.setText(edt_unit.getText().toString());
+                    } else if(position=="front line"){
+                        txtFrontLine.setText(edt_unit.getText().toString());
+                    }
+
+                    dialog.dismiss();
+                }
+            }
+        });*/
+
+        dialog.show();
+
+    }
 
 
     public void editDialog(final String position){

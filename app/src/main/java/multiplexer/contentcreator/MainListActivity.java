@@ -1,9 +1,16 @@
 package multiplexer.contentcreator;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +26,7 @@ import java.util.List;
 import multiplexer.contentcreator.Database.DatabaseHelper;
 import multiplexer.contentcreator.Model.Campaign;
 import multiplexer.contentcreator.adapter.CampaignAdapter;
+import multiplexer.contentcreator.utils.Constants;
 
 public class MainListActivity extends AppCompatActivity {
     RecyclerView recyclerView;
@@ -65,7 +73,82 @@ public class MainListActivity extends AppCompatActivity {
 
             }
         });
+        checkForPermissions();
 
+    }
+    public void checkForPermissions() {
+        if (hasStoragePermission(this)){
+
+        }
+
+        else
+            requestStoragePermissions(this, Constants.REQUEST_STORAGE_PERMS);
+    }
+
+    public void requestStoragePermissions(Activity activity, int requestCode) {
+        int hasReadPermission = ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+        int hasWritePermission = ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        List<String> permissions = new ArrayList<>();
+        if (hasReadPermission != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+
+        if (hasWritePermission != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+        if (!permissions.isEmpty()) {
+            ActivityCompat.requestPermissions(activity, permissions.toArray(new String[permissions.size()]), requestCode);
+        }
+
+    }
+
+    public boolean hasStoragePermission(Context context) {
+        int writePermissionCheck = ContextCompat.checkSelfPermission(context,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int readPermissionCheck = ContextCompat.checkSelfPermission(context,
+                Manifest.permission.READ_EXTERNAL_STORAGE);
+        return !(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && (writePermissionCheck == PackageManager.PERMISSION_DENIED
+                || readPermissionCheck == PackageManager.PERMISSION_DENIED));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case Constants.REQUEST_STORAGE_PERMS:
+                if (validateGrantedPermissions(grantResults)) {
+                    //new Recent_Photo().getImagesFromStorage();
+                    /*Intent i = new Intent(this, CreateContent.class);
+                    startActivity(i);
+                    overridePendingTransition(0, 0);
+                    finish();*/
+                } else {
+                    Toast.makeText(this, "Permissions not granted.", Toast.LENGTH_LONG).show();
+                    requestStoragePermissions(this, Constants.REQUEST_STORAGE_PERMS);
+
+                }
+                break;
+            default: {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            }
+        }
+    }
+
+    public boolean validateGrantedPermissions(int[] grantResults) {
+        boolean isGranted = true;
+        if (grantResults != null && grantResults.length > 0) {
+            for (int i = 0; i < grantResults.length; i++) {
+                if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                    isGranted = false;
+                    break;
+                }
+            }
+            return isGranted;
+        } else {
+            isGranted = false;
+            return isGranted;
+        }
     }
 
 

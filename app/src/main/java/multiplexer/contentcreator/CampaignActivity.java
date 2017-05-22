@@ -1,7 +1,10 @@
 package multiplexer.contentcreator;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -12,8 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 
 import multiplexer.contentcreator.Database.DatabaseHelper;
@@ -51,7 +53,7 @@ public class CampaignActivity extends AppCompatActivity {
         if(db.getBrandsCount()>0){
             ArrayList<Brands> arrBrands = db.getAllBrandsData();
             //edtTagline.setText(arrBrands.get(arrBrands.size()).getBrand_tagline());
-            Bitmap bitmap = null;
+           /* Bitmap bitmap = null;
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), arrBrands.get(arrBrands.size()-1).getPicUri());
                 logo.setImageBitmap(bitmap);
@@ -61,7 +63,11 @@ public class CampaignActivity extends AppCompatActivity {
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }
+            }*/
+            File image = new File(getRealPathFromURI(arrBrands.get(arrBrands.size()-1).getPicUri()));
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(),bmOptions);
+            logo.setImageBitmap(bitmap);
         }
         if(getIntent().hasExtra("flagPosition")){
             headline.setText(getIntent().getStringExtra("headline"));
@@ -119,7 +125,19 @@ public class CampaignActivity extends AppCompatActivity {
             }
         });
     }
-
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
+    }
 
     public void suggestionIntent(View view) {
         if(outcome.getText().toString().equals("")){
@@ -146,6 +164,9 @@ public class CampaignActivity extends AppCompatActivity {
 
             Intent intentMain = new Intent(CampaignActivity.this, CreateContent.class);
             intentMain.putExtra("tag", "campaign");
+            intentMain.putExtra("headline",headline.getText().toString());
+            intentMain.putExtra("subHeadline",subHeader.getText().toString());
+            intentMain.putExtra("frontLine",finePrints.getText().toString());
             startActivity(intentMain);
             finish();
         }

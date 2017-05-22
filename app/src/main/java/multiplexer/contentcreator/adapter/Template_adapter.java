@@ -51,7 +51,7 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
     // binds the data to the textview in each cell
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Template temp = mData.get(position);
+        final Template temp = mData.get(position);
         if(pref.contains("picUri")){
             Picasso.with(mContext).load(pref.getString("picUri","")).into(holder.backgroundImage);
         } else {
@@ -145,6 +145,9 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
                 if(tempUri!=null){
                     Intent i = new Intent(mContext, ImageEditor.class);
                     i.putExtra("uri",tempUri);
+                    i.putExtra("headline",temp.getHeadline());
+                    i.putExtra("subHeadline",temp.getSubHeadline());
+                    i.putExtra("frontLine",temp.getFrontLine());
                     mContext.startActivity(i);
                 } else {
                     Toast.makeText(mContext,"Choose a picture from above",Toast.LENGTH_LONG).show();

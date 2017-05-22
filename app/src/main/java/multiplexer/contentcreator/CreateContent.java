@@ -98,26 +98,11 @@ public class CreateContent extends AppCompatActivity
         ArrayList <String> subHeadlines = new ArrayList<>();
         ArrayList <String> frontLines = new ArrayList<>();
 
-        headlines.add("Headline 1");
-        headlines.add("Headline 2");
-        headlines.add("Headline 3");
-        headlines.add("Headline 4");
-        headlines.add("Headline 5");
-        headlines.add("Headline 6");
-
-        subHeadlines.add("Sub-Headline 1");
-        subHeadlines.add("Sub-Headline 2");
-        subHeadlines.add("Sub-Headline 3");
-        subHeadlines.add("Sub-Headline 4");
-        subHeadlines.add("Sub-Headline 5");
-        subHeadlines.add("Sub-Headline 6");
-
-        frontLines.add("Front Line 1");
-        frontLines.add("Front Line 2");
-        frontLines.add("Front Line 3");
-        frontLines.add("Front Line 4");
-        frontLines.add("Front Line 5");
-        frontLines.add("Front Line 6");
+        for(int i = 0; i<6;i++){
+            headlines.add(getIntent().getStringExtra("headline"));
+            subHeadlines.add(getIntent().getStringExtra("subHeadline"));
+            frontLines.add(getIntent().getStringExtra("frontLine"));
+        }
 
         templatesList = new ArrayList<>();
 
@@ -261,7 +246,7 @@ public class CreateContent extends AppCompatActivity
                         MediaStore.Images.Media.HEIGHT, MediaStore.Images.Media.WIDTH};
                 final String orderBy = MediaStore.Images.Media.DATE_ADDED + " DESC";
                 imageCursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null, null, orderBy);
-                while (imageCursor.moveToNext() && i < 50) {
+                while (imageCursor.moveToNext() && i < 500) {
                     long _id = imageCursor.getLong(imageCursor.getColumnIndex(MediaStore.Images.ImageColumns._ID));
                     int height = imageCursor.getInt(imageCursor.getColumnIndex(MediaStore.Images.ImageColumns.HEIGHT));
                     int width = imageCursor.getInt(imageCursor.getColumnIndex(MediaStore.Images.ImageColumns.WIDTH));
