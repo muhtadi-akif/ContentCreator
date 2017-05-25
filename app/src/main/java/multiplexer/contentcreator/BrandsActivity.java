@@ -6,8 +6,10 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,6 +22,7 @@ import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +41,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flask.colorpicker.ColorPickerView;
+import com.flask.colorpicker.OnColorSelectedListener;
+import com.flask.colorpicker.builder.ColorPickerClickListener;
+import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -46,6 +54,7 @@ import multiplexer.contentcreator.Model.Brands;
 import multiplexer.contentcreator.adapter.ImageAdapter;
 import multiplexer.contentcreator.adapter.ScreenSlidePageFragment;
 import multiplexer.contentcreator.utils.ColorDialog;
+import multiplexer.contentcreator.utils.Utils;
 
 /**
  * Created by Miral on 3/20/2017.
@@ -53,7 +62,8 @@ import multiplexer.contentcreator.utils.ColorDialog;
 
 public class BrandsActivity extends AppCompatActivity implements
         ColorDialog.OnColorChangedListener {
-
+    int selectedColor;
+    int darkenedColor;
     final int CATEGORY_ID = 0;
     Dialog dialog;
     private Animation animBounce;
@@ -72,6 +82,7 @@ public class BrandsActivity extends AppCompatActivity implements
     Uri selectedImage = null;
     DatabaseHelper db;
     ImageView logoImage;
+    TextView color;
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +90,8 @@ public class BrandsActivity extends AppCompatActivity implements
         db = new DatabaseHelper(BrandsActivity.this);
         pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         editor = pref.edit();
+        selectedColor = fetchAccentColor();
+        darkenedColor = Utils.getDarkColor(selectedColor);
         Spinner imageSpinner = (Spinner) findViewById(R.id.spinnerEmotion);
         ImageAdapter adapter = new ImageAdapter(BrandsActivity.this,
                 new Integer[]{R.drawable.happy, R.drawable.unhappy, R.drawable.super_happy, R.drawable.angry});
@@ -148,12 +161,12 @@ public class BrandsActivity extends AppCompatActivity implements
         }
         mainL = (LinearLayout) findViewById(R.id.mainL);
         mContext = getApplicationContext();
-        final TextView color = (TextView) findViewById(R.id.eTColor);
+         color = (TextView) findViewById(R.id.eTColor);
         color.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //new ColorDialog(BrandsActivity.this, BrandsActivity.this, R.color.colorPrimary).show();
-                GridView gv = (GridView) ColorPicker.getColorPicker(BrandsActivity.this);
+               /* GridView gv = (GridView) ColorPicker.getColorPicker(BrandsActivity.this);
 
                 // Initialize a new AlertDialog.Builder object
                 AlertDialog.Builder builder = new AlertDialog.Builder(BrandsActivity.this);
@@ -186,7 +199,8 @@ public class BrandsActivity extends AppCompatActivity implements
                         // close the color picker
                         dialog.dismiss();
                     }
-                });
+                });*/
+                setCustomTheme();
             }
         });
         final TextView tVPersonality = (TextView) findViewById(R.id.personality);
@@ -355,6 +369,14 @@ public class BrandsActivity extends AppCompatActivity implements
 
     }
 
+    private int fetchAccentColor() {
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorAccent});
+        int color = a.getColor(0, 0);
+        a.recycle();
+        return color;
+    }
+
     private Point getScreenSize() {
         WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
@@ -373,6 +395,41 @@ public class BrandsActivity extends AppCompatActivity implements
         }
         return height;
     }
+
+    private void setCustomTheme() {
+        ColorPickerDialogBuilder
+                .with(this)
+                .setTitle("Choose color")
+                .initialColor(selectedColor)
+                .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
+                .density(12)
+                .setOnColorSelectedListener(new OnColorSelectedListener() {
+                    @Override
+                    public void onColorSelected(int selectedColor) {
+                    }
+                })
+                .setPositiveButton("OK", new ColorPickerClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
+                        changeColor(selectedColor);
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .build()
+                .show();
+    }
+
+    private void changeColor(int selectedColor) {
+        this.selectedColor = selectedColor;
+        this.darkenedColor = Utils.getDarkColor(selectedColor);
+        color.setBackgroundColor(selectedColor);
+        //Toast.makeText(this,"New color selected" + Integer.toHexString(selectedColor),Toast.LENGTH_LONG).show();
+    }
+
 
     @Override
     public void colorChanged(int color) {

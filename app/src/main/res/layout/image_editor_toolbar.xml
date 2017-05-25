@@ -19,71 +19,89 @@
             android:layout_height="?android:attr/actionBarSize"
             android:background="@color/custom_grey"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
-            
-            <LinearLayout
+            <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
                 >
-                <ImageButton
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_home"
-                    android:background="@null"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    />
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_reload"
-                    android:background="@null"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    />
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_file"
-                    android:background="@null"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    />
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_question"
-                    android:background="@null"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    />
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_crop"
-                    android:background="@null"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    />
+                    android:orientation="horizontal"
+                    >
+                    <ImageButton
+                        android:id="@+id/homeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_home"
+                        android:background="@null"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+
+                        />
+                    <Button
+                        android:id="@+id/undoButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Undo"
+                        android:background="@null"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        />
+                    <Button
+                        android:id="@+id/strokeWidthPlusButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="SW+"
+                        android:background="@null"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        />
+                    <Button
+                        android:id="@+id/strokeWidthMinusButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="SW-"
+                        android:background="@null"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        />
+                    <Button
+                        android:id="@+id/changeColorButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Color"
+                        android:background="@null"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        />
 
 
-                <ImageButton
-                    android:id="@+id/save"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_done"
-                    android:background="@color/blue"
-                    android:layout_weight="1.5"
-                    android:layout_gravity="center"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    />
-                
-            </LinearLayout>
+                    <ImageButton
+                        android:id="@+id/save"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_done"
+                        android:background="@color/blue"
+                        android:layout_weight="1.5"
+                        android:layout_gravity="center"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        />
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
 
         </android.support.v7.widget.Toolbar>
 

@@ -25,6 +25,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true" />
+            <me.panavtec.drawableview.DrawableView
+                android:id="@+id/paintView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
 
             <TextView
                 android:id="@+id/text"
@@ -115,7 +120,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <LinearLayout
+               <!--     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -146,7 +151,7 @@
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
-                        android:background="@color/blue" />
+                        android:background="@color/blue" />-->
 
                     <LinearLayout
 
@@ -192,6 +197,7 @@
                         android:background="?android:attr/selectableItemBackground"
                         >
                         <ImageButton
+                            android:id="@+id/sharpen"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:layout_gravity="center"
@@ -224,6 +230,7 @@
                         android:background="?android:attr/selectableItemBackground"
                         >
                         <ImageButton
+                            android:id="@+id/brightness"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:layout_gravity="center"
@@ -256,6 +263,7 @@
                         android:background="?android:attr/selectableItemBackground"
                         >
                         <ImageButton
+                            android:id="@+id/colorify"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:layout_gravity="center"
@@ -273,7 +281,6 @@
                             android:layout_weight="1"
                             />
                     </LinearLayout>
-
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
@@ -288,6 +295,7 @@
                         android:background="?android:attr/selectableItemBackground"
                         >
                         <ImageButton
+                            android:id="@+id/saturation"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:layout_gravity="center"
@@ -301,39 +309,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textAlignment="center"
-                            android:text="Beautify"
-                            android:layout_weight="1"
-                            />
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:background="@color/blue" />
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_margin="6dp"
-                        android:layout_gravity="center"
-                        android:orientation="vertical"
-                        android:background="?android:attr/selectableItemBackground"
-                        >
-                        <ImageButton
-                            android:layout_width="80dp"
-                            android:layout_height="80dp"
-                            android:layout_gravity="center"
-                            android:background="@null"
-                            android:src="@drawable/light"
-                            android:layout_weight="1"
-                            />
-
-                        <TextView
-                            android:textColor="@color/white"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textAlignment="center"
-                            android:text="Light Fx"
+                            android:text="Cartoon"
                             android:layout_weight="1"
                             />
                     </LinearLayout>
