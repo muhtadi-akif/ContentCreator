@@ -19,6 +19,7 @@
         <RelativeLayout
             android:id="@+id/actualView"
             android:layout_width="match_parent"
+            android:background="@android:color/white"
             android:layout_height="match_parent">
             <multiplexer.contentcreator.views.AutoImageView
                 android:id="@+id/imageView"
@@ -29,6 +30,7 @@
                 android:id="@+id/paintView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:visibility="invisible"
                 />
 
             <TextView
@@ -313,6 +315,39 @@
                             android:layout_weight="1"
                             />
                     </LinearLayout>
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/blue" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_margin="6dp"
+                        android:layout_gravity="center"
+                        android:orientation="vertical"
+                        android:background="?android:attr/selectableItemBackground"
+                        >
+                        <ImageButton
+                            android:id="@+id/background"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_gravity="center"
+                            android:background="@null"
+                            android:src="@android:drawable/ic_menu_report_image"
+                            android:layout_weight="1"
+                            />
+
+                        <TextView
+                            android:textColor="@color/white"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAlignment="center"
+                            android:text="Background Co"
+                            android:layout_weight="1"
+                            />
+                    </LinearLayout>
+
                 </LinearLayout>
 
             </HorizontalScrollView>

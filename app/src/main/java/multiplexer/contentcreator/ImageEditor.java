@@ -66,6 +66,8 @@ public class ImageEditor extends AppCompatActivity {
     TextView txtHeadline, txtSubHeadline, txtFrontLine;
     int selectedColor;
     int darkenedColor;
+    int BGselectedColor;
+    int BGdarkenedColor;
     float dX;
     float dY;
     int lastAction;
@@ -75,7 +77,7 @@ public class ImageEditor extends AppCompatActivity {
     private android.widget.RelativeLayout.LayoutParams layoutParams;
     AutoImageView imageView;
     RelativeLayout saveViewLayout;
-    ImageButton blur_btn, brightness_btn, sharpen_btn,saturation_btn,colorify_btn;
+    ImageButton blur_btn, brightness_btn, sharpen_btn,saturation_btn,colorify_btn,background_btn;
     int brightness = 0, blur = 0, sharpen = 0,saturation = 0;
     private DrawableView drawableView;
     private DrawableViewConfig config = new DrawableViewConfig();
@@ -92,11 +94,14 @@ public class ImageEditor extends AppCompatActivity {
         }
         selectedColor = getResources().getColor(android.R.color.black);
         darkenedColor = Utils.getDarkColor(selectedColor);
+        BGselectedColor = getResources().getColor(android.R.color.white);
+        BGdarkenedColor = Utils.getDarkColor(selectedColor);
         imageView = (AutoImageView) findViewById(R.id.imageView);
         imageView.setDrawingCacheEnabled(true);
         saveViewLayout = (RelativeLayout) findViewById(R.id.actualView);
         blur_btn = (ImageButton) findViewById(R.id.blur);
         brightness_btn = (ImageButton) findViewById(R.id.brightness);
+        background_btn = (ImageButton) findViewById(R.id.background);
         sharpen_btn = (ImageButton) findViewById(R.id.sharpen);
         colorify_btn = (ImageButton) findViewById(R.id.colorify);
         saturation_btn = (ImageButton) findViewById(R.id.saturation);
@@ -207,7 +212,12 @@ public class ImageEditor extends AppCompatActivity {
                 seekEdit("saturation");
             }
         });
-
+        background_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setBackgroundColor();
+            }
+        });
         txtHeadline = (TextView) findViewById(R.id.text);
         txtSubHeadline = (TextView) findViewById(R.id.subHeadlineText);
         txtFrontLine = (TextView) findViewById(R.id.frontLineText);
@@ -312,6 +322,37 @@ public class ImageEditor extends AppCompatActivity {
                 return true;
             }
         });
+
+        imageView.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        dX = view.getX() - event.getRawX();
+                        dY = view.getY() - event.getRawY();
+                        lastAction = MotionEvent.ACTION_DOWN;
+                        break;
+
+                    case MotionEvent.ACTION_MOVE:
+                        lastY = (event.getRawY() + dY);
+                        lastX = (event.getRawX() + dX);
+                        view.setY(event.getRawY() + dY);
+                        view.setX(event.getRawX() + dX);
+                        lastAction = MotionEvent.ACTION_MOVE;
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                      /*  if (lastAction == MotionEvent.ACTION_DOWN)*/
+                        //Toast.makeText(getBaseContext(), "Clicked!", Toast.LENGTH_SHORT).show();
+                        break;
+
+                    default:
+                        return false;
+                }
+                return true;
+            }
+        });
     }
     private void setCustomColor() {
         ColorPickerDialogBuilder
@@ -347,9 +388,45 @@ public class ImageEditor extends AppCompatActivity {
         //Toast.makeText(this,"New color selected" + Integer.toHexString(selectedColor),Toast.LENGTH_LONG).show();
     }
 
+
+    private void setBackgroundColor() {
+        ColorPickerDialogBuilder
+                .with(this)
+                .setTitle("Choose color")
+                .initialColor(BGselectedColor)
+                .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
+                .density(12)
+                .setOnColorSelectedListener(new OnColorSelectedListener() {
+                    @Override
+                    public void onColorSelected(int selectedColor) {
+                    }
+                })
+                .setPositiveButton("OK", new ColorPickerClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
+                        ChangeBackGroundColor(selectedColor);
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .build()
+                .show();
+    }
+
+    private void ChangeBackGroundColor(int selectedColor) {
+        this.BGselectedColor = selectedColor;
+        this.BGdarkenedColor = Utils.getDarkColor(selectedColor);
+        saveViewLayout.setBackgroundColor(BGselectedColor);
+        //Toast.makeText(this,"New color selected" + Integer.toHexString(selectedColor),Toast.LENGTH_LONG).show();
+    }
+
     private void initColorify() {
         if (colorify==false){
             Toast.makeText(getBaseContext(),"Colorify is enabled now you can draw anything on the image",Toast.LENGTH_LONG).show();
+            drawableView.setVisibility(View.VISIBLE);
             colorify = true;
             colorify_btn.setBackgroundColor(getResources().getColor(R.color.blue));
             config.setStrokeColor(getResources().getColor(android.R.color.black));
@@ -362,6 +439,7 @@ public class ImageEditor extends AppCompatActivity {
             drawableView.setConfig(config);
         } else {
             Toast.makeText(getBaseContext(),"Colorify is disabled",Toast.LENGTH_LONG).show();
+            drawableView.setVisibility(View.INVISIBLE);
             colorify_btn.setBackgroundColor(Color.TRANSPARENT );
             colorify = false;
             config.setStrokeColor(getResources().getColor(android.R.color.black));
