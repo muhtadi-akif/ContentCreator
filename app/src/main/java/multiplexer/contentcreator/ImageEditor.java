@@ -2,9 +2,12 @@ package multiplexer.contentcreator;
 
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
@@ -15,6 +18,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -42,6 +46,8 @@ import com.flask.colorpicker.OnColorSelectedListener;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.squareup.picasso.Picasso;
+import com.zomato.photofilters.SampleFilters;
+import com.zomato.photofilters.imageprocessors.Filter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -50,18 +56,22 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import me.panavtec.drawableview.DrawableView;
 import me.panavtec.drawableview.DrawableViewConfig;
 import multiplexer.contentcreator.Helper.ConvolutionMatrix;
 import multiplexer.contentcreator.utils.Utils;
 import multiplexer.contentcreator.views.AutoImageView;
 
-
 /**
  * Created by USER on 3/20/2017.
  */
 
 public class ImageEditor extends AppCompatActivity {
+    static
+    {
+        System.loadLibrary("NativeImageProcessor");
+    }
     private int screenWidth;
     TextView txtHeadline, txtSubHeadline, txtFrontLine;
     int selectedColor;
@@ -77,12 +87,13 @@ public class ImageEditor extends AppCompatActivity {
     private android.widget.RelativeLayout.LayoutParams layoutParams;
     AutoImageView imageView;
     RelativeLayout saveViewLayout;
-    ImageButton blur_btn, brightness_btn, sharpen_btn,saturation_btn,colorify_btn,background_btn;
-    int brightness = 0, blur = 0, sharpen = 0,saturation = 0;
+    ImageButton blur_btn, brightness_btn, sharpen_btn, saturation_btn, colorify_btn, background_btn;
+    int brightness = 0, blur = 0, sharpen = 0, saturation = 0;
     private DrawableView drawableView;
     private DrawableViewConfig config = new DrawableViewConfig();
-
-    boolean colorify = false;
+    CircleImageView LightFx, BlueFx, StruckVibe, LimeFx, NightFx;
+    boolean colorify = false,litFx = false, bluFx = false,stVibe = false,lime=false,nit =false;
+    ProgressDialog prog_dialog;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,44 +137,48 @@ public class ImageEditor extends AppCompatActivity {
         });
         strokeWidthPlusButton.setOnClickListener(new View.OnClickListener() {
 
-            @Override public void onClick(View v) {
-                if (colorify==true){
+            @Override
+            public void onClick(View v) {
+                if (colorify == true) {
                     config.setStrokeWidth(config.getStrokeWidth() + 10);
                 } else {
-                    Toast.makeText(getBaseContext(),"You need to enable colorify first",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "You need to enable colorify first", Toast.LENGTH_LONG).show();
                 }
 
             }
         });
         strokeWidthMinusButton.setOnClickListener(new View.OnClickListener() {
 
-            @Override public void onClick(View v) {
-                if (colorify==true){
+            @Override
+            public void onClick(View v) {
+                if (colorify == true) {
                     config.setStrokeWidth(config.getStrokeWidth() - 10);
                 } else {
-                    Toast.makeText(getBaseContext(),"You need to enable colorify first",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "You need to enable colorify first", Toast.LENGTH_LONG).show();
                 }
 
             }
         });
         changeColorButton.setOnClickListener(new View.OnClickListener() {
 
-            @Override public void onClick(View v) {
-                if (colorify==true){
+            @Override
+            public void onClick(View v) {
+                if (colorify == true) {
                     setCustomColor();
                 } else {
-                    Toast.makeText(getBaseContext(),"You need to enable colorify first",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "You need to enable colorify first", Toast.LENGTH_LONG).show();
                 }
 
             }
         });
         undoButton.setOnClickListener(new View.OnClickListener() {
 
-            @Override public void onClick(View v) {
-                if (colorify==true){
+            @Override
+            public void onClick(View v) {
+                if (colorify == true) {
                     drawableView.undo();
                 } else {
-                    Toast.makeText(getBaseContext(),"You need to enable colorify first",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "You need to enable colorify first", Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -173,7 +188,18 @@ public class ImageEditor extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //writeTextOnDrawable(Uri.parse(getIntent().getStringExtra("uri")),"Drag Testing",lastX,lastY);
-                CreateBitmap(saveViewLayout);
+                prog_dialog = ProgressDialog.show(ImageEditor.this, "",
+                        "Creating your image content....", true);
+                prog_dialog.setCancelable(false);
+                prog_dialog.show();
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        //TODO your background code
+                        CreateBitmap(saveViewLayout);
+                    }
+                });
+
             }
         });
         Picasso.with(this)
@@ -181,7 +207,7 @@ public class ImageEditor extends AppCompatActivity {
                 .placeholder(R.drawable.image_processing)
                 .error(R.drawable.no_image)
                 .into(imageView);
-
+        initFilters();
         brightness_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -354,6 +380,92 @@ public class ImageEditor extends AppCompatActivity {
             }
         });
     }
+
+    public void initFilters() {
+        LightFx = (CircleImageView) findViewById(R.id.light_fx);
+        BlueFx = (CircleImageView) findViewById(R.id.blue_fx);
+        StruckVibe = (CircleImageView) findViewById(R.id.struck_vibe_fx);
+        LimeFx = (CircleImageView) findViewById(R.id.lime_fx);
+        NightFx = (CircleImageView) findViewById(R.id.night_fx);
+
+        //Bitmap outputImage = null;
+        Filter filter = null;
+
+        filter = SampleFilters.getStarLitFilter();
+        LightFx.setImageBitmap(filter.processFilter(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(this.getApplicationContext().getResources(), R.drawable.compress_sample), 500, 333, false)));
+        LightFx.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(litFx==false){
+                    litFx = true;
+                } else {
+                    litFx = false;
+                }
+                changeEffectOnPic();
+            }
+
+        });
+
+
+        filter = SampleFilters.getBlueMessFilter();
+        BlueFx.setImageBitmap(filter.processFilter(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(this.getApplicationContext().getResources(), R.drawable.compress_sample), 500, 333, false)));
+        BlueFx.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(bluFx==false){
+                    bluFx = true;
+                } else {
+                    bluFx = false;
+                }
+                changeEffectOnPic();
+            }
+        });
+
+        filter = SampleFilters.getAweStruckVibeFilter();
+        StruckVibe.setImageBitmap(filter.processFilter(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(this.getApplicationContext().getResources(), R.drawable.compress_sample), 500, 333, false)));
+        StruckVibe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(stVibe==false){
+                    stVibe = true;
+                } else {
+                    stVibe = false;
+                }
+                changeEffectOnPic();
+            }
+        });
+
+        filter = SampleFilters.getLimeStutterFilter();
+        LimeFx.setImageBitmap(filter.processFilter(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(this.getApplicationContext().getResources(), R.drawable.compress_sample), 500, 333, false)));
+        LimeFx.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(lime==false){
+                    lime = true;
+                } else {
+                    lime = false;
+                }
+                changeEffectOnPic();
+            }
+        });
+
+        filter = SampleFilters.getNightWhisperFilter();
+        NightFx.setImageBitmap(filter.processFilter(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(this.getApplicationContext().getResources(), R.drawable.compress_sample), 500, 333, false)));
+        NightFx.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(nit==false){
+                    nit = true;
+                } else {
+                    nit = false;
+                }
+                changeEffectOnPic();
+            }
+        });
+    }
+
+
     private void setCustomColor() {
         ColorPickerDialogBuilder
                 .with(this)
@@ -424,8 +536,8 @@ public class ImageEditor extends AppCompatActivity {
     }
 
     private void initColorify() {
-        if (colorify==false){
-            Toast.makeText(getBaseContext(),"Colorify is enabled now you can draw anything on the image",Toast.LENGTH_LONG).show();
+        if (colorify == false) {
+            Toast.makeText(getBaseContext(), "Colorify is enabled now you can draw anything on the image", Toast.LENGTH_LONG).show();
             drawableView.setVisibility(View.VISIBLE);
             colorify = true;
             colorify_btn.setBackgroundColor(getResources().getColor(R.color.blue));
@@ -438,9 +550,9 @@ public class ImageEditor extends AppCompatActivity {
             config.setCanvasWidth(1920);
             drawableView.setConfig(config);
         } else {
-            Toast.makeText(getBaseContext(),"Colorify is disabled",Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "Colorify is disabled", Toast.LENGTH_LONG).show();
             drawableView.setVisibility(View.INVISIBLE);
-            colorify_btn.setBackgroundColor(Color.TRANSPARENT );
+            colorify_btn.setBackgroundColor(Color.TRANSPARENT);
             colorify = false;
             config.setStrokeColor(getResources().getColor(android.R.color.black));
             config.setShowCanvasBounds(false);
@@ -467,7 +579,7 @@ public class ImageEditor extends AppCompatActivity {
             seekBar.setProgress(blur);
         } else if (for_.equals("sharpen")) {
             seekBar.setProgress(sharpen);
-        }else if (for_.equals("saturation")) {
+        } else if (for_.equals("saturation")) {
             seekBar.setProgress(saturation);
         } else {
             seekBar.setProgress(0);
@@ -504,7 +616,7 @@ public class ImageEditor extends AppCompatActivity {
                             sharpen = seekBar.getProgress();
                             changeEffectOnPic();
 
-                        }else if (for_.equals("saturation")) {
+                        } else if (for_.equals("saturation")) {
                             saturation = seekBar.getProgress();
                             changeEffectOnPic();
 
@@ -522,35 +634,35 @@ public class ImageEditor extends AppCompatActivity {
 
     }
 
-    public void changeEffectOnPic(){
+    public void changeEffectOnPic() {
         Picasso.with(getBaseContext())
                 .load(Uri.parse((getIntent().getStringExtra("uri"))))
                 .placeholder(R.drawable.image_processing)
                 .error(R.drawable.no_image)
                 .into(imageView);
-        if(sharpen>0){
+        if (sharpen > 0) {
             Bitmap bitmap = imageView.getDrawingCache();
             Bitmap sharpened = sharpen(bitmap, sharpen); //second parametre is radius
             imageView.setImageBitmap(sharpened);
             imageView.invalidate();
             sharpen_btn.setBackgroundColor(getResources().getColor(R.color.blue));
-        }else {
-            sharpen_btn.setBackgroundColor(Color.TRANSPARENT );
+        } else {
+            sharpen_btn.setBackgroundColor(Color.TRANSPARENT);
         }
         if (saturation > 0) {
             Bitmap bitmap = imageView.getDrawingCache();
-            Bitmap saturated = applySaturationFilter(bitmap,saturation); //second parametre is radius
+            Bitmap saturated = applySaturationFilter(bitmap, saturation); //second parametre is radius
             imageView.setImageBitmap(saturated);
             imageView.invalidate();
             saturation_btn.setBackgroundColor(getResources().getColor(R.color.blue));
-        }else {
-            saturation_btn.setBackgroundColor(Color.TRANSPARENT );
+        } else {
+            saturation_btn.setBackgroundColor(Color.TRANSPARENT);
         }
-        if(brightness>0){
+        if (brightness > 0) {
             //imageView.setColorFilter(brightIt(brightness));
             brightness_btn.setBackgroundColor(getResources().getColor(R.color.blue));
-        }else {
-            brightness_btn.setBackgroundColor(Color.TRANSPARENT );
+        } else {
+            brightness_btn.setBackgroundColor(Color.TRANSPARENT);
         }
         if (blur > 0) {
             Bitmap bitmap = imageView.getDrawingCache();
@@ -558,8 +670,66 @@ public class ImageEditor extends AppCompatActivity {
             imageView.setImageBitmap(blurred);
             imageView.invalidate();
             blur_btn.setBackgroundColor(getResources().getColor(R.color.blue));
-        }else {
-            blur_btn.setBackgroundColor(Color.TRANSPARENT );
+        } else {
+            blur_btn.setBackgroundColor(Color.TRANSPARENT);
+        }
+
+        if(litFx){
+            Bitmap bitmap = imageView.getDrawingCache();
+            Filter myFilter = SampleFilters.getStarLitFilter();
+                /*Bitmap outputImage = myFilter.processFilter(bitmap);
+                imageView.setImageBitmap(outputImage);
+                imageView.invalidate();*/
+            LightFx.setBackgroundColor(getResources().getColor(R.color.blue));
+            imageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+        } else {
+            LightFx.setBackgroundColor(Color.TRANSPARENT);
+        }
+        if(bluFx){
+            Bitmap bitmap = imageView.getDrawingCache();
+            Filter myFilter = SampleFilters.getBlueMessFilter();
+                /*Bitmap outputImage = myFilter.processFilter(bitmap);
+                imageView.setImageBitmap(outputImage);
+                imageView.invalidate();*/
+            BlueFx.setBackgroundColor(getResources().getColor(R.color.blue));
+            imageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+        } else {
+            BlueFx.setBackgroundColor(Color.TRANSPARENT);
+        }
+
+        if(stVibe){
+            Bitmap bitmap = imageView.getDrawingCache();
+            Filter myFilter = SampleFilters.getAweStruckVibeFilter();
+                /*Bitmap outputImage = myFilter.processFilter(bitmap);
+                imageView.setImageBitmap(outputImage);
+                imageView.invalidate();*/
+            StruckVibe.setBackgroundColor(getResources().getColor(R.color.blue));
+            imageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+        } else {
+            StruckVibe.setBackgroundColor(Color.TRANSPARENT);
+        }
+
+        if(lime){
+            Bitmap bitmap = imageView.getDrawingCache();
+            Filter myFilter = SampleFilters.getLimeStutterFilter();
+                /*Bitmap outputImage = myFilter.processFilter(bitmap);
+                imageView.setImageBitmap(outputImage);
+                imageView.invalidate();*/
+            LimeFx.setBackgroundColor(getResources().getColor(R.color.blue));
+            imageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+        } else {
+            LimeFx.setBackgroundColor(Color.TRANSPARENT);
+        }
+        if(nit){
+            Bitmap bitmap = imageView.getDrawingCache();
+            Filter myFilter = SampleFilters.getNightWhisperFilter();
+                /*Bitmap outputImage = myFilter.processFilter(bitmap);
+                imageView.setImageBitmap(outputImage);
+                imageView.invalidate();*/
+            NightFx.setBackgroundColor(getResources().getColor(R.color.blue));
+            imageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+        } else {
+            NightFx.setBackgroundColor(Color.TRANSPARENT);
         }
     }
 
@@ -574,8 +744,8 @@ public class ImageEditor extends AppCompatActivity {
 
         int index = 0;
         // iteration through pixels
-        for(int y = 0; y < height; ++y) {
-            for(int x = 0; x < width; ++x) {
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
                 // get current index in 2D-matrix
                 index = y * width + x;
                 // convert to HSV
@@ -966,8 +1136,18 @@ public class ImageEditor extends AppCompatActivity {
             FileOutputStream fos = new FileOutputStream(pictureFile);
             image.compress(Bitmap.CompressFormat.PNG, 90, fos);
             fos.close();
-            Toast.makeText(getBaseContext(), "Image Saved Successfully", Toast.LENGTH_LONG).show();
+            ImageEditor.this.runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(ImageEditor.this, "Image Saved Successfully", Toast.LENGTH_LONG).show();
+                }
+            });
             refreshGallery(pictureFile);
+            Intent i = new Intent(getBaseContext(),ShareActivity.class);
+            i.putExtra("uri",pictureFile+"");
+            startActivity(i);
+            if(prog_dialog.isShowing()){
+                prog_dialog.dismiss();
+            }
             finish();
         } catch (FileNotFoundException e) {
             Log.d(TAG, "File not found: " + e.getMessage());

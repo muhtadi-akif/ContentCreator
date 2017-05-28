@@ -19,58 +19,56 @@
         <RelativeLayout
             android:id="@+id/actualView"
             android:layout_width="match_parent"
-            android:background="@android:color/white"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@android:color/white">
+
             <multiplexer.contentcreator.views.AutoImageView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true" />
+
             <me.panavtec.drawableview.DrawableView
                 android:id="@+id/paintView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="invisible"
-                />
+                android:visibility="invisible" />
 
             <TextView
                 android:id="@+id/text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textAlignment="center"
-                android:text="Your Headline"
-                android:textColor="@android:color/holo_red_light"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="3dp"
-                />
+                android:text="Your Headline"
+                android:textAlignment="center"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="22sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/subHeadlineText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textAlignment="center"
-                android:text="Your Sub Headline"
-                android:textColor="@android:color/holo_red_light"
                 android:layout_centerInParent="true"
-                />
+                android:text="Your Sub Headline"
+                android:textAlignment="center"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/frontLineText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:textStyle="bold"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="3dp"
                 android:text="Your Front Line"
                 android:textAlignment="center"
                 android:textColor="@android:color/holo_red_light"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="3dp"
-                />
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
         </RelativeLayout>
 
@@ -122,230 +120,332 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-               <!--     <LinearLayout
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_margin="6dp"
                         android:layout_gravity="center"
-                        android:orientation="vertical"
+                        android:layout_margin="6dp"
+                        android:layout_weight="1"
                         android:background="?android:attr/selectableItemBackground"
-                        >
-                        <ImageButton
+                        android:orientation="vertical">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/light_fx"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
-                            android:layout_gravity="center"
-                            android:background="@null"
-                            android:src="@drawable/fliter"
                             android:layout_weight="2"
-                            />
+                            android:src="@drawable/compress_sample"
+                            app:civ_border_color="@color/white"
+                            app:civ_border_width="2dp" />
 
                         <TextView
-                            android:textColor="@color/white"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textAlignment="center"
-                            android:text="Filters"
                             android:layout_weight="1"
-                            />
+                            android:text="Light Fx"
+                            android:textAlignment="center"
+                            android:textColor="@color/white" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="6dp"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:orientation="vertical">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/blue_fx"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_weight="2"
+                            android:src="@drawable/compress_sample"
+                            app:civ_border_color="@color/white"
+                            app:civ_border_width="2dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Blue Fx"
+                            android:textAlignment="center"
+                            android:textColor="@color/white" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="6dp"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:orientation="vertical">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/struck_vibe_fx"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_weight="2"
+                            android:src="@drawable/compress_sample"
+                            app:civ_border_color="@color/white"
+                            app:civ_border_width="2dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Struck Vibe Fx"
+                            android:textAlignment="center"
+                            android:textColor="@color/white" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="6dp"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:orientation="vertical">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/lime_fx"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_weight="2"
+                            android:src="@drawable/compress_sample"
+                            app:civ_border_color="@color/white"
+                            app:civ_border_width="2dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Lime Fx"
+                            android:textAlignment="center"
+                            android:textColor="@color/white" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="6dp"
+                        android:layout_weight="1"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:orientation="vertical">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/night_fx"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_weight="2"
+                            android:src="@drawable/compress_sample"
+                            app:civ_border_color="@color/white"
+                            app:civ_border_width="2dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Night Fx"
+                            android:textAlignment="center"
+                            android:textColor="@color/white" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
-                        android:background="@color/blue" />-->
+                        android:background="@color/blue" />
 
                     <LinearLayout
 
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_margin="6dp"
                         android:layout_gravity="center"
-                        android:orientation="vertical"
+                        android:layout_margin="6dp"
+                        android:layout_weight="1"
                         android:background="?android:attr/selectableItemBackground"
-                        >
+                        android:orientation="vertical">
+
                         <ImageButton
                             android:id="@+id/blur"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:layout_gravity="center"
-                            android:background="@null"
-                            android:src="@drawable/blur"
                             android:layout_weight="1"
-                            />
+                            android:background="@null"
+                            android:src="@drawable/blur" />
 
                         <TextView
-                            android:textColor="@color/white"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textAlignment="center"
-                            android:text="Blur"
                             android:layout_weight="1"
-                            />
+                            android:text="Blur"
+                            android:textAlignment="center"
+                            android:textColor="@color/white" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
                         android:background="@color/blue" />
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_margin="6dp"
                         android:layout_gravity="center"
-                        android:orientation="vertical"
+                        android:layout_margin="6dp"
+                        android:layout_weight="1"
                         android:background="?android:attr/selectableItemBackground"
-                        >
+                        android:orientation="vertical">
+
                         <ImageButton
                             android:id="@+id/sharpen"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:layout_gravity="center"
-                            android:background="@null"
-                            android:src="@drawable/sharpen"
                             android:layout_weight="1"
-                            />
+                            android:background="@null"
+                            android:src="@drawable/sharpen" />
 
                         <TextView
-                            android:textColor="@color/white"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textAlignment="center"
-                            android:text="Sharpen"
                             android:layout_weight="1"
-                            />
+                            android:text="Sharpen"
+                            android:textAlignment="center"
+                            android:textColor="@color/white" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
                         android:background="@color/blue" />
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_margin="6dp"
                         android:layout_gravity="center"
-                        android:orientation="vertical"
+                        android:layout_margin="6dp"
+                        android:layout_weight="1"
                         android:background="?android:attr/selectableItemBackground"
-                        >
+                        android:orientation="vertical">
+
                         <ImageButton
                             android:id="@+id/brightness"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:layout_gravity="center"
-                            android:background="@null"
-                            android:src="@drawable/brightness"
                             android:layout_weight="1"
-                            />
+                            android:background="@null"
+                            android:src="@drawable/brightness" />
 
                         <TextView
-                            android:textColor="@color/white"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textAlignment="center"
-                            android:text="Brightness"
                             android:layout_weight="1"
-                            />
+                            android:text="Brightness"
+                            android:textAlignment="center"
+                            android:textColor="@color/white" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
                         android:background="@color/blue" />
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_margin="6dp"
                         android:layout_gravity="center"
-                        android:orientation="vertical"
+                        android:layout_margin="6dp"
+                        android:layout_weight="1"
                         android:background="?android:attr/selectableItemBackground"
-                        >
+                        android:orientation="vertical">
+
                         <ImageButton
                             android:id="@+id/colorify"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:layout_gravity="center"
-                            android:background="@null"
-                            android:src="@drawable/color"
                             android:layout_weight="1"
-                            />
+                            android:background="@null"
+                            android:src="@drawable/color" />
 
                         <TextView
-                            android:textColor="@color/white"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textAlignment="center"
-                            android:text="Colorify"
                             android:layout_weight="1"
-                            />
+                            android:text="Colorify"
+                            android:textAlignment="center"
+                            android:textColor="@color/white" />
                     </LinearLayout>
+
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
                         android:background="@color/blue" />
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_margin="6dp"
                         android:layout_gravity="center"
-                        android:orientation="vertical"
+                        android:layout_margin="6dp"
+                        android:layout_weight="1"
                         android:background="?android:attr/selectableItemBackground"
-                        >
+                        android:orientation="vertical">
+
                         <ImageButton
                             android:id="@+id/saturation"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:layout_gravity="center"
-                            android:background="@null"
-                            android:src="@drawable/beauty"
                             android:layout_weight="1"
-                            />
+                            android:background="@null"
+                            android:src="@drawable/beauty" />
 
                         <TextView
-                            android:textColor="@color/white"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textAlignment="center"
-                            android:text="Cartoon"
                             android:layout_weight="1"
-                            />
+                            android:text="Cartoon"
+                            android:textAlignment="center"
+                            android:textColor="@color/white" />
                     </LinearLayout>
+
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
                         android:background="@color/blue" />
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_margin="6dp"
                         android:layout_gravity="center"
-                        android:orientation="vertical"
+                        android:layout_margin="6dp"
+                        android:layout_weight="1"
                         android:background="?android:attr/selectableItemBackground"
-                        >
+                        android:orientation="vertical">
+
                         <ImageButton
                             android:id="@+id/background"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:layout_gravity="center"
-                            android:background="@null"
-                            android:src="@android:drawable/ic_menu_report_image"
                             android:layout_weight="1"
-                            />
+                            android:background="@null"
+                            android:src="@android:drawable/ic_menu_report_image" />
 
                         <TextView
-                            android:textColor="@color/white"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textAlignment="center"
-                            android:text="Background Co"
                             android:layout_weight="1"
-                            />
+                            android:text="Background Co"
+                            android:textAlignment="center"
+                            android:textColor="@color/white" />
                     </LinearLayout>
 
                 </LinearLayout>

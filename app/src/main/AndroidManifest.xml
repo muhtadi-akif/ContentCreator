@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -26,12 +25,11 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".BrandsActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:label="Create Brand"/>
+            android:label="Create Brand"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ImageEditor"
             android:theme="@style/AppTheme.NoActionBar"
@@ -39,9 +37,11 @@
         <activity
             android:name=".CampaignActivity"
             android:label="New Campaign" />
-        <activity android:name=".CampaignListActivity"></activity>
-        <activity android:name=".CreateContent"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".CampaignListActivity" />
+        <activity
+            android:name=".CreateContent"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ShareActivity"></activity>
     </application>
 
 </manifest>
