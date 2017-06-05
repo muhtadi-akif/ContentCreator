@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +22,7 @@ import android.widget.RelativeLayout;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import multiplexer.contentcreator.CreateContent;
@@ -120,6 +124,7 @@ public class GalleryImagesAdapter extends RecyclerView.Adapter<RecyclerView.View
                 } else {
                     editor.putString("picUri",entity.uri+"");
                     editor.commit();
+                    Log.e("Selected File Size", calculateFileSize(entity.uri));
                     Intent i = new Intent(activity.getBaseContext(),CreateContent.class);
                     i.putExtra("headline",activity.getIntent().getStringExtra("headline"));
                     i.putExtra("subHeadline",activity.getIntent().getStringExtra("subHeadline"));
@@ -131,6 +136,32 @@ public class GalleryImagesAdapter extends RecyclerView.Adapter<RecyclerView.View
 
             }
         });
+    }
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = activity.getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
+    }
+    public String calculateFileSize(Uri filepath) {
+        //String filepathstr=filepath.toString();
+        File file = new File(getRealPathFromURI(filepath));
+
+        // Get length of file in bytes
+        long fileSizeInBytes = file.length();
+        float fileSizeInKB = fileSizeInBytes / 1024;
+        // Convert the KB to MegaBytes (1 MB = 1024 KBytes)
+        float fileSizeInMB = fileSizeInKB / 1024;
+
+        String calString = Float.toString(fileSizeInMB);
+        return  calString;
     }
 
     public void setSelectedItem(View parentView, long imageId,Uri uri){

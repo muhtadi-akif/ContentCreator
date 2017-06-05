@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -24,6 +25,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.Toolbar;
@@ -55,11 +57,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.panavtec.drawableview.DrawableView;
 import me.panavtec.drawableview.DrawableViewConfig;
 import multiplexer.contentcreator.Helper.ConvolutionMatrix;
+import multiplexer.contentcreator.Helper.FontProvider;
+import multiplexer.contentcreator.adapter.FontsAdapter;
 import multiplexer.contentcreator.utils.Utils;
 import multiplexer.contentcreator.views.AutoImageView;
 
@@ -83,6 +88,7 @@ public class ImageEditor extends AppCompatActivity {
     int lastAction;
     float lastX;
     float lastY;
+    float headlineTxtSize = 22f, subHeadlineTxtSize = 18f, frontLineTxtSize = 18f;
     String TAG = "Photo save testing";
     private android.widget.RelativeLayout.LayoutParams layoutParams;
     AutoImageView imageView;
@@ -94,6 +100,7 @@ public class ImageEditor extends AppCompatActivity {
     CircleImageView LightFx, BlueFx, StruckVibe, LimeFx, NightFx;
     boolean colorify = false,litFx = false, bluFx = false,stVibe = false,lime=false,nit =false;
     ProgressDialog prog_dialog;
+    private FontProvider fontProvider;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +110,7 @@ public class ImageEditor extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.parseColor("#333333"));
         }
+        fontProvider = new FontProvider(getResources());
         selectedColor = getResources().getColor(android.R.color.black);
         darkenedColor = Utils.getDarkColor(selectedColor);
         BGselectedColor = getResources().getColor(android.R.color.white);
@@ -202,11 +210,27 @@ public class ImageEditor extends AppCompatActivity {
 
             }
         });
+       /* Picasso.with(this)
+                .load(Uri.parse((getIntent().getStringExtra("uri"))))
+                .placeholder(R.drawable.image_processing)
+                .error(R.drawable.no_image)
+                .into(imageView);*/
+
+        float height;
+        if (isPortraitImage(Uri.parse((getIntent().getStringExtra("uri"))))){
+            height = Float.valueOf(getResources().getDimension(R.dimen.image_height_portrait));
+        } else {
+            height = Float.valueOf(getResources().getDimension(R.dimen.image_height_landscape));
+        }
         Picasso.with(this)
                 .load(Uri.parse((getIntent().getStringExtra("uri"))))
                 .placeholder(R.drawable.image_processing)
                 .error(R.drawable.no_image)
+                .resize(screenWidth , (int)height)
+                .onlyScaleDown()
+                .centerInside()
                 .into(imageView);
+
         initFilters();
         brightness_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -250,6 +274,9 @@ public class ImageEditor extends AppCompatActivity {
         txtHeadline.setText(getIntent().getStringExtra("headline"));
         txtSubHeadline.setText(getIntent().getStringExtra("subHeadline"));
         txtFrontLine.setText(getIntent().getStringExtra("frontLine"));
+        txtHeadline.setTextSize(headlineTxtSize);
+        txtSubHeadline.setTextSize(subHeadlineTxtSize);
+        txtFrontLine.setTextSize(frontLineTxtSize);
         txtHeadline.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
@@ -379,6 +406,34 @@ public class ImageEditor extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
+    }
+
+    private boolean isPortraitImage(Uri uri){
+        boolean x = false;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(getRealPathFromURI(uri), options);
+        int imageHeight = options.outHeight;
+        int imageWidth = options.outWidth;
+        if (imageHeight>imageWidth){
+            x = true;
+        }
+        Log.e("Is Potrait",x+"");
+        return x;
     }
 
     public void initFilters() {
@@ -1047,9 +1102,140 @@ public class ImageEditor extends AppCompatActivity {
                 }
             }
         });
+        Button txt_color = (Button) dialog.findViewById(R.id.change_color_btn);
+        txt_color.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (position == "headline") {
+                    changeTextColor(txtHeadline.getCurrentTextColor(),position);
+                } else if (position == "sub headline") {
+                    changeTextColor(txtSubHeadline.getCurrentTextColor(),position);
+                } else if (position == "front line") {
+                    changeTextColor(txtFrontLine.getCurrentTextColor(),position);
+                }
+                dialog.dismiss();
+            }
+        });
+        Button increaseTextSize = (Button) dialog.findViewById(R.id.change_text_size_increase_button);
+        increaseTextSize.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (position == "headline") {
+                    Log.e("text size",(txtHeadline.getTextSize())+"");
+                    headlineTxtSize = headlineTxtSize+5;
+                    txtHeadline.setTextSize(headlineTxtSize);
+                    Log.e("text size after",(txtHeadline.getTextSize())+"");
+                } else if (position == "sub headline") {
+                    subHeadlineTxtSize = subHeadlineTxtSize+5;
+                    txtSubHeadline.setTextSize(subHeadlineTxtSize);
+                } else if (position == "front line") {
+                    frontLineTxtSize = frontLineTxtSize+5;
+                    txtFrontLine.setTextSize(frontLineTxtSize);
+                }
+
+                dialog.dismiss();
+            }
+        });
+
+        Button decreaseTextSize = (Button) dialog.findViewById(R.id.change_text_size_decrease_button);
+        decreaseTextSize.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (position == "headline") {
+                    Log.e("text size",(txtHeadline.getTextSize())+"");
+                    headlineTxtSize = headlineTxtSize-5;
+                    txtHeadline.setTextSize(headlineTxtSize);
+                    Log.e("text size after",(txtHeadline.getTextSize())+"");
+                } else if (position == "sub headline") {
+                    subHeadlineTxtSize = subHeadlineTxtSize-5;
+                    txtSubHeadline.setTextSize(subHeadlineTxtSize);
+                } else if (position == "front line") {
+                    frontLineTxtSize = frontLineTxtSize-5;
+                    txtFrontLine.setTextSize(frontLineTxtSize);
+                }
+
+                dialog.dismiss();
+            }
+        });
+
+        Button font = (Button) dialog.findViewById(R.id.change_font_button);
+        font.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeTextEntityFont(position);
+                dialog.dismiss();
+            }
+        });
 
         dialog.show();
 
+    }
+
+
+    private void changeTextEntityFont(final String position) {
+        final List<String> fonts = fontProvider.getFontNames();
+        FontsAdapter fontsAdapter = new FontsAdapter(this, fonts, fontProvider);
+        new AlertDialog.Builder(this)
+                .setTitle("Choose your font")
+                .setAdapter(fontsAdapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        if (position == "headline") {
+                            txtHeadline.setTypeface(fontProvider.getTypeface(fonts.get(which)));
+                            //txtHeadline.setTypeface(fonts.get(which));
+                        } else if (position == "sub headline") {
+                            txtSubHeadline.setTypeface(fontProvider.getTypeface(fonts.get(which)));
+                        } else if (position == "front line") {
+                            txtFrontLine.setTypeface(fontProvider.getTypeface(fonts.get(which)));
+                        }
+                       /* if (textEntity != null) {
+                            textEntity.getLayer().getFont().setTypeface(fonts.get(which));
+
+
+                        }*/
+                    }
+                })
+                .show();
+    }
+
+    private void changeTextColor(int textColor, final String position) {
+
+        ColorPickerDialogBuilder
+                .with(this)
+                .setTitle("Choose color")
+                .initialColor(textColor)
+                .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
+                .density(12)
+                .setOnColorSelectedListener(new OnColorSelectedListener() {
+                    @Override
+                    public void onColorSelected(int selectedColor) {
+                    }
+                })
+                .setPositiveButton("OK", new ColorPickerClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
+                        if (position == "headline") {
+                            txtHeadline.setTextColor(selectedColor);
+                        } else if (position == "sub headline") {
+                            txtSubHeadline.setTextColor(selectedColor);
+                        } else if (position == "front line") {
+                            txtFrontLine.setTextColor(selectedColor);
+                        }
+                    dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .build()
+                .show();
+
+    }
+
+    public static float pxFromDp(float dp, Context mContext) {
+        return dp * mContext.getResources().getDisplayMetrics().density;
     }
 
     public Bitmap viewToBitmap(View view) {

@@ -3,10 +3,18 @@ package multiplexer.contentcreator.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -31,11 +39,17 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
     SharedPreferences.Editor editor;
     SharedPreferences pref;
     String tempUri;
+    private int screenWidth;
     // data is passed into the constructor
     public Template_adapter(Context context, ArrayList<Template> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
         mContext = context;
+        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        screenWidth = size.x;
         pref = mContext.getSharedPreferences("MyPref", MODE_PRIVATE);
         editor = pref.edit();
     }
@@ -53,7 +67,21 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Template temp = mData.get(position);
         if(pref.contains("picUri")){
-            Picasso.with(mContext).load(pref.getString("picUri","")).into(holder.backgroundImage);
+            float height;
+            if (isPortraitImage(Uri.parse(pref.getString("picUri","")))){
+                height = Float.valueOf(mContext.getResources().getDimension(R.dimen.image_height_portrait));
+            } else {
+                height = Float.valueOf(mContext.getResources().getDimension(R.dimen.image_height_landscape));
+            }
+            Picasso.with(mContext)
+                    .load(pref.getString("picUri",""))
+                    .placeholder(R.drawable.image_processing)
+                    .error(R.drawable.no_image)
+                    .resize(screenWidth / 3, (int)height)
+                    .onlyScaleDown()
+                    .centerInside()
+                    .into(holder.backgroundImage);
+
         } else {
             if(position == 0){
                 Picasso.with(mContext).load(R.drawable.wood).into(holder.backgroundImage);
@@ -162,7 +190,33 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
 
 
     }
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = mContext.getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
+    }
 
+     private boolean isPortraitImage(Uri uri){
+         boolean x = false;
+         BitmapFactory.Options options = new BitmapFactory.Options();
+         options.inJustDecodeBounds = true;
+         BitmapFactory.decodeFile(getRealPathFromURI(uri), options);
+         int imageHeight = options.outHeight;
+         int imageWidth = options.outWidth;
+         if (imageHeight>imageWidth){
+             x = true;
+         }
+         Log.e("Is Potrait",x+"");
+         return x;
+     }
     // total number of cells
     @Override
     public int getItemCount() {

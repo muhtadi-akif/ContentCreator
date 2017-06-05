@@ -70,6 +70,7 @@ public class CampaignActivity extends AppCompatActivity {
             logo.setImageBitmap(bitmap);
         }
         if(getIntent().hasExtra("flagPosition")){
+            getSupportActionBar().setTitle("Campaign Details");
             headline.setText(getIntent().getStringExtra("headline"));
             subHeader.setText(getIntent().getStringExtra("subHeadline"));
             finePrints.setText(getIntent().getStringExtra("frontLine"));

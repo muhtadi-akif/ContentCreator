@@ -123,6 +123,7 @@ public class BrandsActivity extends AppCompatActivity implements
         edtAlternateLinks = (EditText) findViewById(R.id.etAlternateLinks);
         logoImage = (ImageView) findViewById(R.id.imageViewLogo);
         if(db.getBrandsCount()>0){
+            getSupportActionBar().setTitle("Your Brand");
             ArrayList<Brands> arrBrands = db.getAllBrandsData();
             edtTagline.setText(arrBrands.get(arrBrands.size()-1).getBrand_tagline());
             selectedImage = arrBrands.get(arrBrands.size()-1).getPicUri();
