@@ -52,6 +52,7 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
         screenWidth = size.x;
         pref = mContext.getSharedPreferences("MyPref", MODE_PRIVATE);
         editor = pref.edit();
+
     }
 
     // inflates the cell layout from xml when needed
