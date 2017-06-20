@@ -84,17 +84,25 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
 
         } else {
             if(position == 0){
-                Picasso.with(mContext).load(R.drawable.wood).into(holder.backgroundImage);
+                Picasso.with(mContext).load(R.drawable.eid1).into(holder.backgroundImage);
             } else if (position ==1){
-                Picasso.with(mContext).load(R.drawable.rock).into(holder.backgroundImage);
+                Picasso.with(mContext).load(R.drawable.eid2).into(holder.backgroundImage);
             }else if (position ==2){
-                Picasso.with(mContext).load(R.drawable.wood).into(holder.backgroundImage);
+                Picasso.with(mContext).load(R.drawable.eid3).into(holder.backgroundImage);
             }else if (position ==3){
-                Picasso.with(mContext).load(R.drawable.rock).into(holder.backgroundImage);
+                Picasso.with(mContext).load(R.drawable.eid4).into(holder.backgroundImage);
             }else if (position ==4){
-                Picasso.with(mContext).load(R.drawable.wood).into(holder.backgroundImage);
+                Picasso.with(mContext).load(R.drawable.eid5).into(holder.backgroundImage);
             }else if (position ==5){
-                Picasso.with(mContext).load(R.drawable.wood).into(holder.backgroundImage);
+                Picasso.with(mContext).load(R.drawable.eid6).into(holder.backgroundImage);
+            }else if (position ==6){
+                Picasso.with(mContext).load(R.drawable.edi7).into(holder.backgroundImage);
+            }else if (position ==7){
+                Picasso.with(mContext).load(R.drawable.eid8).into(holder.backgroundImage);
+            }else if (position ==8){
+                Picasso.with(mContext).load(R.drawable.eid9).into(holder.backgroundImage);
+            }else if (position ==9){
+                Picasso.with(mContext).load(R.drawable.eid10).into(holder.backgroundImage);
             }
         }
 
@@ -157,6 +165,16 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
             subHeadlineParams.addRule(RelativeLayout.CENTER_IN_PARENT);
             frontLineParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             frontLineParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            holder.headLine.setText(temp.getHeadline());
+            holder.subHeadline.setText(temp.getSubHeadline());
+            holder.frontLine.setText(temp.getFrontLine());
+        }else{
+            RelativeLayout.LayoutParams headlineParams = (RelativeLayout.LayoutParams) holder.headLine.getLayoutParams();
+            RelativeLayout.LayoutParams subHeadlineParams = (RelativeLayout.LayoutParams) holder.subHeadline.getLayoutParams();
+            RelativeLayout.LayoutParams frontLineParams = (RelativeLayout.LayoutParams) holder.frontLine.getLayoutParams();
+            headlineParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            subHeadlineParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            frontLineParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             holder.headLine.setText(temp.getHeadline());
             holder.subHeadline.setText(temp.getSubHeadline());
             holder.frontLine.setText(temp.getFrontLine());

@@ -98,7 +98,7 @@ public class CreateContent extends AppCompatActivity
         ArrayList <String> subHeadlines = new ArrayList<>();
         ArrayList <String> frontLines = new ArrayList<>();
 
-        for(int i = 0; i<6;i++){
+        for(int i = 0; i<10;i++){
             headlines.add(getIntent().getStringExtra("headline"));
             subHeadlines.add(getIntent().getStringExtra("subHeadline"));
             frontLines.add(getIntent().getStringExtra("frontLine"));
