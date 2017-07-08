@@ -3,6 +3,7 @@ package multiplexer.contentcreator;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -11,12 +12,14 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,11 +41,23 @@ public class MainListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         db = new DatabaseHelper(MainListActivity.this);
-
         setContentView(R.layout.app_bar_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Button skipBtn = (Button) toolbar.findViewById(R.id.buttonSkip);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
+
+        skipBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentMain = new Intent(MainListActivity.this, CreateContent.class);
+                intentMain.putExtra("headline","Headline");
+                intentMain.putExtra("subHeadline","Sub Headline");
+                intentMain.putExtra("frontLine","Front Line");
+                startActivity(intentMain);
+            }
+        });
+
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/Sketch.ttf");
         TextView app_title = (TextView) findViewById(R.id.app_title);
         app_title.setTypeface(font);
@@ -60,16 +75,38 @@ public class MainListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(db.getBrandsCount()<=0){
-                    Toast.makeText(getBaseContext(),"You've to set your brands first then create your campaign",Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(getBaseContext(),BrandsActivity.class);
-                    i.putExtra("flag","must brand entry");
-                    startActivity(i);
-                    finish();
-                } else {
-                    Intent i = new Intent(getBaseContext(),CampaignActivity.class);
-                    startActivity(i);
-                }
+                AlertDialog.Builder dialog = new AlertDialog.Builder(MainListActivity.this);
+                dialog.setTitle("Add brand and campaigns!").setCancelable(false);
+                dialog.setMessage("Do you want to add your Brand information and Campaign details?");
+                dialog.setPositiveButton("SKIP", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intentMain = new Intent(MainListActivity.this, CreateContent.class);
+                        intentMain.putExtra("headline","Headline");
+                        intentMain.putExtra("subHeadline","Sub Headline");
+                        intentMain.putExtra("frontLine","Front Line");
+                        startActivity(intentMain);
+                        dialog.cancel();
+                    }
+                });
+
+                dialog.setNegativeButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(db.getBrandsCount()<=0){
+                            Toast.makeText(getBaseContext(),"You've to set your brands first then create your campaign",Toast.LENGTH_LONG).show();
+                            Intent i = new Intent(getBaseContext(),BrandsActivity.class);
+                            i.putExtra("flag","must brand entry");
+                            startActivity(i);
+                            dialog.cancel();
+                        } else {
+                            Intent i = new Intent(getBaseContext(),CampaignActivity.class);
+                            startActivity(i);
+                            dialog.cancel();
+                        }
+                    }
+                });
+                dialog.show();
 
             }
         });

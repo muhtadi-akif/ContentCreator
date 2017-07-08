@@ -13,7 +13,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2.5"
+        android:layout_weight="3.5"
         android:background="@android:color/white">
 
         <RelativeLayout
@@ -80,11 +80,12 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical">
+<!--
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="0"
             android:orientation="vertical">
 
             <TextView
@@ -94,19 +95,21 @@
                 android:text="EDIT OPTIONS"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
+                android:visibility="gone"
                 android:textSize="18sp" />
 
             <View
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/blue" />
 
         </LinearLayout>
+-->
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3">
+            android:layout_height="wrap_content">
 
             <HorizontalScrollView
                 android:id="@+id/weekday_buttonHolder"

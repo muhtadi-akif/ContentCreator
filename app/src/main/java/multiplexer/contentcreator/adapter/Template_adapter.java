@@ -40,6 +40,16 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
     SharedPreferences pref;
     String tempUri;
     private int screenWidth;
+    public Uri[] imageURI = {Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid1"),
+            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid2"),
+            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid3"),
+            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid4"),
+            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid5"),
+            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid6"),
+            Uri.parse("android.resource://multiplexer.contentcreator/drawable/edi7"),
+            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid8"),
+            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid9"),
+            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid10")};
     // data is passed into the constructor
     public Template_adapter(Context context, ArrayList<Template> data) {
         this.mInflater = LayoutInflater.from(context);
@@ -65,7 +75,7 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
 
     // binds the data to the textview in each cell
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         final Template temp = mData.get(position);
         if(pref.contains("picUri")){
             float height;
@@ -180,16 +190,18 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
             holder.subHeadline.setText(temp.getSubHeadline());
             holder.frontLine.setText(temp.getFrontLine());
         }
-        if(pref.contains("picUri")){
-             tempUri = pref.getString("picUri","");
-        } else {
-             tempUri = null;
-        }
-        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(pref.contains("picUri")){
+                    tempUri = pref.getString("picUri","");
+                } else {
+                    Log.i("Dekhi Uri", "Dhukse");
+                    tempUri = imageURI[position].toString();
+                }
                 if(tempUri!=null){
+                    Log.i("Uri", position+ "  "+ tempUri.toString());
                     Intent i = new Intent(mContext, ImageEditor.class);
                     i.putExtra("uri",tempUri);
                     i.putExtra("headline",temp.getHeadline());
@@ -202,6 +214,23 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
 
             }
         });
+        /*holder.parentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(tempUri!=null){
+                    Log.i("Uri", tempUri.toString());
+                    Intent i = new Intent(mContext, ImageEditor.class);
+                    i.putExtra("uri",tempUri);
+                    i.putExtra("headline",temp.getHeadline());
+                    i.putExtra("subHeadline",temp.getSubHeadline());
+                    i.putExtra("frontLine",temp.getFrontLine());
+                    mContext.startActivity(i);
+                } else {
+                    Toast.makeText(mContext,"Choose a picture from above",Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });*/
 
       /*  holder.headLine.setText(temp.getHeadline());
         holder.subHeadline.setText(temp.getSubHeadline());
