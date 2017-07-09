@@ -39,6 +39,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -118,7 +119,12 @@ public class CreateContent extends AppCompatActivity
         recycler_view_gallery.setLayoutManager(new StaggeredGridLayoutManager(3, GridLayoutManager.VERTICAL));
         recyclerView_template.setLayoutManager(new GridLayoutManager(this, 3));
 
-        new GetTemplates().execute();
+        if(isNetConnected()){
+            new GetTemplates().execute();
+        } else {
+            Toast.makeText(getBaseContext(),"No internet connection",Toast.LENGTH_LONG).show();
+        }
+
         //setDummyDataForTemplate();
     }
 
@@ -272,7 +278,19 @@ public class CreateContent extends AppCompatActivity
                 || readPermissionCheck == PackageManager.PERMISSION_DENIED));
     }
 
+    public boolean isNetConnected() {
 
+        Runtime runtime = Runtime.getRuntime();
+        try {
+
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int     exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+
+        } catch (IOException e)          { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+
+        return false; }
     public void showProgressDialog(String message) {
         if (progressDialog == null)
             progressDialog = new CustomProgressDialog(this);
