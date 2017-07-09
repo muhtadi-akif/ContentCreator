@@ -1,5 +1,6 @@
 package multiplexer.contentcreator;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -7,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -30,7 +32,7 @@ public class CampaignActivity extends AppCompatActivity {
 
     String[] arr = {"Choose Headline", "Suggestion 1", "Suggestion 2", "Suggestion 3"};
     String[] arr2 = {"Choose Sub Headline", "Suggestion 1", "Suggestion 2", "Suggestion 3"};
-    String[] arr3 = {"Choose Front Lines", "Suggestion 1", "Suggestion 2", "Suggestion 3"};
+    String[] arr3 = {"Choose Call To Actions", "Suggestion 1", "Suggestion 2", "Suggestion 3"};
     Spinner spinnerHeadline, spinnerSubHeadline, spinnerFinePrints;
     EditText headline, subHeader, finePrints,outcome,audience;
     ImageView logo;
@@ -88,7 +90,8 @@ public class CampaignActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0) {
-                    headline.setText(parent.getSelectedItem().toString());
+                    alertSuggestion("Headline",parent.getSelectedItem().toString());
+                    //headline.setText(parent.getSelectedItem().toString());
                 }
             }
 
@@ -101,7 +104,8 @@ public class CampaignActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0) {
-                    subHeader.setText(parent.getSelectedItem().toString());
+                    alertSuggestion("Sub Headline",parent.getSelectedItem().toString());
+                    //subHeader.setText(parent.getSelectedItem().toString());
                 }
             }
 
@@ -114,7 +118,8 @@ public class CampaignActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0) {
-                    finePrints.setText(parent.getSelectedItem().toString());
+                    alertSuggestion("Fine Prints",parent.getSelectedItem().toString());
+                    //finePrints.setText(parent.getSelectedItem().toString());
                 }
             }
 
@@ -123,6 +128,43 @@ public class CampaignActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void alertSuggestion(final String type, final String message){
+        AlertDialog.Builder dialog = new AlertDialog.Builder(CampaignActivity.this);
+        dialog.setTitle(type+" Suggestions").setCancelable(false);
+        dialog.setMessage("Are you sure you want to choose "+message+" as your "+type.toLowerCase()+"?");
+        dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(type.equals("Headline")){
+                    headline.setText(message);
+                } else if(type.equals("Sub Headline")){
+                    subHeader.setText(message);
+                }else if(type.equals("Fine Prints")){
+                    finePrints.setText(message);
+                } else {
+                    //do nothing
+                }
+            }
+        });
+
+        dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(type.equals("Headline")){
+                   spinnerHeadline.setSelection(0);
+                } else if(type.equals("Sub Headline")){
+                    spinnerSubHeadline.setSelection(0);
+                }else if(type.equals("Fine Prints")){
+                    spinnerFinePrints.setSelection(0);
+                } else {
+                    //do nothing
+                }
+
+            }
+        });
+        dialog.show();
     }
     private String getRealPathFromURI(Uri contentURI) {
         String result;
