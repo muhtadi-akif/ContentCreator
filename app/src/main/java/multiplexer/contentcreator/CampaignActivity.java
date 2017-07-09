@@ -32,7 +32,7 @@ public class CampaignActivity extends AppCompatActivity {
     String[] arr2 = {"Choose Sub Headline", "Suggestion 1", "Suggestion 2", "Suggestion 3"};
     String[] arr3 = {"Choose Front Lines", "Suggestion 1", "Suggestion 2", "Suggestion 3"};
     Spinner spinnerHeadline, spinnerSubHeadline, spinnerFinePrints;
-    EditText headline, subHeader, finePrints,outcome,audience,story;
+    EditText headline, subHeader, finePrints,outcome,audience;
     ImageView logo;
     DatabaseHelper db;
     @Override
@@ -48,7 +48,6 @@ public class CampaignActivity extends AppCompatActivity {
         finePrints = (EditText) findViewById(R.id.editTextFinePrints);
         outcome = (EditText) findViewById(R.id.editTextOutcome);
         audience = (EditText) findViewById(R.id.editTextAudience);
-        story = (EditText) findViewById(R.id.editTextStory);
         logo = (ImageView) findViewById(R.id.imageViewLogo);
         if(db.getBrandsCount()>0){
             ArrayList<Brands> arrBrands = db.getAllBrandsData();
@@ -76,7 +75,6 @@ public class CampaignActivity extends AppCompatActivity {
             finePrints.setText(getIntent().getStringExtra("frontLine"));
             outcome.setText(getIntent().getStringExtra("outcome"));
             audience.setText(getIntent().getStringExtra("audience"));
-            story.setText(getIntent().getStringExtra("story"));
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(CampaignActivity.this, android.R.layout.simple_spinner_dropdown_item, arr);
@@ -149,14 +147,12 @@ public class CampaignActivity extends AppCompatActivity {
             headline.setError("Please write something about headline or choose from the suggestion");
         } else if(subHeader.getText().toString().equals("")){
             subHeader.setError("Please write something about sub headline or choose from the suggestion");
-        } else if(story.getText().toString().equals("")){
-            story.setError("Please write a story for your campaign");
-        }else if(finePrints.getText().toString().equals("")){
+        } else if(finePrints.getText().toString().equals("")){
             finePrints.setError("Please write something about front line or choose from the suggestion");
         }
         else {
             Campaign c = new Campaign(headline.getText().toString(),outcome.getText().toString(),audience.getText().toString(),
-                    subHeader.getText().toString(),story.getText().toString(),finePrints.getText().toString());
+                    subHeader.getText().toString(),finePrints.getText().toString());
             if(getIntent().hasExtra("flagPosition")){
                 db.updateCampaignData(c,getIntent().getIntExtra("flagPosition",0)+"");
             } else {

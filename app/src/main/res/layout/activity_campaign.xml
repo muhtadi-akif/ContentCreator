@@ -17,7 +17,7 @@
                 android:id="@+id/editTextOutcome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Expected Outcome" />
+                android:hint="Campaign Objective" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -54,21 +54,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Sub Headline" />
-
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
-
-            <EditText
-                android:id="@+id/editTextStory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Story/Details"
-                />
-        </android.support.design.widget.TextInputLayout>
-
 
         <Spinner
             android:id="@+id/spinnerFinePrints"

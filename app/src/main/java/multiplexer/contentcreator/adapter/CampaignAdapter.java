@@ -55,7 +55,6 @@ public class CampaignAdapter extends RecyclerView.Adapter<CampaignAdapter.MyView
                 i.putExtra("headline",campaign.getHeadline());
                 i.putExtra("subHeadline",campaign.getSub_headline());
                 i.putExtra("frontLine",campaign.getFront_lines());
-                i.putExtra("story",campaign.getStory());
                 i.putExtra("outcome",campaign.getOutcome());
                 i.putExtra("audience",campaign.getAudience());
                 i.putExtra("flagPosition",position+1);

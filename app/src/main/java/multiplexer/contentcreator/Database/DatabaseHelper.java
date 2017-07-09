@@ -64,7 +64,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(TableAttributes.CAMPAIGN_EXPECTED_OUTCOME, campaign.getOutcome());
         values.put(TableAttributes.CAMPAIGN_FRONT_LINES, campaign.getFront_lines());
         values.put(TableAttributes.CAMPAIGN_HEADLINE, campaign.getHeadline());
-        values.put(TableAttributes.CAMPAIGN_STORY, campaign.getStory());
         values.put(TableAttributes.CAMPAIGN_SUB_HEADLINE, campaign.getSub_headline());
         try {
             dbInsert.insert(TableAttributes.CAMPAIGN_TABLE_NAME, null, values);
@@ -81,7 +80,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(TableAttributes.CAMPAIGN_EXPECTED_OUTCOME, campaign.getOutcome());
         values.put(TableAttributes.CAMPAIGN_FRONT_LINES, campaign.getFront_lines());
         values.put(TableAttributes.CAMPAIGN_HEADLINE, campaign.getHeadline());
-        values.put(TableAttributes.CAMPAIGN_STORY, campaign.getStory());
         values.put(TableAttributes.CAMPAIGN_SUB_HEADLINE, campaign.getSub_headline());
         dbInsert.update(TableAttributes.CAMPAIGN_TABLE_NAME, values, "campaign_id = ?",
                 new String[] { position });
@@ -139,7 +137,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             subHeadline = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_SUB_HEADLINE));
             story = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_STORY));
             frontLines = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_FRONT_LINES));
-            Campaign campaign = new Campaign(headline, outcome, audience, subHeadline, story, frontLines);
+            Campaign campaign = new Campaign(headline, outcome, audience, subHeadline, frontLines);
            /* campaign.setUsername(cur.getString(cur.getColumnIndex(TableAttributes.STUDENT_NAME)));
             campaign.setPassword(cur.getString(cur.getColumnIndex(TableAttributes.STUDENT_PASSWORD)));
             campaign.setPhoneNo(cur.getString(cur.getColumnIndex(TableAttributes.STUDENT_PHONENO)));
