@@ -255,11 +255,18 @@ public class BrandsActivity extends AppCompatActivity implements
                 // fragment expose actions itself (rather than the activity exposing actions),
                 // but for simplicity, the activity provides the actions in this sample.
                 invalidateOptionsMenu();
+                if (mPager.getCurrentItem() < 1) {
+                    findViewById(R.id.previous).setVisibility(View.INVISIBLE);
+                } else{
+                    findViewById(R.id.previous).setVisibility(View.VISIBLE);
+                }  if (mPager.getCurrentItem() > 1) {
+                    findViewById(R.id.next).setVisibility(View.INVISIBLE);
+                } else {
+                    findViewById(R.id.next).setVisibility(View.VISIBLE);
+                }
             }
         });
-        if (mPager.getCurrentItem() == 0) {
-            findViewById(R.id.previous).setVisibility(View.INVISIBLE);
-        }
+
 
         findViewById(R.id.previous).setOnClickListener(new View.OnClickListener() {
             @Override

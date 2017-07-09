@@ -70,6 +70,7 @@
                 android:background="#F6532F"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
+                android:visibility="invisible"
                 android:text="Previous"/>
             <Button
                 android:id="@+id/next"
