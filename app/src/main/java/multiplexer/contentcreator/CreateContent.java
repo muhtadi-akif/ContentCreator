@@ -199,9 +199,15 @@ public class CreateContent extends AppCompatActivity
 
                 // Getting JSON Array node
                 JSONArray templates = jsonObj.getJSONArray(new JsonConstants().TAG_TEMPLATE);
-
+                //making size for custom choose
+                int size = 0;
+                if(pref.contains("picUri")){
+                    size =1;
+                } else {
+                    size = templates.length();
+                }
                 // looping through All Students
-                for (int i = 0; i < templates.length(); i++) {
+                for (int i = 0; i < size; i++) {
                     JSONObject c = templates.getJSONObject(i);
 
                     String headline = c.getString(new JsonConstants().TEMPLATE_HEADLINE);
@@ -484,7 +490,7 @@ public class CreateContent extends AppCompatActivity
             startActivity(campaignIntent);
 
         } else if (id == R.id.nav_campaign_existing) {
-            Intent intentCampaignList = new Intent(getBaseContext(), CampaignListActivity.class);
+            Intent intentCampaignList = new Intent(getBaseContext(), MainListActivity.class);
             startActivity(intentCampaignList);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

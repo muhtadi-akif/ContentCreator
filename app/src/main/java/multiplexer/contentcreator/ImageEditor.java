@@ -222,15 +222,15 @@ public class ImageEditor extends AppCompatActivity {
         } else {
             height = Float.valueOf(getResources().getDimension(R.dimen.image_height_landscape));
         }
-       /* Picasso.with(this)
+        Picasso.with(this)
                 .load(Uri.parse((getIntent().getStringExtra("uri"))))
                 .placeholder(R.drawable.image_processing)
                 .error(R.drawable.no_image)
-                .resize(screenWidth , (int)height)
+                .resize(screenWidth*3 , (int)height*3)
                 .onlyScaleDown()
                 .centerInside()
-                .into(imageView);*/
-        Picasso.with(this).load((getIntent().getStringExtra("uri"))).into(imageView);
+                .into(imageView);
+        //Picasso.with(this).load((getIntent().getStringExtra("uri"))).into(imageView);
 
         initFilters();
         brightness_btn.setOnClickListener(new View.OnClickListener() {

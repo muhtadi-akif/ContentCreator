@@ -83,6 +83,7 @@ public class BrandsActivity extends AppCompatActivity implements
     DatabaseHelper db;
     ImageView logoImage;
     TextView color;
+    Button btnUpload;
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +107,7 @@ public class BrandsActivity extends AppCompatActivity implements
         productDetails.setCompoundDrawablesWithIntrinsicBounds(R.drawable.collapsibledown, 0, 0, 0);
         competition.setCompoundDrawablesWithIntrinsicBounds(R.drawable.collapsibledown, 0, 0, 0);
         alternate.setCompoundDrawablesWithIntrinsicBounds(R.drawable.collapsibledown, 0, 0, 0);
-
+        btnUpload = (Button) findViewById(R.id.btnUpload);
         edtTagline = (EditText) findViewById(R.id.eTTagline);
         edtObject = (EditText) findViewById(R.id.eTObject);
         edtCelebrity = (EditText) findViewById(R.id.eTCelebrityPersonality);
@@ -124,6 +125,7 @@ public class BrandsActivity extends AppCompatActivity implements
         logoImage = (ImageView) findViewById(R.id.imageViewLogo);
         if(db.getBrandsCount()>0){
             getSupportActionBar().setTitle("Your Brand");
+            btnUpload.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
             ArrayList<Brands> arrBrands = db.getAllBrandsData();
             edtTagline.setText(arrBrands.get(arrBrands.size()-1).getBrand_tagline());
             selectedImage = arrBrands.get(arrBrands.size()-1).getPicUri();

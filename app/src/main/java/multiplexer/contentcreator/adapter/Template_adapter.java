@@ -76,7 +76,7 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
                     .load(pref.getString("picUri",""))
                     .placeholder(R.drawable.image_processing)
                     .error(R.drawable.no_image)
-                    .resize(screenWidth / 3, (int)height)
+                    .resize(screenWidth*2 , (int)height*2)
                     .onlyScaleDown()
                     .centerInside()
                     .into(holder.backgroundImage);
@@ -95,17 +95,12 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
             }else if (position ==5){
                 Picasso.with(mContext).load(R.drawable.wood).into(holder.backgroundImage);
             }*/
-            final float height;
-            if (isPortraitImage(Uri.parse(temp.getImg_url()))){
-                height = Float.valueOf(mContext.getResources().getDimension(R.dimen.image_height_portrait));
-            } else {
-                height = Float.valueOf(mContext.getResources().getDimension(R.dimen.image_height_landscape));
-            }
+
             Picasso.with(mContext)
                     .load(temp.getImg_url())
                     .placeholder(R.drawable.image_processing)
                     .error(R.drawable.no_image)
-                    .resize(screenWidth / 3, (int)height)
+                    .resize(screenWidth*2 , (int)mContext.getResources().getDimension(R.dimen.image_height_portrait)*2)
                     .onlyScaleDown()
                     .centerInside()
                     .into(holder.backgroundImage);

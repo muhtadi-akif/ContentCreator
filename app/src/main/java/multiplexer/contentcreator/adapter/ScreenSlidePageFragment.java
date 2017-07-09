@@ -40,7 +40,7 @@ public class ScreenSlidePageFragment extends Fragment {
      */
     public static final String ARG_PAGE = "page";
     public static final String[] arrAgeGroup = {"Select Age Group of Audiance", "15-25", "26-40", "40-50", "50 above"};
-    public static final String[] arrGender = {"Select Gender of Audiance", "Male", "Female"};
+    public static final String[] arrGender = {"Select Gender of Audiance", "Male", "Female", "Both"};
 
     /**
      * The fragment's page number, which is set to the argument value for {@link #ARG_PAGE}.
@@ -82,48 +82,72 @@ public class ScreenSlidePageFragment extends Fragment {
         editor = pref.edit();
         final String[] age = {""};
         final String[] gender = {""};
-        Spinner spinnerAgeGroup = (Spinner) rootView.findViewById(R.id.spinnerAgeGroup);
+
         Spinner spinnerGender = (Spinner) rootView.findViewById(R.id.spinnerGender);
         final EditText  edtSituation = (EditText) rootView.findViewById(R.id.edtSituation);
         final EditText  edtPurpose = (EditText) rootView.findViewById(R.id.edtPurpose);
         final EditText edtOutcome = (EditText) rootView.findViewById(R.id.edtOutcome);
+        final EditText  edtAgeFrom = (EditText) rootView.findViewById(R.id.edtAgeFrom);
+        final EditText edtAgeTo = (EditText) rootView.findViewById(R.id.edtAgeTo);
         Button  btnSaveAudience = (Button) rootView.findViewById(R.id.btn_save_audience);
-        spinnerAgeGroup.setAdapter(new ArrayAdapter<String>(container.getContext(), android.R.layout.simple_spinner_dropdown_item, arrAgeGroup));
+
         spinnerGender.setAdapter(new ArrayAdapter<String>(container.getContext(), android.R.layout.simple_spinner_dropdown_item, arrGender));
-        if(pref.contains("audGender")){
-            if(pref.getString("audGender","").equals("Male")){
-                spinnerGender.setSelection(1);
-            } else if(pref.getString("audGender","").equals("Female")){
-                spinnerGender.setSelection(2);
-            }
+        if(getPageNumber()==0){
+            if(pref.contains("audGender1")){
+                if(pref.getString("audGender1","").equals("Male")){
+                    spinnerGender.setSelection(1);
+                } else if(pref.getString("audGender1","").equals("Female")){
+                    spinnerGender.setSelection(2);
+                } else if(pref.getString("audGender1","").equals("Both")){
+                    spinnerGender.setSelection(3);
+                }
 
-            if(pref.getString("audAgeGroup","").equals("15-25")){
-                spinnerAgeGroup.setSelection(1);
-            } else if(pref.getString("audAgeGroup","").equals("26-40")){
-                spinnerAgeGroup.setSelection(2);
-            }else if(pref.getString("audAgeGroup","").equals("40-50")){
-                spinnerAgeGroup.setSelection(3);
-            }else if(pref.getString("audAgeGroup","").equals("50 above")){
-                spinnerAgeGroup.setSelection(4);
-            }
 
-            edtSituation.setText(pref.getString("audSituation",""));
-            edtPurpose.setText(pref.getString("audPurpose",""));
-            edtOutcome.setText(pref.getString("audOutcome",""));
+                edtSituation.setText(pref.getString("audSituation1",""));
+                edtPurpose.setText(pref.getString("audPurpose1",""));
+                edtOutcome.setText(pref.getString("audOutcome1",""));
+                edtAgeFrom.setText(pref.getString("FromAge1",""));
+                edtAgeTo.setText(pref.getString("ToAge1",""));
+            }
+        } else if(getPageNumber()==1){
+            if(pref.contains("audGender2")){
+                if(pref.getString("audGender2","").equals("Male")){
+                    spinnerGender.setSelection(1);
+                } else if(pref.getString("audGender2","").equals("Female")){
+                    spinnerGender.setSelection(2);
+                } else if(pref.getString("audGender2","").equals("Both")){
+                    spinnerGender.setSelection(3);
+                }
+
+
+                edtSituation.setText(pref.getString("audSituation2",""));
+                edtPurpose.setText(pref.getString("audPurpose2",""));
+                edtOutcome.setText(pref.getString("audOutcome2",""));
+                edtAgeFrom.setText(pref.getString("FromAge2",""));
+                edtAgeTo.setText(pref.getString("ToAge2",""));
+            }
+        }else if(getPageNumber()==2){
+            if(pref.contains("audGender3")){
+                if(pref.getString("audGender3","").equals("Male")){
+                    spinnerGender.setSelection(1);
+                } else if(pref.getString("audGender3","").equals("Female")){
+                    spinnerGender.setSelection(2);
+                } else if(pref.getString("audGender3","").equals("Both")){
+                    spinnerGender.setSelection(3);
+                }
+
+
+                edtSituation.setText(pref.getString("audSituation3",""));
+                edtPurpose.setText(pref.getString("audPurpose3",""));
+                edtOutcome.setText(pref.getString("audOutcome3",""));
+                edtAgeFrom.setText(pref.getString("FromAge3",""));
+                edtAgeTo.setText(pref.getString("ToAge3",""));
+            }
         }
 
 
-        spinnerAgeGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                age[0] = arrAgeGroup[position]+"";
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
 
-            }
-        });
         spinnerGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -140,13 +164,38 @@ public class ScreenSlidePageFragment extends Fragment {
         btnSaveAudience.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editor.putString("audSituation",edtSituation.getText().toString());
-                editor.putString("audPurpose",edtPurpose.getText().toString());
-                editor.putString("audOutcome",edtOutcome.getText().toString());
-                editor.putString("audAgeGroup", age[0]);
-                editor.putString("audGender", gender[0]);
-                editor.commit();
-                Toast.makeText(container.getContext(),"Audience Saved",Toast.LENGTH_LONG).show();
+                if(getPageNumber()==0){
+                    editor.putString("audSituation1",edtSituation.getText().toString());
+                    editor.putString("audPurpose1",edtPurpose.getText().toString());
+                    editor.putString("audOutcome1",edtOutcome.getText().toString());
+                    editor.putString("FromAge1",edtAgeFrom.getText().toString());
+                    editor.putString("ToAge1",edtAgeTo.getText().toString());
+                    editor.putString("audAgeGroup1", age[0]);
+                    editor.putString("audGender1", gender[0]);
+                    editor.commit();
+                    Toast.makeText(container.getContext(),"Audience "+(getPageNumber()+1)+ " Saved",Toast.LENGTH_LONG).show();
+                } else if(getPageNumber()==1){
+                    editor.putString("audSituation2",edtSituation.getText().toString());
+                    editor.putString("audPurpose2",edtPurpose.getText().toString());
+                    editor.putString("audOutcome2",edtOutcome.getText().toString());
+                    editor.putString("FromAge2",edtAgeFrom.getText().toString());
+                    editor.putString("ToAge2",edtAgeTo.getText().toString());
+                    editor.putString("audAgeGroup2", age[0]);
+                    editor.putString("audGender2", gender[0]);
+                    editor.commit();
+                    Toast.makeText(container.getContext(),"Audience "+(getPageNumber()+1)+ " Saved",Toast.LENGTH_LONG).show();
+                }else if(getPageNumber()==2){
+                    editor.putString("audSituation3",edtSituation.getText().toString());
+                    editor.putString("audPurpose3",edtPurpose.getText().toString());
+                    editor.putString("audOutcome3",edtOutcome.getText().toString());
+                    editor.putString("FromAge3",edtAgeFrom.getText().toString());
+                    editor.putString("ToAge3",edtAgeTo.getText().toString());
+                    editor.putString("audAgeGroup3", age[0]);
+                    editor.putString("audGender3", gender[0]);
+                    editor.commit();
+                    Toast.makeText(container.getContext(),"Audience "+(getPageNumber()+1)+ " Saved",Toast.LENGTH_LONG).show();
+                }
+
             }
         });
 
