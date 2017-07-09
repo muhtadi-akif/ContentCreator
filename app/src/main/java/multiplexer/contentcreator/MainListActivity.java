@@ -77,7 +77,7 @@ public class MainListActivity extends AppCompatActivity {
             public void onClick(View v) {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(MainListActivity.this);
                 dialog.setTitle("Add brand and campaigns!").setCancelable(false);
-                dialog.setMessage("Do you want to add your Brand information and Campaign details?");
+                dialog.setMessage("Do you want to add your brand information and campaign details?");
                 dialog.setPositiveButton("SKIP", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
