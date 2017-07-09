@@ -38,15 +38,32 @@
             android:orientation="vertical"
             android:layout_margin="4dp"
             >
-            <TextView
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Your suggested templates"
                 android:background="@color/colorPrimary"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
                 android:padding="8dp"
-                />
+                >
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Your suggested templates"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:layout_centerVertical="true"
+                    />
+
+                <ImageButton
+                    android:id="@+id/refreshButton"
+                    android:background="@drawable/reload"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentRight="true"
+                    />
+
+            </RelativeLayout>
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/templates"
                 android:layout_width="match_parent"

@@ -117,7 +117,7 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
             }
         }
 
-        if(position == 0){
+        /*if(position == 0){
             RelativeLayout.LayoutParams headlineParams = (RelativeLayout.LayoutParams) holder.headLine.getLayoutParams();
             RelativeLayout.LayoutParams subHeadlineParams = (RelativeLayout.LayoutParams) holder.subHeadline.getLayoutParams();
             RelativeLayout.LayoutParams frontLineParams = (RelativeLayout.LayoutParams) holder.frontLine.getLayoutParams();
@@ -190,7 +190,7 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
             holder.subHeadline.setText(temp.getSubHeadline());
             holder.frontLine.setText(temp.getFrontLine());
         }
-
+*/
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -28,6 +28,8 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -57,6 +59,7 @@ public class CreateContent extends AppCompatActivity
     Template_adapter template_adapter ;
     SharedPreferences.Editor editor;
     SharedPreferences pref;
+    ImageButton refreshButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +81,21 @@ public class CreateContent extends AppCompatActivity
         parentLayout = (RelativeLayout) findViewById(R.id.parentLayout);
         recycler_view_gallery = (RecyclerView) findViewById(R.id.gallary_images);
         recyclerView_template = (RecyclerView) findViewById(R.id.templates);
+        refreshButton = (ImageButton) findViewById(R.id.refreshButton);
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(pref.contains("picUri")){
+                    editor.remove("picUri");
+                    editor.commit();
+                }
+                Toast.makeText(getBaseContext(),"Refreshed",Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(getBaseContext(),CreateContent.class);
+                startActivity(i);
+                finish();
+                overridePendingTransition(0,0);
+            }
+        });
         init();
         checkForPermissions();
 
@@ -350,9 +368,9 @@ public class CreateContent extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+      /*  if (id == R.id.action_settings) {
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }

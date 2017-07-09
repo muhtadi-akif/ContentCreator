@@ -25,5 +25,12 @@
                 android:title="Open Exisiting" />
         </menu>
     </item>
+    <item android:title="Application">
+        <menu>
+            <item
+                android:icon="@drawable/settings"
+                android:title="Settings" />
 
+        </menu>
+    </item>
 </menu>
