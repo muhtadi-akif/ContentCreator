@@ -2,6 +2,7 @@ package multiplexer.contentcreator;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,10 +35,17 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
+import multiplexer.contentcreator.Helper.EndPoints;
+import multiplexer.contentcreator.Helper.JsonConstants;
+import multiplexer.contentcreator.Helper.WebRequest;
 import multiplexer.contentcreator.Model.Template;
 import multiplexer.contentcreator.adapter.GalleryImagesAdapter;
 import multiplexer.contentcreator.adapter.Template_adapter;
@@ -57,9 +66,10 @@ public class CreateContent extends AppCompatActivity
     AlertDialog alertDialog;
     ArrayList<Template> templatesList;
     Template_adapter template_adapter ;
+
     SharedPreferences.Editor editor;
     SharedPreferences pref;
-    ImageButton refreshButton;
+    ImageButton refreshBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,8 +91,9 @@ public class CreateContent extends AppCompatActivity
         parentLayout = (RelativeLayout) findViewById(R.id.parentLayout);
         recycler_view_gallery = (RecyclerView) findViewById(R.id.gallary_images);
         recyclerView_template = (RecyclerView) findViewById(R.id.templates);
-        refreshButton = (ImageButton) findViewById(R.id.refreshButton);
-        refreshButton.setOnClickListener(new View.OnClickListener() {
+
+        refreshBtn = (ImageButton) findViewById(R.id.refreshButton);
+        refreshBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(pref.contains("picUri")){
@@ -107,16 +118,16 @@ public class CreateContent extends AppCompatActivity
         recycler_view_gallery.setLayoutManager(new StaggeredGridLayoutManager(3, GridLayoutManager.VERTICAL));
         recyclerView_template.setLayoutManager(new GridLayoutManager(this, 3));
 
-
-        setDummyDataForTemplate();
+        new GetTemplates().execute();
+        //setDummyDataForTemplate();
     }
 
-    public void setDummyDataForTemplate(){
+/*    public void setDummyDataForTemplate(){
         ArrayList <String> headlines = new ArrayList<>();
         ArrayList <String> subHeadlines = new ArrayList<>();
         ArrayList <String> frontLines = new ArrayList<>();
 
-        for(int i = 0; i<10;i++){
+        for(int i = 0; i<6;i++){
             headlines.add(getIntent().getStringExtra("headline"));
             subHeadlines.add(getIntent().getStringExtra("subHeadline"));
             frontLines.add(getIntent().getStringExtra("frontLine"));
@@ -131,7 +142,88 @@ public class CreateContent extends AppCompatActivity
 
         template_adapter = new Template_adapter(this,templatesList);
         recyclerView_template.setAdapter(template_adapter);
+    }*/
+
+
+    private class GetTemplates extends AsyncTask<Void, Void, Void> {
+
+        // Hashmap for ListView
+        ArrayList<Template> jsonTemplateList;
+
+        ProgressDialog proDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Showing progress loading dialog
+            proDialog = new ProgressDialog(CreateContent.this);
+            proDialog.setMessage("Please wait...");
+            proDialog.setCancelable(false);
+            proDialog.show();
+        }
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            // Creating service handler class instance
+            WebRequest webreq = new WebRequest();
+
+            // Making a request to url and getting response
+            String jsonStr = webreq.makeWebServiceCall(new EndPoints().TEMPLTATES_LINK, WebRequest.GETRequest);
+
+            Log.d("Response: ", "> " + jsonStr);
+
+            jsonTemplateList = ParseJSON(jsonStr);
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void requestresult) {
+            super.onPostExecute(requestresult);
+            // Dismiss the progress dialog
+            if (proDialog.isShowing())
+                proDialog.dismiss();
+            /**
+            * Updating received data from JSON into ListView
+            **/
+            template_adapter = new Template_adapter(CreateContent.this,jsonTemplateList);
+            recyclerView_template.setAdapter(template_adapter);
+        }
+
     }
+    private ArrayList<Template> ParseJSON(String json) {
+        if (json != null) {
+            try {
+                // Hashmap for ListView
+                ArrayList<Template> tempList = new ArrayList<Template>();
+
+                JSONObject jsonObj = new JSONObject(json);
+
+                // Getting JSON Array node
+                JSONArray templates = jsonObj.getJSONArray(new JsonConstants().TAG_TEMPLATE);
+
+                // looping through All Students
+                for (int i = 0; i < templates.length(); i++) {
+                    JSONObject c = templates.getJSONObject(i);
+
+                    String headline = c.getString(new JsonConstants().TEMPLATE_HEADLINE);
+                    String sub_headline = c.getString(new JsonConstants().TEMPLATE_SUBHEADLINE);
+                    String front_line = c.getString(new JsonConstants().TEMPLATE_FRONTLINE);
+                    String img_url = c.getString(new JsonConstants().TEMPLATE_IMAGE);
+
+                    Template template = new Template(headline,sub_headline,front_line,img_url);
+                    // adding student to students list
+                    tempList.add(template);
+                }
+                return tempList;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else {
+            Log.e("ServiceHandler", "No data received from HTTP Request");
+            return null;
+        }
+    }
+
 
     private void handleInputParams() {
         params = new Params();
@@ -368,9 +460,9 @@ public class CreateContent extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-      /*  if (id == R.id.action_settings) {
+        if (id == R.id.action_settings) {
             return true;
-        }*/
+        }
 
         return super.onOptionsItemSelected(item);
     }

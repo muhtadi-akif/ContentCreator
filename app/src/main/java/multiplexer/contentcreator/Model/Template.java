@@ -5,11 +5,12 @@ package multiplexer.contentcreator.Model;
  */
 
 public class Template {
-    private String headline, subHeadline, frontLine;
-    public Template(String headline,String subHeadline, String frontLine){
+    private String headline, subHeadline, frontLine,img_url;
+    public Template(String headline,String subHeadline, String frontLine,String img_url){
         this.headline = headline;
         this.subHeadline = subHeadline;
         this.frontLine = frontLine;
+        this.img_url = img_url;
     }
 
     public String getHeadline() {
@@ -34,5 +35,13 @@ public class Template {
 
     public void setFrontLine(String frontLine) {
         this.frontLine = frontLine;
+    }
+
+    public String getImg_url() {
+        return img_url;
+    }
+
+    public void setImg_url(String img_url) {
+        this.img_url = img_url;
     }
 }

@@ -222,14 +222,15 @@ public class ImageEditor extends AppCompatActivity {
         } else {
             height = Float.valueOf(getResources().getDimension(R.dimen.image_height_landscape));
         }
-        Picasso.with(this)
+       /* Picasso.with(this)
                 .load(Uri.parse((getIntent().getStringExtra("uri"))))
                 .placeholder(R.drawable.image_processing)
                 .error(R.drawable.no_image)
                 .resize(screenWidth , (int)height)
                 .onlyScaleDown()
                 .centerInside()
-                .into(imageView);
+                .into(imageView);*/
+        Picasso.with(this).load((getIntent().getStringExtra("uri"))).into(imageView);
 
         initFilters();
         brightness_btn.setOnClickListener(new View.OnClickListener() {
@@ -382,16 +383,16 @@ public class ImageEditor extends AppCompatActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getActionMasked()) {
                     case MotionEvent.ACTION_DOWN:
-                        dX = view.getX() - event.getRawX();
+                        //dX = view.getX() - event.getRawX();
                         dY = view.getY() - event.getRawY();
                         lastAction = MotionEvent.ACTION_DOWN;
                         break;
 
                     case MotionEvent.ACTION_MOVE:
                         lastY = (event.getRawY() + dY);
-                        lastX = (event.getRawX() + dX);
+                        //lastX = (event.getRawX() + dX);
                         view.setY(event.getRawY() + dY);
-                        view.setX(event.getRawX() + dX);
+                        //view.setX(event.getRawX() + dX);
                         lastAction = MotionEvent.ACTION_MOVE;
                         break;
 

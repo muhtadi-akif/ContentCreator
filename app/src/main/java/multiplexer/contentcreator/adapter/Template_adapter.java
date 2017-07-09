@@ -18,7 +18,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -40,16 +39,6 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
     SharedPreferences pref;
     String tempUri;
     private int screenWidth;
-    public Uri[] imageURI = {Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid1"),
-            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid2"),
-            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid3"),
-            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid4"),
-            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid5"),
-            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid6"),
-            Uri.parse("android.resource://multiplexer.contentcreator/drawable/edi7"),
-            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid8"),
-            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid9"),
-            Uri.parse("android.resource://multiplexer.contentcreator/drawable/eid10")};
     // data is passed into the constructor
     public Template_adapter(Context context, ArrayList<Template> data) {
         this.mInflater = LayoutInflater.from(context);
@@ -62,7 +51,6 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
         screenWidth = size.x;
         pref = mContext.getSharedPreferences("MyPref", MODE_PRIVATE);
         editor = pref.edit();
-
     }
 
     // inflates the cell layout from xml when needed
@@ -75,10 +63,10 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
 
     // binds the data to the textview in each cell
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         final Template temp = mData.get(position);
         if(pref.contains("picUri")){
-            float height;
+            final float height;
             if (isPortraitImage(Uri.parse(pref.getString("picUri","")))){
                 height = Float.valueOf(mContext.getResources().getDimension(R.dimen.image_height_portrait));
             } else {
@@ -94,30 +82,39 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
                     .into(holder.backgroundImage);
 
         } else {
-            if(position == 0){
-                Picasso.with(mContext).load(R.drawable.eid1).into(holder.backgroundImage);
+            /*if(position == 0){
+                Picasso.with(mContext).load(R.drawable.wood).into(holder.backgroundImage);
             } else if (position ==1){
-                Picasso.with(mContext).load(R.drawable.eid2).into(holder.backgroundImage);
+                Picasso.with(mContext).load(R.drawable.rock).into(holder.backgroundImage);
             }else if (position ==2){
-                Picasso.with(mContext).load(R.drawable.eid3).into(holder.backgroundImage);
+                Picasso.with(mContext).load(R.drawable.wood).into(holder.backgroundImage);
             }else if (position ==3){
-                Picasso.with(mContext).load(R.drawable.eid4).into(holder.backgroundImage);
+                Picasso.with(mContext).load(R.drawable.rock).into(holder.backgroundImage);
             }else if (position ==4){
-                Picasso.with(mContext).load(R.drawable.eid5).into(holder.backgroundImage);
+                Picasso.with(mContext).load(R.drawable.wood).into(holder.backgroundImage);
             }else if (position ==5){
-                Picasso.with(mContext).load(R.drawable.eid6).into(holder.backgroundImage);
-            }else if (position ==6){
-                Picasso.with(mContext).load(R.drawable.edi7).into(holder.backgroundImage);
-            }else if (position ==7){
-                Picasso.with(mContext).load(R.drawable.eid8).into(holder.backgroundImage);
-            }else if (position ==8){
-                Picasso.with(mContext).load(R.drawable.eid9).into(holder.backgroundImage);
-            }else if (position ==9){
-                Picasso.with(mContext).load(R.drawable.eid10).into(holder.backgroundImage);
+                Picasso.with(mContext).load(R.drawable.wood).into(holder.backgroundImage);
+            }*/
+            final float height;
+            if (isPortraitImage(Uri.parse(temp.getImg_url()))){
+                height = Float.valueOf(mContext.getResources().getDimension(R.dimen.image_height_portrait));
+            } else {
+                height = Float.valueOf(mContext.getResources().getDimension(R.dimen.image_height_landscape));
             }
+            Picasso.with(mContext)
+                    .load(temp.getImg_url())
+                    .placeholder(R.drawable.image_processing)
+                    .error(R.drawable.no_image)
+                    .resize(screenWidth / 3, (int)height)
+                    .onlyScaleDown()
+                    .centerInside()
+                    .into(holder.backgroundImage);
+            //Picasso.with(mContext).load(temp.getImg_url()).into(holder.backgroundImage);
         }
-
-        /*if(position == 0){
+        holder.headLine.setText(temp.getHeadline());
+        holder.subHeadline.setText(temp.getSubHeadline());
+        holder.frontLine.setText(temp.getFrontLine());
+       /* if(position == 0){
             RelativeLayout.LayoutParams headlineParams = (RelativeLayout.LayoutParams) holder.headLine.getLayoutParams();
             RelativeLayout.LayoutParams subHeadlineParams = (RelativeLayout.LayoutParams) holder.subHeadline.getLayoutParams();
             RelativeLayout.LayoutParams frontLineParams = (RelativeLayout.LayoutParams) holder.frontLine.getLayoutParams();
@@ -179,29 +176,17 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
             holder.headLine.setText(temp.getHeadline());
             holder.subHeadline.setText(temp.getSubHeadline());
             holder.frontLine.setText(temp.getFrontLine());
-        }else{
-            RelativeLayout.LayoutParams headlineParams = (RelativeLayout.LayoutParams) holder.headLine.getLayoutParams();
-            RelativeLayout.LayoutParams subHeadlineParams = (RelativeLayout.LayoutParams) holder.subHeadline.getLayoutParams();
-            RelativeLayout.LayoutParams frontLineParams = (RelativeLayout.LayoutParams) holder.frontLine.getLayoutParams();
-            headlineParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            subHeadlineParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            frontLineParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            holder.headLine.setText(temp.getHeadline());
-            holder.subHeadline.setText(temp.getSubHeadline());
-            holder.frontLine.setText(temp.getFrontLine());
+        }*/
+        if(pref.contains("picUri")){
+             tempUri = pref.getString("picUri","");
+        } else {
+             tempUri = null;
         }
-*/
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(pref.contains("picUri")){
-                    tempUri = pref.getString("picUri","");
-                } else {
-                    Log.i("Dekhi Uri", "Dhukse");
-                    tempUri = imageURI[position].toString();
-                }
+
                 if(tempUri!=null){
-                    Log.i("Uri", position+ "  "+ tempUri.toString());
                     Intent i = new Intent(mContext, ImageEditor.class);
                     i.putExtra("uri",tempUri);
                     i.putExtra("headline",temp.getHeadline());
@@ -209,28 +194,17 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
                     i.putExtra("frontLine",temp.getFrontLine());
                     mContext.startActivity(i);
                 } else {
-                    Toast.makeText(mContext,"Choose a picture from above",Toast.LENGTH_LONG).show();
+                    Intent i = new Intent(mContext, ImageEditor.class);
+                    i.putExtra("uri",temp.getImg_url());
+                    i.putExtra("headline",temp.getHeadline());
+                    i.putExtra("subHeadline",temp.getSubHeadline());
+                    i.putExtra("frontLine",temp.getFrontLine());
+                    mContext.startActivity(i);
+                    //Toast.makeText(mContext,"Choose a picture from above",Toast.LENGTH_LONG).show();
                 }
 
             }
         });
-        /*holder.parentLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(tempUri!=null){
-                    Log.i("Uri", tempUri.toString());
-                    Intent i = new Intent(mContext, ImageEditor.class);
-                    i.putExtra("uri",tempUri);
-                    i.putExtra("headline",temp.getHeadline());
-                    i.putExtra("subHeadline",temp.getSubHeadline());
-                    i.putExtra("frontLine",temp.getFrontLine());
-                    mContext.startActivity(i);
-                } else {
-                    Toast.makeText(mContext,"Choose a picture from above",Toast.LENGTH_LONG).show();
-                }
-
-            }
-        });*/
 
       /*  holder.headLine.setText(temp.getHeadline());
         holder.subHeadline.setText(temp.getSubHeadline());
