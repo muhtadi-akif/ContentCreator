@@ -118,8 +118,13 @@ public class CreateContent extends AppCompatActivity
         handleInputParams();
         recycler_view_gallery.setLayoutManager(new StaggeredGridLayoutManager(3, GridLayoutManager.VERTICAL));
         recyclerView_template.setLayoutManager(new GridLayoutManager(this, 3));
-
-        if(isNetConnected()){
+        if(pref.contains("picUri")){
+            templatesList = new ArrayList<Template>();
+            Template t = new Template("Your headline","Your sub-headline","You front line",pref.getString("picUri",""));
+            templatesList.add(t);
+            template_adapter = new Template_adapter(CreateContent.this,templatesList);
+            recyclerView_template.setAdapter(template_adapter);
+        } else if(isNetConnected()){
             new GetTemplates().execute();
         } else {
             Toast.makeText(getBaseContext(),"No internet connection",Toast.LENGTH_LONG).show();
