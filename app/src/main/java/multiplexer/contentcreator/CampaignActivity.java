@@ -193,10 +193,10 @@ public class CampaignActivity extends AppCompatActivity {
             finePrints.setError("Please write something about front line or choose from the suggestion");
         }
         else {
-            Campaign c = new Campaign(headline.getText().toString(),outcome.getText().toString(),audience.getText().toString(),
+            Campaign c = new Campaign(getIntent().getIntExtra("camp_id",0), headline.getText().toString(),outcome.getText().toString(),audience.getText().toString(),
                     subHeader.getText().toString(),finePrints.getText().toString());
             if(getIntent().hasExtra("flagPosition")){
-                db.updateCampaignData(c,getIntent().getIntExtra("flagPosition",0)+"");
+                db.updateCampaignData(c,getIntent().getIntExtra("camp_id",0));
             } else {
                 db.insertCampaingData(c);
             }
@@ -207,7 +207,7 @@ public class CampaignActivity extends AppCompatActivity {
             intentMain.putExtra("subHeadline",subHeader.getText().toString());
             intentMain.putExtra("frontLine",finePrints.getText().toString());
             startActivity(intentMain);
-            finish();
+            finishAffinity();
         }
 
     }

@@ -6,12 +6,14 @@ package multiplexer.contentcreator.Model;
 
 public class Campaign {
     private String headline,outcome,audience,sub_headline,front_lines;
-    public Campaign(String headline,String outcome,String audience,String sub_headline,String front_lines){
+    int camp_id;
+    public Campaign(int camp_id,String headline,String outcome,String audience,String sub_headline,String front_lines){
         this.headline = headline;
         this.outcome = outcome;
         this.audience = audience;
         this.sub_headline = sub_headline;
         this.front_lines = front_lines;
+        this.camp_id = camp_id;
     }
     public Campaign(String headline){
         this.headline = headline;
@@ -54,5 +56,13 @@ public class Campaign {
 
     public void setFront_lines(String front_lines) {
         this.front_lines = front_lines;
+    }
+
+    public int getCamp_id() {
+        return camp_id;
+    }
+
+    public void setCamp_id(int camp_id) {
+        this.camp_id = camp_id;
     }
 }

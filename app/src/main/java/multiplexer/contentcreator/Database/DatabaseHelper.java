@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -21,10 +22,10 @@ import multiplexer.contentcreator.Model.Campaign;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String DB_NAME = "ContentCreatordb.db";
-
+    Context context;
     public DatabaseHelper(Context context) {
-
         super(context, DB_NAME, null, 1);
+        this.context = context;
     }
 
     @Override
@@ -73,7 +74,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void updateCampaignData(Campaign campaign,String position){
+    public void updateCampaignData(Campaign campaign,int position){
         SQLiteDatabase dbInsert = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(TableAttributes.CAMPAIGN_AUDIENCE, campaign.getAudience());
@@ -82,7 +83,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(TableAttributes.CAMPAIGN_HEADLINE, campaign.getHeadline());
         values.put(TableAttributes.CAMPAIGN_SUB_HEADLINE, campaign.getSub_headline());
         dbInsert.update(TableAttributes.CAMPAIGN_TABLE_NAME, values, "campaign_id = ?",
-                new String[] { position });
+                new String[] { position+"" });
     }
 
     public void insertBrand(Brands brand) {
@@ -131,13 +132,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cur.moveToFirst();
         while (!cur.isAfterLast()) {
             String headline, outcome, audience, subHeadline, story, frontLines;
+            int camp_id;
+            camp_id = cur.getInt(cur.getColumnIndex("campaign_id"));
             headline = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_HEADLINE));
             outcome = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_EXPECTED_OUTCOME));
             audience = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_AUDIENCE));
             subHeadline = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_SUB_HEADLINE));
             story = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_STORY));
             frontLines = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_FRONT_LINES));
-            Campaign campaign = new Campaign(headline, outcome, audience, subHeadline, frontLines);
+            Campaign campaign = new Campaign(camp_id,headline, outcome, audience, subHeadline, frontLines);
            /* campaign.setUsername(cur.getString(cur.getColumnIndex(TableAttributes.STUDENT_NAME)));
             campaign.setPassword(cur.getString(cur.getColumnIndex(TableAttributes.STUDENT_PASSWORD)));
             campaign.setPhoneNo(cur.getString(cur.getColumnIndex(TableAttributes.STUDENT_PHONENO)));
@@ -202,7 +205,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
+    public void deleteCampaign(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TableAttributes.CAMPAIGN_TABLE_NAME, "campaign_id = ?",
+                new String[]{String.valueOf(id)});
+        db.close();
 
+        Toast.makeText(context,"Campaign Deleted",Toast.LENGTH_LONG).show();
+    }
   /*  public ArrayList<Student> getStudent(String name) {
         ArrayList<Student> arrayList = new ArrayList<Student>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -251,3 +261,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }*/
     }
+
+
