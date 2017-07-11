@@ -382,7 +382,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Colorify"
+                            android:text="Doodle"
                             android:textAlignment="center"
                             android:textColor="@color/white" />
                     </LinearLayout>

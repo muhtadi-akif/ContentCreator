@@ -339,7 +339,7 @@ public class BrandsActivity extends AppCompatActivity implements
                 }
                 else  if (selectedImage == null) {
                   Toast.makeText(getBaseContext(),"You haven't select any logo yet",Toast.LENGTH_LONG).show();
-                } else if(!pref.contains("audGender")){
+                } else if(!pref.contains("audGender1")&&!pref.contains("audGender2")&&!pref.contains("audGender3")){
                         Toast.makeText(getBaseContext(),"Please set and save your Audience",Toast.LENGTH_LONG).show();
                 }  else {
                     brand_tagline = edtTagline.getText().toString();
