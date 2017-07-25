@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
@@ -59,6 +60,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import cn.Ragnarok.BitmapFilter;
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.panavtec.drawableview.DrawableView;
 import me.panavtec.drawableview.DrawableViewConfig;
@@ -73,10 +75,10 @@ import multiplexer.contentcreator.views.AutoImageView;
  */
 
 public class ImageEditor extends AppCompatActivity {
-    static
-    {
+    static {
         System.loadLibrary("NativeImageProcessor");
     }
+
     private int screenWidth;
     TextView txtHeadline, txtSubHeadline, txtFrontLine;
     int selectedColor;
@@ -97,10 +99,11 @@ public class ImageEditor extends AppCompatActivity {
     int brightness = 0, blur = 0, sharpen = 0, saturation = 0;
     private DrawableView drawableView;
     private DrawableViewConfig config = new DrawableViewConfig();
-    CircleImageView LightFx, BlueFx, StruckVibe, LimeFx, NightFx;
-    boolean colorify = false,litFx = false, bluFx = false,stVibe = false,lime=false,nit =false;
+    CircleImageView LightFx, BlueFx, StruckVibe, LimeFx, NightFx,NormalFx;
+    boolean colorify = false, litFx = false, bluFx = false, stVibe = false, lime = false, nit = false,normal=true;
     ProgressDialog prog_dialog;
     private FontProvider fontProvider;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -217,7 +220,7 @@ public class ImageEditor extends AppCompatActivity {
                 .into(imageView);*/
 
         float height;
-        if (isPortraitImage(Uri.parse((getIntent().getStringExtra("uri"))))){
+        if (isPortraitImage(Uri.parse((getIntent().getStringExtra("uri"))))) {
             height = Float.valueOf(getResources().getDimension(R.dimen.image_height_portrait));
         } else {
             height = Float.valueOf(getResources().getDimension(R.dimen.image_height_landscape));
@@ -226,7 +229,7 @@ public class ImageEditor extends AppCompatActivity {
                 .load(Uri.parse((getIntent().getStringExtra("uri"))))
                 .placeholder(R.drawable.image_processing)
                 .error(R.drawable.no_image)
-                .resize(screenWidth*3 , (int)height*3)
+                .resize(screenWidth * 3, (int) height * 3)
                 .onlyScaleDown()
                 .centerInside()
                 .into(imageView);
@@ -376,8 +379,8 @@ public class ImageEditor extends AppCompatActivity {
                 return true;
             }
         });
-
-        imageView.setOnTouchListener(new View.OnTouchListener() {
+        //image move options
+       /* imageView.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View view, MotionEvent event) {
@@ -397,7 +400,7 @@ public class ImageEditor extends AppCompatActivity {
                         break;
 
                     case MotionEvent.ACTION_UP:
-                      /*  if (lastAction == MotionEvent.ACTION_DOWN)*/
+                      *//*  if (lastAction == MotionEvent.ACTION_DOWN)*//*
                         //Toast.makeText(getBaseContext(), "Clicked!", Toast.LENGTH_SHORT).show();
                         break;
 
@@ -406,7 +409,7 @@ public class ImageEditor extends AppCompatActivity {
                 }
                 return true;
             }
-        });
+        });*/
     }
 
     private String getRealPathFromURI(Uri contentURI) {
@@ -423,21 +426,22 @@ public class ImageEditor extends AppCompatActivity {
         return result;
     }
 
-    private boolean isPortraitImage(Uri uri){
+    private boolean isPortraitImage(Uri uri) {
         boolean x = false;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(getRealPathFromURI(uri), options);
         int imageHeight = options.outHeight;
         int imageWidth = options.outWidth;
-        if (imageHeight>imageWidth){
+        if (imageHeight > imageWidth) {
             x = true;
         }
-        Log.e("Is Potrait",x+"");
+        Log.e("Is Potrait", x + "");
         return x;
     }
 
     public void initFilters() {
+        NormalFx = (CircleImageView) findViewById(R.id.normal_fx);
         LightFx = (CircleImageView) findViewById(R.id.light_fx);
         BlueFx = (CircleImageView) findViewById(R.id.blue_fx);
         StruckVibe = (CircleImageView) findViewById(R.id.struck_vibe_fx);
@@ -448,15 +452,38 @@ public class ImageEditor extends AppCompatActivity {
         Filter filter = null;
 
         filter = SampleFilters.getStarLitFilter();
+        NormalFx.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (normal == false) {
+                    normal = true;
+                    litFx = false;
+                    bluFx = false;
+                    stVibe = false;
+                    lime = false;
+                    nit = false;
+                } else {
+                    normal = false;
+                }
+                changeEffectOnPic();
+            }
+        });
+
         LightFx.setImageBitmap(filter.processFilter(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(this.getApplicationContext().getResources(), R.drawable.compress_sample), 500, 333, false)));
         LightFx.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(litFx==false){
+                if (litFx == false) {
                     litFx = true;
+                    normal = false;
+                    bluFx = false;
+                    stVibe = false;
+                    lime = false;
+                    nit = false;
                 } else {
                     litFx = false;
+                    normal = true;
                 }
                 changeEffectOnPic();
             }
@@ -464,15 +491,22 @@ public class ImageEditor extends AppCompatActivity {
         });
 
 
+
         filter = SampleFilters.getBlueMessFilter();
         BlueFx.setImageBitmap(filter.processFilter(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(this.getApplicationContext().getResources(), R.drawable.compress_sample), 500, 333, false)));
         BlueFx.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(bluFx==false){
+                if (bluFx == false) {
                     bluFx = true;
+                    normal = false;
+                    litFx = false;
+                    stVibe = false;
+                    lime = false;
+                    nit = false;
                 } else {
                     bluFx = false;
+                    normal = true;
                 }
                 changeEffectOnPic();
             }
@@ -483,10 +517,16 @@ public class ImageEditor extends AppCompatActivity {
         StruckVibe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(stVibe==false){
+                if (stVibe == false) {
                     stVibe = true;
+                    normal = false;
+                    litFx = false;
+                    bluFx = false;
+                    lime = false;
+                    nit = false;
                 } else {
                     stVibe = false;
+                    normal = true;
                 }
                 changeEffectOnPic();
             }
@@ -497,10 +537,16 @@ public class ImageEditor extends AppCompatActivity {
         LimeFx.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(lime==false){
+                if (lime == false) {
                     lime = true;
+                    normal = false;
+                    litFx = false;
+                    bluFx = false;
+                    stVibe = false;
+                    nit = false;
                 } else {
                     lime = false;
+                    normal = true;
                 }
                 changeEffectOnPic();
             }
@@ -511,14 +557,22 @@ public class ImageEditor extends AppCompatActivity {
         NightFx.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(nit==false){
+                if (nit == false) {
                     nit = true;
+                    normal = false;
+                    litFx = false;
+                    bluFx = false;
+                    stVibe = false;
+                    lime = false;
+                    normal = true;
                 } else {
                     nit = false;
                 }
                 changeEffectOnPic();
             }
         });
+
+        changeEffectOnPic();
     }
 
 
@@ -662,7 +716,7 @@ public class ImageEditor extends AppCompatActivity {
                     public void run() {
                         if (for_.equals("brightness")) {
                             brightness = seekBar.getProgress();
-                            imageView.setColorFilter(brightIt(brightness));
+                            imageView.setColorFilter(brightIt(brightness/2));
                             changeEffectOnPic();
                         } else if (for_.equals("blur")) {
                             blur = seekBar.getProgress();
@@ -698,7 +752,7 @@ public class ImageEditor extends AppCompatActivity {
                 .into(imageView);
         if (sharpen > 0) {
             Bitmap bitmap = imageView.getDrawingCache();
-            Bitmap sharpened = sharpen(bitmap, sharpen); //second parametre is radius
+            Bitmap sharpened = BitmapFilter.changeStyle(bitmap, BitmapFilter.SHARPEN_STYLE, sharpen); //second parametre is radius
             imageView.setImageBitmap(sharpened);
             imageView.invalidate();
             sharpen_btn.setBackgroundColor(getResources().getColor(R.color.blue));
@@ -707,8 +761,9 @@ public class ImageEditor extends AppCompatActivity {
         }
         if (saturation > 0) {
             Bitmap bitmap = imageView.getDrawingCache();
-            Bitmap saturated = applySaturationFilter(bitmap, saturation); //second parametre is radius
-            imageView.setImageBitmap(saturated);
+            //Bitmap saturated = applySaturationFilter(bitmap, saturation); //second parametre is radius
+            Bitmap changeBitmap = BitmapFilter.changeStyle(bitmap, BitmapFilter.OIL_STYLE, saturation/4);
+            imageView.setImageBitmap(changeBitmap);
             imageView.invalidate();
             saturation_btn.setBackgroundColor(getResources().getColor(R.color.blue));
         } else {
@@ -722,15 +777,18 @@ public class ImageEditor extends AppCompatActivity {
         }
         if (blur > 0) {
             Bitmap bitmap = imageView.getDrawingCache();
-            Bitmap blurred = fastblur(bitmap, 1, blur);//second parametre is radius
-            imageView.setImageBitmap(blurred);
+            Bitmap blurred = processingBitmap_Blur(bitmap,blur);
+            Bitmap blurred1 =processingBitmap_Blur(blurred,blur);
+            imageView.setImageBitmap(blurred1);
+
             imageView.invalidate();
             blur_btn.setBackgroundColor(getResources().getColor(R.color.blue));
+
         } else {
             blur_btn.setBackgroundColor(Color.TRANSPARENT);
         }
 
-        if(litFx){
+        if (litFx) {
             Bitmap bitmap = imageView.getDrawingCache();
             Filter myFilter = SampleFilters.getStarLitFilter();
                 /*Bitmap outputImage = myFilter.processFilter(bitmap);
@@ -741,7 +799,7 @@ public class ImageEditor extends AppCompatActivity {
         } else {
             LightFx.setBackgroundColor(Color.TRANSPARENT);
         }
-        if(bluFx){
+        if (bluFx) {
             Bitmap bitmap = imageView.getDrawingCache();
             Filter myFilter = SampleFilters.getBlueMessFilter();
                 /*Bitmap outputImage = myFilter.processFilter(bitmap);
@@ -753,7 +811,7 @@ public class ImageEditor extends AppCompatActivity {
             BlueFx.setBackgroundColor(Color.TRANSPARENT);
         }
 
-        if(stVibe){
+        if (stVibe) {
             Bitmap bitmap = imageView.getDrawingCache();
             Filter myFilter = SampleFilters.getAweStruckVibeFilter();
                 /*Bitmap outputImage = myFilter.processFilter(bitmap);
@@ -765,7 +823,7 @@ public class ImageEditor extends AppCompatActivity {
             StruckVibe.setBackgroundColor(Color.TRANSPARENT);
         }
 
-        if(lime){
+        if (lime) {
             Bitmap bitmap = imageView.getDrawingCache();
             Filter myFilter = SampleFilters.getLimeStutterFilter();
                 /*Bitmap outputImage = myFilter.processFilter(bitmap);
@@ -776,7 +834,7 @@ public class ImageEditor extends AppCompatActivity {
         } else {
             LimeFx.setBackgroundColor(Color.TRANSPARENT);
         }
-        if(nit){
+        if (nit) {
             Bitmap bitmap = imageView.getDrawingCache();
             Filter myFilter = SampleFilters.getNightWhisperFilter();
                 /*Bitmap outputImage = myFilter.processFilter(bitmap);
@@ -787,7 +845,13 @@ public class ImageEditor extends AppCompatActivity {
         } else {
             NightFx.setBackgroundColor(Color.TRANSPARENT);
         }
+        if(normal){
+            NormalFx.setBackgroundColor(getResources().getColor(R.color.blue));
+        } else {
+            NormalFx.setBackgroundColor(Color.TRANSPARENT);
+        }
     }
+
 
     public static Bitmap applySaturationFilter(Bitmap source, int level) {
         // get image size
@@ -830,6 +894,37 @@ public class ImageEditor extends AppCompatActivity {
         convMatrix.Factor = weight - 8;
         return ConvolutionMatrix.computeConvolution3x3(src, convMatrix);
     }
+
+    private Bitmap processingBitmap_Blur(Bitmap src, int radius) {
+        int width = src.getWidth();
+        int height = src.getHeight();
+
+        BlurMaskFilter blurMaskFilter;
+        Paint paintBlur = new Paint();
+
+        Bitmap dest = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        Canvas canvas = new Canvas(dest);
+
+    /*    //Create background in White
+        Bitmap alpha = src.extractAlpha();
+        paintBlur.setColor(0xFFFFFFFF);
+        canvas.drawBitmap(alpha, 0, 0, paintBlur);
+
+        //Create outer blur, in White
+        blurMaskFilter = new BlurMaskFilter(radius, BlurMaskFilter.Blur.OUTER);
+        paintBlur.setMaskFilter(blurMaskFilter);
+        canvas.drawBitmap(alpha, 0, 0, paintBlur);*/
+
+        //Create inner blur
+        blurMaskFilter = new BlurMaskFilter(radius * 2, BlurMaskFilter.Blur.NORMAL);
+        paintBlur.setColor(0xFFFFFFFF);
+        paintBlur.setMaskFilter(blurMaskFilter);
+        canvas.drawBitmap(src, 0, 0, paintBlur);
+
+
+        return dest;
+    }
+
 
     public Bitmap fastblur(Bitmap sentBitmap, float scale, int radius) {
 
@@ -1108,11 +1203,11 @@ public class ImageEditor extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (position == "headline") {
-                    changeTextColor(txtHeadline.getCurrentTextColor(),position);
+                    changeTextColor(txtHeadline.getCurrentTextColor(), position);
                 } else if (position == "sub headline") {
-                    changeTextColor(txtSubHeadline.getCurrentTextColor(),position);
+                    changeTextColor(txtSubHeadline.getCurrentTextColor(), position);
                 } else if (position == "front line") {
-                    changeTextColor(txtFrontLine.getCurrentTextColor(),position);
+                    changeTextColor(txtFrontLine.getCurrentTextColor(), position);
                 }
                 dialog.dismiss();
             }
@@ -1122,15 +1217,15 @@ public class ImageEditor extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (position == "headline") {
-                    Log.e("text size",(txtHeadline.getTextSize())+"");
-                    headlineTxtSize = headlineTxtSize+5;
+                    Log.e("text size", (txtHeadline.getTextSize()) + "");
+                    headlineTxtSize = headlineTxtSize + 5;
                     txtHeadline.setTextSize(headlineTxtSize);
-                    Log.e("text size after",(txtHeadline.getTextSize())+"");
+                    Log.e("text size after", (txtHeadline.getTextSize()) + "");
                 } else if (position == "sub headline") {
-                    subHeadlineTxtSize = subHeadlineTxtSize+5;
+                    subHeadlineTxtSize = subHeadlineTxtSize + 5;
                     txtSubHeadline.setTextSize(subHeadlineTxtSize);
                 } else if (position == "front line") {
-                    frontLineTxtSize = frontLineTxtSize+5;
+                    frontLineTxtSize = frontLineTxtSize + 5;
                     txtFrontLine.setTextSize(frontLineTxtSize);
                 }
 
@@ -1143,15 +1238,15 @@ public class ImageEditor extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (position == "headline") {
-                    Log.e("text size",(txtHeadline.getTextSize())+"");
-                    headlineTxtSize = headlineTxtSize-5;
+                    Log.e("text size", (txtHeadline.getTextSize()) + "");
+                    headlineTxtSize = headlineTxtSize - 5;
                     txtHeadline.setTextSize(headlineTxtSize);
-                    Log.e("text size after",(txtHeadline.getTextSize())+"");
+                    Log.e("text size after", (txtHeadline.getTextSize()) + "");
                 } else if (position == "sub headline") {
-                    subHeadlineTxtSize = subHeadlineTxtSize-5;
+                    subHeadlineTxtSize = subHeadlineTxtSize - 5;
                     txtSubHeadline.setTextSize(subHeadlineTxtSize);
                 } else if (position == "front line") {
-                    frontLineTxtSize = frontLineTxtSize-5;
+                    frontLineTxtSize = frontLineTxtSize - 5;
                     txtFrontLine.setTextSize(frontLineTxtSize);
                 }
 
@@ -1222,7 +1317,7 @@ public class ImageEditor extends AppCompatActivity {
                         } else if (position == "front line") {
                             txtFrontLine.setTextColor(selectedColor);
                         }
-                    dialog.dismiss();
+                        dialog.dismiss();
                     }
                 })
                 .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -1329,10 +1424,10 @@ public class ImageEditor extends AppCompatActivity {
                 }
             });
             refreshGallery(pictureFile);
-            Intent i = new Intent(getBaseContext(),ShareActivity.class);
-            i.putExtra("uri",pictureFile+"");
+            Intent i = new Intent(getBaseContext(), ShareActivity.class);
+            i.putExtra("uri", pictureFile + "");
             startActivity(i);
-            if(prog_dialog.isShowing()){
+            if (prog_dialog.isShowing()) {
                 prog_dialog.dismiss();
             }
             finish();
