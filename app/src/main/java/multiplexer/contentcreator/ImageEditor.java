@@ -67,6 +67,7 @@ import me.panavtec.drawableview.DrawableViewConfig;
 import multiplexer.contentcreator.Helper.ConvolutionMatrix;
 import multiplexer.contentcreator.Helper.FontProvider;
 import multiplexer.contentcreator.adapter.FontsAdapter;
+import multiplexer.contentcreator.utils.BitmapTransform;
 import multiplexer.contentcreator.utils.Utils;
 import multiplexer.contentcreator.views.AutoImageView;
 
@@ -103,7 +104,8 @@ public class ImageEditor extends AppCompatActivity {
     boolean colorify = false, litFx = false, bluFx = false, stVibe = false, lime = false, nit = false,normal=true;
     ProgressDialog prog_dialog;
     private FontProvider fontProvider;
-
+    private static final int MAX_WIDTH = 1024;
+    private static final int MAX_HEIGHT = 768;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -225,11 +227,16 @@ public class ImageEditor extends AppCompatActivity {
         } else {
             height = Float.valueOf(getResources().getDimension(R.dimen.image_height_landscape));
         }
+
+
+        int sizeBM = (int) Math.ceil(Math.sqrt(MAX_WIDTH * MAX_HEIGHT));
         Picasso.with(this)
                 .load(Uri.parse((getIntent().getStringExtra("uri"))))
+                .transform(new BitmapTransform(MAX_WIDTH, MAX_HEIGHT))
+                .skipMemoryCache()
                 .placeholder(R.drawable.image_processing)
                 .error(R.drawable.no_image)
-                .resize(screenWidth * 3, (int) height * 3)
+                .resize(sizeBM,sizeBM)
                 .onlyScaleDown()
                 .centerInside()
                 .into(imageView);
@@ -564,9 +571,9 @@ public class ImageEditor extends AppCompatActivity {
                     bluFx = false;
                     stVibe = false;
                     lime = false;
-                    normal = true;
                 } else {
                     nit = false;
+                    normal = true;
                 }
                 changeEffectOnPic();
             }

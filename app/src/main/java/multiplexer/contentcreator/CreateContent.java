@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -39,9 +40,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 
 import multiplexer.contentcreator.Helper.EndPoints;
@@ -67,10 +72,10 @@ public class CreateContent extends AppCompatActivity
     AlertDialog alertDialog;
     ArrayList<Template> templatesList;
     Template_adapter template_adapter ;
-
     SharedPreferences.Editor editor;
     SharedPreferences pref;
     ImageButton refreshBtn;
+    Uri fileUri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -489,12 +494,100 @@ public class CreateContent extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_camera) {
+            callCamera();
             return true;
+
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void callCamera(){
+        Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        fileUri = getOutputMediaFileUri(1);
+        takePicture.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+        startActivityForResult(takePicture, 0);
+    }
+
+    public Uri getOutputMediaFileUri(int type) {
+        return Uri.fromFile(getOutputMediaFile(type));
+    }
+
+    /**
+     * returning image / video
+     */
+    private static File getOutputMediaFile(int type) {
+
+        // External sdcard location
+        File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
+                + "/Content Creator/Camera");
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+
+                return null;
+            }
+        }
+
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
+                Locale.getDefault()).format(new Date());
+        File mediaFile;
+        if (type == 1) {
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator
+                    + "IMG_" + timeStamp + ".jpg");
+
+        } else {
+            return null;
+        }
+
+        return mediaFile;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // TODO Auto-generated method stub
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 0:
+                if (resultCode == RESULT_OK) {
+              /*   picture = (Bitmap) data.getExtras().get("data");
+                 picFIle = new File(getFilename());
+*/
+                    Uri selectedImage = fileUri;
+
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+/*
+                    Cursor cursor = getContentResolver().query(
+                            selectedImage, filePathColumn, null, null, null);
+                    cursor.moveToFirst();
+
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);*/
+                    String filePath = selectedImage.getPath().toString();
+                    // cursor.close();
+
+                    //compressImage(filePath);
+                    editor.putString("picUri",selectedImage+"");
+                    editor.commit();
+                    Intent i = new Intent(getBaseContext(),CreateContent.class);
+                    i.putExtra("headline",getIntent().getStringExtra("headline"));
+                    i.putExtra("subHeadline",getIntent().getStringExtra("subHeadline"));
+                    i.putExtra("frontLine",getIntent().getStringExtra("frontLine"));
+                    startActivity(i);
+                    finish();
+                    overridePendingTransition(0,0);
+
+                }
+
+                break;
+
+        }
+
+
+    }
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

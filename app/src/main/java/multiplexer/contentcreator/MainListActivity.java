@@ -125,6 +125,7 @@ public class MainListActivity extends AppCompatActivity {
     public void requestStoragePermissions(Activity activity, int requestCode) {
         int hasReadPermission = ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
         int hasWritePermission = ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int hasCameraPermission = ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA);
         List<String> permissions = new ArrayList<>();
         if (hasReadPermission != PackageManager.PERMISSION_GRANTED) {
             permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -132,6 +133,11 @@ public class MainListActivity extends AppCompatActivity {
 
         if (hasWritePermission != PackageManager.PERMISSION_GRANTED) {
             permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+
+        if (hasCameraPermission != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.CAMERA);
         }
 
         if (!permissions.isEmpty()) {
@@ -145,9 +151,12 @@ public class MainListActivity extends AppCompatActivity {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int readPermissionCheck = ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_EXTERNAL_STORAGE);
+        int cameraPermissionCheck = ContextCompat.checkSelfPermission(context,
+                Manifest.permission.CAMERA);
         return !(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && (writePermissionCheck == PackageManager.PERMISSION_DENIED
-                || readPermissionCheck == PackageManager.PERMISSION_DENIED));
+                || readPermissionCheck == PackageManager.PERMISSION_DENIED
+                || cameraPermissionCheck == PackageManager.PERMISSION_DENIED));
     }
 
     @Override
