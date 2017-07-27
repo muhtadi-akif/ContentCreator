@@ -42,7 +42,7 @@
             android:layout_margin="5dp"
             android:padding="5dp"
             android:text="Choose Background Color"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@android:color/darker_gray"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <EditText

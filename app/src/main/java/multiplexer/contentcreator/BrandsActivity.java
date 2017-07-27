@@ -507,6 +507,7 @@ public class BrandsActivity extends AppCompatActivity implements
 
         //Detects request codes
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            btnUpload.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
             selectedImage = data.getData();
             //Bitmap bitmap = null;
             /*try {

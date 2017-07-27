@@ -18,6 +18,9 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -76,7 +79,7 @@ public class MainListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(MainListActivity.this);
-                dialog.setTitle("Add brand and campaigns!").setCancelable(false);
+                dialog.setTitle(getSmallCapsString("Add Brand And Campaigns!")).setCancelable(false);
                 dialog.setMessage("Do you want to add your brand information and campaign details?");
                 dialog.setPositiveButton("SKIP", new DialogInterface.OnClickListener() {
                     @Override
@@ -112,6 +115,45 @@ public class MainListActivity extends AppCompatActivity {
         });
         checkForPermissions();
 
+    }
+
+    public static SpannableString getSmallCapsString(String input) {
+        // values needed to record start/end points of blocks of lowercase letters
+        char[] chars = input.toCharArray();
+        int currentBlock = 0;
+        int[] blockStarts = new int[chars.length];
+        int[] blockEnds = new int[chars.length];
+        boolean blockOpen = false;
+
+        // record where blocks of lowercase letters start/end
+        for (int i = 0; i < chars.length; ++i) {
+            char c = chars[i];
+            if (c >= 'a' && c <= 'z') {
+                if (!blockOpen) {
+                    blockOpen = true;
+                    blockStarts[currentBlock] = i;
+                }
+                // replace with uppercase letters
+                chars[i] = (char) (c - 'a' + '\u0041');
+            } else {
+                if (blockOpen) {
+                    blockOpen = false;
+                    blockEnds[currentBlock] = i;
+                    ++currentBlock;
+                }
+            }
+        }
+
+        // add the string end, in case the last character is a lowercase letter
+        blockEnds[currentBlock] = chars.length;
+
+        // shrink the blocks found above
+        SpannableString output = new SpannableString(String.valueOf(chars));
+        for (int i = 0; i < Math.min(blockStarts.length, blockEnds.length); ++i) {
+            output.setSpan(new RelativeSizeSpan(0.8f), blockStarts[i], blockEnds[i], Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        }
+
+        return output;
     }
     public void checkForPermissions() {
         if (hasStoragePermission(this)){
