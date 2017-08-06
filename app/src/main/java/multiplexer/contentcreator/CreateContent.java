@@ -122,14 +122,15 @@ public class CreateContent extends AppCompatActivity
         //Object object = this.getIntent().getSerializableExtra(Constants.KEY_PARAMS);
         handleInputParams();
         recycler_view_gallery.setLayoutManager(new StaggeredGridLayoutManager(3, GridLayoutManager.VERTICAL));
-        recyclerView_template.setLayoutManager(new GridLayoutManager(this, 3));
-        if(pref.contains("picUri")){
+        recyclerView_template.setLayoutManager(new GridLayoutManager(this, 2));
+
+        /*if(pref.contains("picUri")){
             templatesList = new ArrayList<Template>();
             Template t = new Template("Your headline","Your sub-headline","You front line",pref.getString("picUri",""));
             templatesList.add(t);
             template_adapter = new Template_adapter(CreateContent.this,templatesList);
             recyclerView_template.setAdapter(template_adapter);
-        } else if(isNetConnected()){
+        } else*/ if(isNetConnected()){
             new GetTemplates().execute();
         } else {
             Toast.makeText(getBaseContext(),"No internet connection",Toast.LENGTH_LONG).show();
@@ -186,9 +187,41 @@ public class CreateContent extends AppCompatActivity
             String jsonStr = webreq.makeWebServiceCall(new EndPoints().TEMPLTATES_LINK, WebRequest.GETRequest);
 
             Log.d("Response: ", "> " + jsonStr);
+            String json = "{   \"templates\": [\n" +
+                    "    {\n" +
+                    "     \"image_url\":\"http://apps.sharedtoday.com/wiliimg/temp_01.png\",\n" +
+                    "      \"headline\":\"Headline Suggestion 1\",\n" +
+                    "      \"headline_top_position\":\"50\", \n" +
+                    "      \"headline_left_position\":\"10\",\n" +
+                    "      \"headline_font\":\"Transitional Serifs\",\n" +
+                    "      \"headline_text_size\":\"14\",\n" +
+                    "      \"headline_text_color\":\"#FAFAFA\",\n" +
+                    "      \"sub_headline\":\"Sub Headline Example\",\n" +
+                    "      \"subheadline_top_position\":\"60\", \n" +
+                    "      \"subheadline_left_position\":\"5\",\n" +
+                    "      \"sub_headline_font\":\"Transitional Serifs\",\n" +
+                    "      \"sub_headline_text_size\":\"12\",\n" +
+                    "      \"sub_headline_text_color\":\"#000000\",\n" +
+                    "      \"front_line\":\"Front line Example\",\n" +
+                    "      \"frontline_top_position\":\"80\", \n" +
+                    "      \"frontline_left_position\":\"10\", \n" +
+                    "      \"frontline_font\":\"Transitional Serifs\",\n" +
+                    "      \"frontline_text_size\":\"14\",\n" +
+                    "      \"frontline_text_color\":\"#FAFAFA\",\n" +
+                    "      \"calltoaction_position\":\"90\", \n" +
+                    "      \"calltoaction_left_position\":\"5\", \n" +
+                    "      \"calltoaction_font\":\"Transitional Serifs\",\n" +
+                    "      \"calltoaction_text_size\":\"10\",\n" +
+                    "      \"calltoaction_text_color\":\"#FAFAFA\",\n" +
+                    "      \"editableimage\": \"1\"\n" +
+                    "    }\n" +
+                    "  ]}\n" +
+                    "\n" +
+                    "\n";
+
 
             jsonTemplateList = ParseJSON(jsonStr);
-
+            //jsonTemplateList = ParseJSON(json);
             return null;
         }
         @Override
@@ -197,11 +230,13 @@ public class CreateContent extends AppCompatActivity
             // Dismiss the progress dialog
             if (proDialog.isShowing())
                 proDialog.dismiss();
-            /**
-            * Updating received data from JSON into ListView
-            **/
-            template_adapter = new Template_adapter(CreateContent.this,jsonTemplateList);
-            recyclerView_template.setAdapter(template_adapter);
+
+            if(jsonTemplateList!=null){
+                template_adapter = new Template_adapter(CreateContent.this,jsonTemplateList);
+                recyclerView_template.setAdapter(template_adapter);
+            } else {
+                Toast.makeText(CreateContent.this, "Server error please try again", Toast.LENGTH_LONG).show();
+            }
         }
 
     }
@@ -216,14 +251,14 @@ public class CreateContent extends AppCompatActivity
                 // Getting JSON Array node
                 JSONArray templates = jsonObj.getJSONArray(new JsonConstants().TAG_TEMPLATE);
                 //making size for custom choose
-                int size = 0;
+                /*int size = 0;
                 if(pref.contains("picUri")){
                     size =1;
                 } else {
                     size = templates.length();
-                }
+                }*/
                 // looping through All Students
-                for (int i = 0; i < size; i++) {
+                for (int i = 0; i < templates.length(); i++) {
                     JSONObject c = templates.getJSONObject(i);
 
                     String headline = c.getString(new JsonConstants().TEMPLATE_HEADLINE);
@@ -232,12 +267,35 @@ public class CreateContent extends AppCompatActivity
                     String img_url = c.getString(new JsonConstants().TEMPLATE_IMAGE);
 
                     Template template = new Template(headline,sub_headline,front_line,img_url);
+                    //setting headline attributes
+                    template.setHeadline_font_size(c.getString(new JsonConstants().TEMPLATE_HEADLINE_TEXT_SIZE));
+                    template.setHeadline_left_position(c.getString(new JsonConstants().TEMPLATE_HEADLINE_LEFT_POSITION));
+                    template.setHeadline_top_position(c.getString(new JsonConstants().TEMPLATE_HEADLINE_TOP_POSITION));
+                    template.setHeadline_text_color(c.getString(new JsonConstants().TEMPLATE_HEADLINE_TEXT_COLOR));
+                    template.setHeadline_font(c.getString(new JsonConstants().TEMPLATE_HEADLINE_TOP_POSITION));
+                    //setting sub_headline attributes
+                    template.setSub_headline_font_size(c.getString(new JsonConstants().TEMPLATE_SUBHEADLINE_TEXT_SIZE));
+                    template.setSub_headline_left_position(c.getString(new JsonConstants().TEMPLATE_SUBHEADLINE_LEFT_POSITION));
+                    template.setSub_headline_top_position(c.getString(new JsonConstants().TEMPLATE_SUBHEADLINE_TOP_POSITION));
+                    template.setSub_headline_text_color(c.getString(new JsonConstants().TEMPLATE_SUBHEADLINE_TEXT_COLOR));
+                    template.setSub_headline_font(c.getString(new JsonConstants().TEMPLATE_SUBHEADLINE_FONT));
+                    //setting front_line attributes
+                    template.setFrontLine_font_size(c.getString(new JsonConstants().TEMPLATE_FRONTLINE_TEXT_SIZE));
+                    template.setFrontLine_left_position(c.getString(new JsonConstants().TEMPLATE_FRONTLINE_LEFT_POSITION));
+                    template.setFronLine_top_position(c.getString(new JsonConstants().TEMPLATE_FRONTLINE_TOP_POSITION));
+                    template.setFrontLine_text_color(c.getString(new JsonConstants().TEMPLATE_FRONTLINE_TEXT_COLOR));
+                    template.setFront_line_font(c.getString(new JsonConstants().TEMPLATE_FRONTLINE_FONT));
+
+                    if(pref.contains("picUri")){
+                        template.setUser_img_uri(pref.getString("picUri",""));
+                    }
                     // adding student to students list
                     tempList.add(template);
                 }
                 return tempList;
             } catch (JSONException e) {
                 e.printStackTrace();
+
                 return null;
             }
         } else {
@@ -293,7 +351,7 @@ public class CreateContent extends AppCompatActivity
         Runtime runtime = Runtime.getRuntime();
         try {
 
-            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 www.google.com");
             int     exitValue = ipProcess.waitFor();
             return (exitValue == 0);
 
@@ -480,11 +538,13 @@ public class CreateContent extends AppCompatActivity
     public void onStop() {
         // Inflate the menu; this adds items to the action bar if it is present.
         super.onStop();
-        if(pref.contains("picUri")){
+        /*if(pref.contains("picUri")){
             editor.remove("picUri");
             editor.commit();
-        }
+        }*/
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -521,7 +581,7 @@ public class CreateContent extends AppCompatActivity
 
         // External sdcard location
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
-                + "/Content Creator/Camera");
+                + "/WiLi/Camera");
 
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists()) {

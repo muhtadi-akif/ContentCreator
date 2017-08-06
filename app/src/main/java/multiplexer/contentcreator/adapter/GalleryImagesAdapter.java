@@ -10,10 +10,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -118,7 +118,7 @@ public class GalleryImagesAdapter extends RecyclerView.Adapter<RecyclerView.View
             public void onClick(View v) {
                 //long imageId = (long) v.getTag(R.id.image_id);
                 //setSelectedItem(v, imageId,entity.uri);
-                if(pref.contains("picUri")){
+               /* if(pref.contains("picUri")){
                     editor.remove("picUri");
                     editor.commit();
                 } else {
@@ -134,6 +134,17 @@ public class GalleryImagesAdapter extends RecyclerView.Adapter<RecyclerView.View
                     activity.overridePendingTransition(0,0);
                 }
 
+*/
+                editor.putString("picUri",entity.uri+"");
+                editor.commit();
+                Log.e("Selected File Size", calculateFileSize(entity.uri));
+                Intent i = new Intent(activity.getBaseContext(),CreateContent.class);
+                i.putExtra("headline",activity.getIntent().getStringExtra("headline"));
+                i.putExtra("subHeadline",activity.getIntent().getStringExtra("subHeadline"));
+                i.putExtra("frontLine",activity.getIntent().getStringExtra("frontLine"));
+                activity.startActivity(i);
+                activity.finish();
+                activity.overridePendingTransition(0,0);
             }
         });
     }

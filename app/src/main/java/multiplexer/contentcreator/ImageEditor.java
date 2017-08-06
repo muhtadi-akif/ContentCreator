@@ -14,18 +14,23 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.util.TypedValue;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.percent.PercentLayoutHelper;
+import android.support.percent.PercentRelativeLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSeekBar;
@@ -39,6 +44,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -66,6 +72,7 @@ import me.panavtec.drawableview.DrawableView;
 import me.panavtec.drawableview.DrawableViewConfig;
 import multiplexer.contentcreator.Helper.ConvolutionMatrix;
 import multiplexer.contentcreator.Helper.FontProvider;
+import multiplexer.contentcreator.Helper.JsonConstants;
 import multiplexer.contentcreator.adapter.FontsAdapter;
 import multiplexer.contentcreator.utils.BitmapTransform;
 import multiplexer.contentcreator.utils.Utils;
@@ -93,8 +100,7 @@ public class ImageEditor extends AppCompatActivity {
     float lastY;
     float headlineTxtSize = 22f, subHeadlineTxtSize = 18f, frontLineTxtSize = 18f;
     String TAG = "Photo save testing";
-    private android.widget.RelativeLayout.LayoutParams layoutParams;
-    AutoImageView imageView;
+    AutoImageView imageView,userImageView;
     RelativeLayout saveViewLayout;
     ImageButton blur_btn, brightness_btn, sharpen_btn, saturation_btn, colorify_btn, background_btn;
     int brightness = 0, blur = 0, sharpen = 0, saturation = 0;
@@ -106,6 +112,27 @@ public class ImageEditor extends AppCompatActivity {
     private FontProvider fontProvider;
     private static final int MAX_WIDTH = 1024;
     private static final int MAX_HEIGHT = 768;
+
+    // These matrices will be used to move and zoom image
+    Matrix matrix = new Matrix();
+    Matrix savedMatrix = new Matrix();
+
+    // We can be in one of these 3 states
+    static final int NONE = 0;
+    static final int DRAG = 1;
+    static final int ZOOM = 2;
+    int mode = NONE;
+
+    // Remember some things for zooming
+    PointF start = new PointF();
+    PointF mid = new PointF();
+    float oldDist = 1f;
+    String savedItemClicked;
+
+    boolean isEditable = false;
+    LinearLayout nextHolder;
+    RelativeLayout effectsHolder;
+    ImageButton btnProceed;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +142,7 @@ public class ImageEditor extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.parseColor("#333333"));
         }
+
         fontProvider = new FontProvider(getResources());
         selectedColor = getResources().getColor(android.R.color.black);
         darkenedColor = Utils.getDarkColor(selectedColor);
@@ -122,7 +150,13 @@ public class ImageEditor extends AppCompatActivity {
         BGdarkenedColor = Utils.getDarkColor(selectedColor);
         imageView = (AutoImageView) findViewById(R.id.imageView);
         imageView.setDrawingCacheEnabled(true);
+        userImageView = (AutoImageView) findViewById(R.id.userImageView);
+        userImageView.setDrawingCacheEnabled(true);
         saveViewLayout = (RelativeLayout) findViewById(R.id.actualView);
+        saveViewLayout.setDrawingCacheEnabled(true);
+        nextHolder = (LinearLayout) findViewById(R.id.nextHolder);
+        effectsHolder = (RelativeLayout) findViewById(R.id.effectsHolder);
+        btnProceed = (ImageButton) findViewById(R.id.btnProceed);
         blur_btn = (ImageButton) findViewById(R.id.blur);
         brightness_btn = (ImageButton) findViewById(R.id.brightness);
         background_btn = (ImageButton) findViewById(R.id.background);
@@ -221,6 +255,20 @@ public class ImageEditor extends AppCompatActivity {
                 .error(R.drawable.no_image)
                 .into(imageView);*/
 
+
+
+       /* holder.headLine.setText(temp.getHeadline());
+        holder.subHeadline.setText(temp.getSubHeadline());
+        holder.frontLine.setText(temp.getFrontLine());*/
+
+
+       btnProceed.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+             makePicEditable();
+           }
+       });
+
         float height;
         if (isPortraitImage(Uri.parse((getIntent().getStringExtra("uri"))))) {
             height = Float.valueOf(getResources().getDimension(R.dimen.image_height_portrait));
@@ -240,6 +288,19 @@ public class ImageEditor extends AppCompatActivity {
                 .onlyScaleDown()
                 .centerInside()
                 .into(imageView);
+        if(getIntent().hasExtra("userUri")){
+            Picasso.with(this)
+                    .load(Uri.parse((getIntent().getStringExtra("userUri"))))
+                    .transform(new BitmapTransform(MAX_WIDTH, MAX_HEIGHT))
+                    .skipMemoryCache()
+                    .placeholder(R.drawable.image_processing)
+                    .error(R.drawable.no_image)
+                    .resize(sizeBM,sizeBM)
+                    .onlyScaleDown()
+                    .centerInside()
+                    .into(userImageView);
+        }
+
         //Picasso.with(this).load((getIntent().getStringExtra("uri"))).into(imageView);
 
         initFilters();
@@ -282,9 +343,6 @@ public class ImageEditor extends AppCompatActivity {
         txtHeadline = (TextView) findViewById(R.id.text);
         txtSubHeadline = (TextView) findViewById(R.id.subHeadlineText);
         txtFrontLine = (TextView) findViewById(R.id.frontLineText);
-        txtHeadline.setText(getIntent().getStringExtra("headline"));
-        txtSubHeadline.setText(getIntent().getStringExtra("subHeadline"));
-        txtFrontLine.setText(getIntent().getStringExtra("frontLine"));
         txtHeadline.setTextSize(headlineTxtSize);
         txtSubHeadline.setTextSize(subHeadlineTxtSize);
         txtFrontLine.setTextSize(frontLineTxtSize);
@@ -387,27 +445,27 @@ public class ImageEditor extends AppCompatActivity {
             }
         });
         //image move options
-       /* imageView.setOnTouchListener(new View.OnTouchListener() {
+        /*userImageView.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 switch (event.getActionMasked()) {
                     case MotionEvent.ACTION_DOWN:
-                        //dX = view.getX() - event.getRawX();
+                        dX = view.getX() - event.getRawX();
                         dY = view.getY() - event.getRawY();
                         lastAction = MotionEvent.ACTION_DOWN;
                         break;
 
                     case MotionEvent.ACTION_MOVE:
                         lastY = (event.getRawY() + dY);
-                        //lastX = (event.getRawX() + dX);
+                        lastX = (event.getRawX() + dX);
                         view.setY(event.getRawY() + dY);
-                        //view.setX(event.getRawX() + dX);
+                        view.setX(event.getRawX() + dX);
                         lastAction = MotionEvent.ACTION_MOVE;
                         break;
 
                     case MotionEvent.ACTION_UP:
-                      *//*  if (lastAction == MotionEvent.ACTION_DOWN)*//*
+                        if (lastAction == MotionEvent.ACTION_DOWN)
                         //Toast.makeText(getBaseContext(), "Clicked!", Toast.LENGTH_SHORT).show();
                         break;
 
@@ -417,6 +475,190 @@ public class ImageEditor extends AppCompatActivity {
                 return true;
             }
         });*/
+        if(!getIntent().hasExtra("userUri")){
+           makePicEditable();
+        }
+        changeUserImagePoint(isEditable);
+        setTextAttributes();
+
+    }
+
+    public void makePicEditable(){
+        isEditable = true;
+        nextHolder.setVisibility(View.GONE);
+        effectsHolder.setVisibility(View.VISIBLE);
+        txtHeadline.setVisibility(View.VISIBLE);
+        txtSubHeadline.setVisibility(View.VISIBLE);
+        txtFrontLine.setVisibility(View.VISIBLE);
+        changeUserImagePoint(isEditable);
+    }
+
+    public void setTextAttributes(){
+        txtHeadline.setText(getIntent().getStringExtra(new JsonConstants().TEMPLATE_HEADLINE));
+        txtHeadline.setTextColor(Color.parseColor(getIntent().getStringExtra(new JsonConstants().TEMPLATE_HEADLINE_TEXT_COLOR)));
+        txtHeadline.setTextSize(TypedValue.COMPLEX_UNIT_PX, Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_HEADLINE_TEXT_SIZE))*4);
+        txtSubHeadline.setText(getIntent().getStringExtra(new JsonConstants().TEMPLATE_SUBHEADLINE));
+        txtSubHeadline.setTextColor(Color.parseColor(getIntent().getStringExtra(new JsonConstants().TEMPLATE_SUBHEADLINE_TEXT_COLOR)));
+        txtSubHeadline.setTextSize(TypedValue.COMPLEX_UNIT_PX, Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_SUBHEADLINE_TEXT_SIZE))*4);
+        txtFrontLine.setText(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE));
+        txtFrontLine.setTextColor(Color.parseColor(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE_TEXT_COLOR)));
+        txtFrontLine.setTextSize(TypedValue.COMPLEX_UNIT_PX, Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE_TEXT_SIZE))*4);
+        PercentRelativeLayout.LayoutParams headlineParams = (PercentRelativeLayout.LayoutParams) txtHeadline.getLayoutParams();
+        PercentLayoutHelper.PercentLayoutInfo headlinePercentLayoutInfo = headlineParams.getPercentLayoutInfo();
+        headlinePercentLayoutInfo.leftMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_HEADLINE_LEFT_POSITION))-10) * 0.01f);
+        headlinePercentLayoutInfo.topMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_HEADLINE_TOP_POSITION))-10) * 0.01f);
+        PercentRelativeLayout.LayoutParams subHeadlineParams = (PercentRelativeLayout.LayoutParams) txtSubHeadline.getLayoutParams();
+        PercentLayoutHelper.PercentLayoutInfo subHeadlinePercentLayoutInfo = subHeadlineParams.getPercentLayoutInfo();
+        subHeadlinePercentLayoutInfo.leftMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_SUBHEADLINE_LEFT_POSITION))-10) * 0.01f);
+        subHeadlinePercentLayoutInfo.topMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_SUBHEADLINE_TOP_POSITION))-10) * 0.01f);
+        PercentRelativeLayout.LayoutParams frontLineParams = (PercentRelativeLayout.LayoutParams) txtFrontLine.getLayoutParams();
+        PercentLayoutHelper.PercentLayoutInfo frontLinePercentLayoutInfo = frontLineParams.getPercentLayoutInfo();
+        frontLinePercentLayoutInfo.leftMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE_LEFT_POSITION))-10) * 0.01f);
+        frontLinePercentLayoutInfo.topMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE_TOP_POSITION))-10) * 0.01f);
+        txtHeadline.setLayoutParams(headlineParams);
+        txtSubHeadline.setLayoutParams(subHeadlineParams);
+        txtFrontLine.setLayoutParams(frontLineParams);
+    }
+
+    public void changeUserImagePoint(boolean isEditable){
+        if(!isEditable){
+            /*userImageView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    // TODO Auto-generated method stub
+
+                    AutoImageView view = (AutoImageView) v;
+                    dumpEvent(event);
+
+                    // Handle touch events here...
+                    switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                        case MotionEvent.ACTION_DOWN:
+                            savedMatrix.set(matrix);
+                            start.set(event.getX(), event.getY());
+                            Log.d(TAG, "mode=DRAG");
+                            mode = DRAG;
+                            break;
+                        case MotionEvent.ACTION_POINTER_DOWN:
+                            oldDist = spacing(event);
+                            Log.d(TAG, "oldDist=" + oldDist);
+                            if (oldDist > 10f) {
+                                savedMatrix.set(matrix);
+                                midPoint(mid, event);
+                                mode = ZOOM;
+                                Log.d(TAG, "mode=ZOOM");
+                            }
+                            break;
+                        case MotionEvent.ACTION_UP:
+                        case MotionEvent.ACTION_POINTER_UP:
+                            mode = NONE;
+                            Log.d(TAG, "mode=NONE");
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            if (mode == DRAG) {
+                                // ...
+                                matrix.set(savedMatrix);
+                                matrix.postTranslate(event.getX() - start.x, event.getY()
+                                        - start.y);
+                            } else if (mode == ZOOM) {
+                                float newDist = spacing(event);
+                                Log.d(TAG, "newDist=" + newDist);
+                                if (newDist > 10f) {
+                                    matrix.set(savedMatrix);
+                                    float scale = newDist / oldDist;
+                                    matrix.postScale(scale, scale, mid.x, mid.y);
+                                }
+                            }
+                            break;
+                    }
+
+                    view.setImageMatrix(matrix);
+                    return true;
+                }
+
+            });*/
+
+             userImageView.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        dX = view.getX() - event.getRawX();
+                        dY = view.getY() - event.getRawY();
+                        lastAction = MotionEvent.ACTION_DOWN;
+                        break;
+
+                    case MotionEvent.ACTION_MOVE:
+                        lastY = (event.getRawY() + dY);
+                        lastX = (event.getRawX() + dX);
+                        view.setY(event.getRawY() + dY);
+                        view.setX(event.getRawX() + dX);
+                        lastAction = MotionEvent.ACTION_MOVE;
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        if (lastAction == MotionEvent.ACTION_DOWN)
+                        //Toast.makeText(getBaseContext(), "Clicked!", Toast.LENGTH_SHORT).show();
+                        break;
+
+                    default:
+                        return false;
+                }
+                return true;
+            }
+        });
+        } else {
+            userImageView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    //do nothing
+
+                    return false;
+                }
+
+            });
+        }
+
+    }
+
+    private void dumpEvent(MotionEvent event) {
+        String names[] = { "DOWN", "UP", "MOVE", "CANCEL", "OUTSIDE",
+                "POINTER_DOWN", "POINTER_UP", "7?", "8?", "9?" };
+        StringBuilder sb = new StringBuilder();
+        int action = event.getAction();
+        int actionCode = action & MotionEvent.ACTION_MASK;
+        sb.append("event ACTION_").append(names[actionCode]);
+        if (actionCode == MotionEvent.ACTION_POINTER_DOWN
+                || actionCode == MotionEvent.ACTION_POINTER_UP) {
+            sb.append("(pid ").append(
+                    action >> MotionEvent.ACTION_POINTER_ID_SHIFT);
+            sb.append(")");
+        }
+        sb.append("[");
+        for (int i = 0; i < event.getPointerCount(); i++) {
+            sb.append("#").append(i);
+            sb.append("(pid ").append(event.getPointerId(i));
+            sb.append(")=").append((int) event.getX(i));
+            sb.append(",").append((int) event.getY(i));
+            if (i + 1 < event.getPointerCount())
+                sb.append(";");
+        }
+        sb.append("]");
+        Log.d(TAG, sb.toString());
+    }
+
+    /** Determine the space between the first two fingers */
+    private float spacing(MotionEvent event) {
+        float x = event.getX(0) - event.getX(1);
+        float y = event.getY(0) - event.getY(1);
+        return (float)Math.sqrt(x * x + y * y);
+    }
+
+    /** Calculate the mid point of the first two fingers */
+    private void midPoint(PointF point, MotionEvent event) {
+        float x = event.getX(0) + event.getX(1);
+        float y = event.getY(0) + event.getY(1);
+        point.set(x / 2, y / 2);
     }
 
     private String getRealPathFromURI(Uri contentURI) {
@@ -723,7 +965,7 @@ public class ImageEditor extends AppCompatActivity {
                     public void run() {
                         if (for_.equals("brightness")) {
                             brightness = seekBar.getProgress();
-                            imageView.setColorFilter(brightIt(brightness/2));
+                            userImageView.setColorFilter(brightIt(brightness/2));
                             changeEffectOnPic();
                         } else if (for_.equals("blur")) {
                             blur = seekBar.getProgress();
@@ -757,21 +999,29 @@ public class ImageEditor extends AppCompatActivity {
                 .placeholder(R.drawable.image_processing)
                 .error(R.drawable.no_image)
                 .into(imageView);
+        if(getIntent().hasExtra("userUri")){
+            Picasso.with(getBaseContext())
+                    .load(Uri.parse((getIntent().getStringExtra("userUri"))))
+                    .placeholder(R.drawable.image_processing)
+                    .error(R.drawable.no_image)
+                    .into(userImageView);
+        }
+
         if (sharpen > 0) {
-            Bitmap bitmap = imageView.getDrawingCache();
+            Bitmap bitmap = userImageView.getDrawingCache();
             Bitmap sharpened = BitmapFilter.changeStyle(bitmap, BitmapFilter.SHARPEN_STYLE, sharpen); //second parametre is radius
-            imageView.setImageBitmap(sharpened);
-            imageView.invalidate();
+            userImageView.setImageBitmap(sharpened);
+            userImageView.invalidate();
             sharpen_btn.setBackgroundColor(getResources().getColor(R.color.blue));
         } else {
             sharpen_btn.setBackgroundColor(Color.TRANSPARENT);
         }
         if (saturation > 0) {
-            Bitmap bitmap = imageView.getDrawingCache();
+            Bitmap bitmap = userImageView.getDrawingCache();
             //Bitmap saturated = applySaturationFilter(bitmap, saturation); //second parametre is radius
             Bitmap changeBitmap = BitmapFilter.changeStyle(bitmap, BitmapFilter.OIL_STYLE, saturation/4);
-            imageView.setImageBitmap(changeBitmap);
-            imageView.invalidate();
+            userImageView.setImageBitmap(changeBitmap);
+            userImageView.invalidate();
             saturation_btn.setBackgroundColor(getResources().getColor(R.color.blue));
         } else {
             saturation_btn.setBackgroundColor(Color.TRANSPARENT);
@@ -783,12 +1033,12 @@ public class ImageEditor extends AppCompatActivity {
             brightness_btn.setBackgroundColor(Color.TRANSPARENT);
         }
         if (blur > 0) {
-            Bitmap bitmap = imageView.getDrawingCache();
+            Bitmap bitmap = userImageView.getDrawingCache();
             Bitmap blurred = processingBitmap_Blur(bitmap,blur);
             Bitmap blurred1 =processingBitmap_Blur(blurred,blur);
-            imageView.setImageBitmap(blurred1);
+            userImageView.setImageBitmap(blurred1);
 
-            imageView.invalidate();
+            userImageView.invalidate();
             blur_btn.setBackgroundColor(getResources().getColor(R.color.blue));
 
         } else {
@@ -796,59 +1046,60 @@ public class ImageEditor extends AppCompatActivity {
         }
 
         if (litFx) {
-            Bitmap bitmap = imageView.getDrawingCache();
+            Bitmap bitmap = userImageView.getDrawingCache();
             Filter myFilter = SampleFilters.getStarLitFilter();
                 /*Bitmap outputImage = myFilter.processFilter(bitmap);
                 imageView.setImageBitmap(outputImage);
                 imageView.invalidate();*/
             LightFx.setBackgroundColor(getResources().getColor(R.color.blue));
-            imageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+            userImageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
         } else {
             LightFx.setBackgroundColor(Color.TRANSPARENT);
         }
         if (bluFx) {
-            Bitmap bitmap = imageView.getDrawingCache();
+            Bitmap bitmap = userImageView.getDrawingCache();
             Filter myFilter = SampleFilters.getBlueMessFilter();
                 /*Bitmap outputImage = myFilter.processFilter(bitmap);
                 imageView.setImageBitmap(outputImage);
                 imageView.invalidate();*/
             BlueFx.setBackgroundColor(getResources().getColor(R.color.blue));
-            imageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+            userImageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
         } else {
             BlueFx.setBackgroundColor(Color.TRANSPARENT);
         }
 
         if (stVibe) {
-            Bitmap bitmap = imageView.getDrawingCache();
+            Bitmap bitmap = userImageView.getDrawingCache();
             Filter myFilter = SampleFilters.getAweStruckVibeFilter();
                 /*Bitmap outputImage = myFilter.processFilter(bitmap);
                 imageView.setImageBitmap(outputImage);
                 imageView.invalidate();*/
             StruckVibe.setBackgroundColor(getResources().getColor(R.color.blue));
-            imageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+            userImageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
         } else {
             StruckVibe.setBackgroundColor(Color.TRANSPARENT);
         }
 
         if (lime) {
-            Bitmap bitmap = imageView.getDrawingCache();
+            Bitmap bitmap = userImageView.getDrawingCache();
             Filter myFilter = SampleFilters.getLimeStutterFilter();
                 /*Bitmap outputImage = myFilter.processFilter(bitmap);
                 imageView.setImageBitmap(outputImage);
                 imageView.invalidate();*/
             LimeFx.setBackgroundColor(getResources().getColor(R.color.blue));
-            imageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+            userImageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
         } else {
             LimeFx.setBackgroundColor(Color.TRANSPARENT);
         }
         if (nit) {
-            Bitmap bitmap = imageView.getDrawingCache();
+            Bitmap bitmap = userImageView.getDrawingCache();
             Filter myFilter = SampleFilters.getNightWhisperFilter();
                 /*Bitmap outputImage = myFilter.processFilter(bitmap);
                 imageView.setImageBitmap(outputImage);
                 imageView.invalidate();*/
             NightFx.setBackgroundColor(getResources().getColor(R.color.blue));
-            imageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+            userImageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+            //userImageView.setImageMatrix(matrix);
         } else {
             NightFx.setBackgroundColor(Color.TRANSPARENT);
         }
@@ -1457,7 +1708,7 @@ public class ImageEditor extends AppCompatActivity {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
-                + "/Content Creator");
+                + "/WiLi");
 
         // This location works best if you want the created images to be shared
         // between applications and persist after your app has been uninstalled.

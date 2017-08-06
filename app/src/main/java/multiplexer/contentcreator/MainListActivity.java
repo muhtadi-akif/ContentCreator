@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -40,11 +41,15 @@ public class MainListActivity extends AppCompatActivity {
     private List<Campaign> campaignList = new ArrayList<>();
     DatabaseHelper db;
     TextView error;
+    SharedPreferences.Editor editor;
+    SharedPreferences pref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         db = new DatabaseHelper(MainListActivity.this);
         setContentView(R.layout.app_bar_list);
+        pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        editor = pref.edit();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         Button skipBtn = (Button) toolbar.findViewById(R.id.buttonSkip);
         setSupportActionBar(toolbar);
@@ -258,5 +263,12 @@ public class MainListActivity extends AppCompatActivity {
         //mAdapter.notifyDataSetChanged();
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(pref.contains("picUri")){
+            editor.remove("picUri");
+            editor.commit();
+        }
+    }
 }
