@@ -42,6 +42,19 @@
                         android:paddingRight="8dp"
                         />
                     <Button
+                        android:id="@+id/turnOnDoodle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Turn on\nDoodle"
+                        android:drawableLeft="@drawable/color"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                        android:background="@null"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        />
+
+                    <Button
                         android:id="@+id/undoButton"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"

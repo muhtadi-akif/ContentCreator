@@ -43,6 +43,7 @@ public class MainListActivity extends AppCompatActivity {
     TextView error;
     SharedPreferences.Editor editor;
     SharedPreferences pref;
+    String brandBtnTxt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,21 +98,37 @@ public class MainListActivity extends AppCompatActivity {
                         dialog.cancel();
                     }
                 });
-
-                dialog.setNegativeButton("YES", new DialogInterface.OnClickListener() {
+                dialog.setNegativeButton("ADD CAMPAIGN", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(db.getBrandsCount()<=0){
-                            Toast.makeText(getBaseContext(),"You've to set your brands first then create your campaign",Toast.LENGTH_LONG).show();
-                            Intent i = new Intent(getBaseContext(),BrandsActivity.class);
-                            i.putExtra("flag","must brand entry");
-                            startActivity(i);
-                            dialog.cancel();
-                        } else {
-                            Intent i = new Intent(getBaseContext(),CampaignActivity.class);
-                            startActivity(i);
-                            dialog.cancel();
-                        }
+                        Intent i = new Intent(getBaseContext(),CampaignActivity.class);
+                        startActivity(i);
+                        dialog.cancel();
+                    }
+                });
+                if(db.getBrandsCount()<=0){
+                    brandBtnTxt = "ADD BRAND";
+                }else {
+                    brandBtnTxt = "EDIT BRAND";
+                }
+                dialog.setNeutralButton(brandBtnTxt, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                            /*if(db.getBrandsCount()<=0){
+                                Toast.makeText(getBaseContext(),"You've to set your brands first then create your campaign",Toast.LENGTH_LONG).show();
+                                Intent i = new Intent(getBaseContext(),BrandsActivity.class);
+                                i.putExtra("flag","must brand entry");
+                                startActivity(i);
+                                dialog.cancel();
+                            } else {
+                                Intent i = new Intent(getBaseContext(),CampaignActivity.class);
+                                startActivity(i);
+                                dialog.cancel();
+                            }*/
+                        Intent i = new Intent(getBaseContext(),BrandsActivity.class);
+                        i.putExtra("flag","must brand entry");
+                        startActivity(i);
+                        dialog.cancel();
                     }
                 });
                 dialog.show();

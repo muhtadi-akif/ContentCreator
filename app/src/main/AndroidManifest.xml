@@ -38,7 +38,9 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".CampaignActivity"
-            android:label="New Campaign" />
+            android:label="New Campaign"
+            android:windowSoftInputMode="stateHidden"
+            />
         <activity android:name=".CampaignListActivity" />
         <activity
             android:name=".CreateContent"

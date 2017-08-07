@@ -133,6 +133,7 @@ public class ImageEditor extends AppCompatActivity {
     LinearLayout nextHolder;
     RelativeLayout effectsHolder;
     ImageButton btnProceed;
+    Button turnOnDoodle, strokeWidthMinusButton, strokeWidthPlusButton, changeColorButton, undoButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -172,15 +173,22 @@ public class ImageEditor extends AppCompatActivity {
         Point size = new Point();
         display.getSize(size);
         screenWidth = size.x;
-        Button strokeWidthMinusButton = (Button) toolbar.findViewById(R.id.strokeWidthMinusButton);
-        Button strokeWidthPlusButton = (Button) toolbar.findViewById(R.id.strokeWidthPlusButton);
-        Button changeColorButton = (Button) toolbar.findViewById(R.id.changeColorButton);
-        Button undoButton = (Button) toolbar.findViewById(R.id.undoButton);
+        turnOnDoodle = (Button) toolbar.findViewById(R.id.turnOnDoodle);
+        strokeWidthMinusButton = (Button) toolbar.findViewById(R.id.strokeWidthMinusButton);
+        strokeWidthPlusButton = (Button) toolbar.findViewById(R.id.strokeWidthPlusButton);
+        changeColorButton = (Button) toolbar.findViewById(R.id.changeColorButton);
+        undoButton = (Button) toolbar.findViewById(R.id.undoButton);
         ImageButton homeButton = (ImageButton) toolbar.findViewById(R.id.homeButton);
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+        turnOnDoodle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initColorify();
             }
         });
         strokeWidthPlusButton.setOnClickListener(new View.OnClickListener() {
@@ -920,6 +928,7 @@ public class ImageEditor extends AppCompatActivity {
             config.setCanvasHeight(1920);
             config.setCanvasWidth(1920);
             drawableView.setConfig(config);
+            turnOnDoodle.setText("Turn off\nDoodle");
         } else {
             Toast.makeText(getBaseContext(), "Colorify is disabled", Toast.LENGTH_LONG).show();
             drawableView.setVisibility(View.INVISIBLE);
@@ -933,6 +942,7 @@ public class ImageEditor extends AppCompatActivity {
             config.setCanvasHeight(0);
             config.setCanvasWidth(0);
             drawableView.setConfig(config);
+            turnOnDoodle.setText("Turn on\nDoodle");
         }
 
     }

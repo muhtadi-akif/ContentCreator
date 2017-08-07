@@ -32,9 +32,10 @@ public class CampaignActivity extends AppCompatActivity {
 
     String[] arr = {"Choose Headline", "Suggestion 1", "Suggestion 2", "Suggestion 3"};
     String[] arr2 = {"Choose Sub Headline", "Suggestion 1", "Suggestion 2", "Suggestion 3"};
-    String[] arr3 = {"Choose Call To Actions", "Suggestion 1", "Suggestion 2", "Suggestion 3"};
-    Spinner spinnerHeadline, spinnerSubHeadline, spinnerFinePrints;
-    EditText headline, subHeader, finePrints,outcome,audience;
+    String[] arr3 = {"Choose Front Line", "Suggestion 1", "Suggestion 2", "Suggestion 3"};
+    String[] arr4 = {"Choose Call To Actions", "Suggestion 1", "Suggestion 2", "Suggestion 3"};
+    Spinner spinnerHeadline, spinnerSubHeadline, spinnerFinePrints,spinnerCallToActions;
+    EditText headline, subHeader, finePrints,outcome,audience,callToActions;
     ImageView logo;
     DatabaseHelper db;
     @Override
@@ -45,9 +46,11 @@ public class CampaignActivity extends AppCompatActivity {
         spinnerHeadline = (Spinner) findViewById(R.id.spinnerHeadline);
         spinnerSubHeadline = (Spinner) findViewById(R.id.spinnerSubHeadline);
         spinnerFinePrints = (Spinner) findViewById(R.id.spinnerFinePrints);
+        spinnerCallToActions = (Spinner) findViewById(R.id.spinnerCallToActions);
         headline = (EditText) findViewById(R.id.editTextHeadline);
         subHeader = (EditText) findViewById(R.id.editTextSubHeadline);
         finePrints = (EditText) findViewById(R.id.editTextFinePrints);
+        callToActions = (EditText) findViewById(R.id.editTextCallToActions);
         outcome = (EditText) findViewById(R.id.editTextOutcome);
         audience = (EditText) findViewById(R.id.editTextAudience);
         logo = (ImageView) findViewById(R.id.imageViewLogo);
@@ -82,9 +85,11 @@ public class CampaignActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(CampaignActivity.this, android.R.layout.simple_spinner_dropdown_item, arr);
         ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(CampaignActivity.this, android.R.layout.simple_spinner_dropdown_item, arr2);
         ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(CampaignActivity.this, android.R.layout.simple_spinner_dropdown_item, arr3);
+        ArrayAdapter<String> adapter4 = new ArrayAdapter<String>(CampaignActivity.this, android.R.layout.simple_spinner_dropdown_item, arr4);
         spinnerHeadline.setAdapter(adapter);
         spinnerSubHeadline.setAdapter(adapter2);
         spinnerFinePrints.setAdapter(adapter3);
+        spinnerCallToActions.setAdapter(adapter4);
 
         spinnerHeadline.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -92,6 +97,8 @@ public class CampaignActivity extends AppCompatActivity {
                 if (position > 0) {
                     alertSuggestion("Headline",parent.getSelectedItem().toString());
                     //headline.setText(parent.getSelectedItem().toString());
+                } else {
+                    headline.setText("");
                 }
             }
 
@@ -106,6 +113,8 @@ public class CampaignActivity extends AppCompatActivity {
                 if (position > 0) {
                     alertSuggestion("Sub Headline",parent.getSelectedItem().toString());
                     //subHeader.setText(parent.getSelectedItem().toString());
+                } else {
+                    subHeader.setText("");
                 }
             }
 
@@ -120,6 +129,25 @@ public class CampaignActivity extends AppCompatActivity {
                 if (position > 0) {
                     alertSuggestion("Fine Prints",parent.getSelectedItem().toString());
                     //finePrints.setText(parent.getSelectedItem().toString());
+                } else {
+                    finePrints.setText("");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        spinnerCallToActions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position > 0) {
+                    alertSuggestion("Call To Actions",parent.getSelectedItem().toString());
+                    //finePrints.setText(parent.getSelectedItem().toString());
+                } else {
+                    callToActions.setText("");
                 }
             }
 
@@ -143,6 +171,8 @@ public class CampaignActivity extends AppCompatActivity {
                     subHeader.setText(message);
                 }else if(type.equals("Fine Prints")){
                     finePrints.setText(message);
+                } else if(type.equals("Call To Actions")){
+                    callToActions.setText(message);
                 } else {
                     //do nothing
                 }

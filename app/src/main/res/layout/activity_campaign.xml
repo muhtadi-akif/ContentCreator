@@ -65,6 +65,19 @@
             android:id="@+id/editTextFinePrints"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="Front Line" />
+
+
+        <Spinner
+            android:id="@+id/spinnerCallToActions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"></Spinner>
+
+        <EditText
+            android:id="@+id/editTextCallToActions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:hint="Call To Actions" />
 
         <LinearLayout
