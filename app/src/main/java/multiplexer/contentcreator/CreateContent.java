@@ -235,7 +235,7 @@ public class CreateContent extends AppCompatActivity
                 template_adapter = new Template_adapter(CreateContent.this,jsonTemplateList);
                 recyclerView_template.setAdapter(template_adapter);
             } else {
-                Toast.makeText(CreateContent.this, "Server error please try again", Toast.LENGTH_LONG).show();
+                Toast.makeText(CreateContent.this, "Connection error please try again", Toast.LENGTH_LONG).show();
             }
         }
 
