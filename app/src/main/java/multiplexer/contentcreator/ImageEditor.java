@@ -24,7 +24,6 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.util.TypedValue;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -36,6 +35,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -100,14 +100,14 @@ public class ImageEditor extends AppCompatActivity {
     float lastY;
     float headlineTxtSize = 22f, subHeadlineTxtSize = 18f, frontLineTxtSize = 18f;
     String TAG = "Photo save testing";
-    AutoImageView imageView,userImageView;
+    AutoImageView imageView, userImageView;
     RelativeLayout saveViewLayout;
     ImageButton blur_btn, brightness_btn, sharpen_btn, saturation_btn, colorify_btn, background_btn;
     int brightness = 0, blur = 0, sharpen = 0, saturation = 0;
     private DrawableView drawableView;
     private DrawableViewConfig config = new DrawableViewConfig();
-    CircleImageView LightFx, BlueFx, StruckVibe, LimeFx, NightFx,NormalFx;
-    boolean colorify = false, litFx = false, bluFx = false, stVibe = false, lime = false, nit = false,normal=true;
+    CircleImageView LightFx, BlueFx, StruckVibe, LimeFx, NightFx, NormalFx;
+    boolean colorify = false, litFx = false, bluFx = false, stVibe = false, lime = false, nit = false, normal = true;
     ProgressDialog prog_dialog;
     private FontProvider fontProvider;
     private static final int MAX_WIDTH = 1024;
@@ -133,6 +133,7 @@ public class ImageEditor extends AppCompatActivity {
     LinearLayout nextHolder;
     RelativeLayout effectsHolder;
     ImageButton btnProceed;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -186,7 +187,7 @@ public class ImageEditor extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                if (colorify == true) {
+                if (colorify) {
                     config.setStrokeWidth(config.getStrokeWidth() + 10);
                 } else {
                     Toast.makeText(getBaseContext(), "You need to enable colorify first", Toast.LENGTH_LONG).show();
@@ -198,7 +199,7 @@ public class ImageEditor extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                if (colorify == true) {
+                if (colorify) {
                     config.setStrokeWidth(config.getStrokeWidth() - 10);
                 } else {
                     Toast.makeText(getBaseContext(), "You need to enable colorify first", Toast.LENGTH_LONG).show();
@@ -210,7 +211,7 @@ public class ImageEditor extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                if (colorify == true) {
+                if (colorify) {
                     setCustomColor();
                 } else {
                     Toast.makeText(getBaseContext(), "You need to enable colorify first", Toast.LENGTH_LONG).show();
@@ -222,7 +223,7 @@ public class ImageEditor extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                if (colorify == true) {
+                if (colorify) {
                     drawableView.undo();
                 } else {
                     Toast.makeText(getBaseContext(), "You need to enable colorify first", Toast.LENGTH_LONG).show();
@@ -262,12 +263,12 @@ public class ImageEditor extends AppCompatActivity {
         holder.frontLine.setText(temp.getFrontLine());*/
 
 
-       btnProceed.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-             makePicEditable();
-           }
-       });
+        btnProceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makePicEditable();
+            }
+        });
 
         float height;
         if (isPortraitImage(Uri.parse((getIntent().getStringExtra("uri"))))) {
@@ -284,18 +285,18 @@ public class ImageEditor extends AppCompatActivity {
                 .skipMemoryCache()
                 .placeholder(R.drawable.image_processing)
                 .error(R.drawable.no_image)
-                .resize(sizeBM,sizeBM)
+                .resize(sizeBM, sizeBM)
                 .onlyScaleDown()
                 .centerInside()
                 .into(imageView);
-        if(getIntent().hasExtra("userUri")){
+        if (getIntent().hasExtra("userUri")) {
             Picasso.with(this)
                     .load(Uri.parse((getIntent().getStringExtra("userUri"))))
                     .transform(new BitmapTransform(MAX_WIDTH, MAX_HEIGHT))
                     .skipMemoryCache()
                     .placeholder(R.drawable.image_processing)
                     .error(R.drawable.no_image)
-                    .resize(sizeBM,sizeBM)
+                    .resize(sizeBM, sizeBM)
                     .onlyScaleDown()
                     .centerInside()
                     .into(userImageView);
@@ -475,15 +476,15 @@ public class ImageEditor extends AppCompatActivity {
                 return true;
             }
         });*/
-        if(!getIntent().hasExtra("userUri")){
-           makePicEditable();
+        if (!getIntent().hasExtra("userUri")) {
+            templateEditor();
         }
         changeUserImagePoint(isEditable);
         setTextAttributes();
 
     }
 
-    public void makePicEditable(){
+    public void makePicEditable() {
         isEditable = true;
         nextHolder.setVisibility(View.GONE);
         effectsHolder.setVisibility(View.VISIBLE);
@@ -493,35 +494,45 @@ public class ImageEditor extends AppCompatActivity {
         changeUserImagePoint(isEditable);
     }
 
-    public void setTextAttributes(){
+    public void templateEditor() {
+        isEditable = true;
+        nextHolder.setVisibility(View.GONE);
+        effectsHolder.setVisibility(View.GONE);
+        txtHeadline.setVisibility(View.VISIBLE);
+        txtSubHeadline.setVisibility(View.VISIBLE);
+        txtFrontLine.setVisibility(View.VISIBLE);
+        changeUserImagePoint(isEditable);
+    }
+
+    public void setTextAttributes() {
         txtHeadline.setText(getIntent().getStringExtra(new JsonConstants().TEMPLATE_HEADLINE));
         txtHeadline.setTextColor(Color.parseColor(getIntent().getStringExtra(new JsonConstants().TEMPLATE_HEADLINE_TEXT_COLOR)));
-        txtHeadline.setTextSize(TypedValue.COMPLEX_UNIT_PX, Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_HEADLINE_TEXT_SIZE))*4);
+        txtHeadline.setTextSize(TypedValue.COMPLEX_UNIT_PX, Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_HEADLINE_TEXT_SIZE)) * 4);
         txtSubHeadline.setText(getIntent().getStringExtra(new JsonConstants().TEMPLATE_SUBHEADLINE));
         txtSubHeadline.setTextColor(Color.parseColor(getIntent().getStringExtra(new JsonConstants().TEMPLATE_SUBHEADLINE_TEXT_COLOR)));
-        txtSubHeadline.setTextSize(TypedValue.COMPLEX_UNIT_PX, Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_SUBHEADLINE_TEXT_SIZE))*4);
+        txtSubHeadline.setTextSize(TypedValue.COMPLEX_UNIT_PX, Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_SUBHEADLINE_TEXT_SIZE)) * 4);
         txtFrontLine.setText(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE));
         txtFrontLine.setTextColor(Color.parseColor(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE_TEXT_COLOR)));
-        txtFrontLine.setTextSize(TypedValue.COMPLEX_UNIT_PX, Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE_TEXT_SIZE))*4);
+        txtFrontLine.setTextSize(TypedValue.COMPLEX_UNIT_PX, Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE_TEXT_SIZE)) * 4);
         PercentRelativeLayout.LayoutParams headlineParams = (PercentRelativeLayout.LayoutParams) txtHeadline.getLayoutParams();
         PercentLayoutHelper.PercentLayoutInfo headlinePercentLayoutInfo = headlineParams.getPercentLayoutInfo();
-        headlinePercentLayoutInfo.leftMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_HEADLINE_LEFT_POSITION))-10) * 0.01f);
-        headlinePercentLayoutInfo.topMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_HEADLINE_TOP_POSITION))-10) * 0.01f);
+        headlinePercentLayoutInfo.leftMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_HEADLINE_LEFT_POSITION)) - 10) * 0.01f);
+        headlinePercentLayoutInfo.topMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_HEADLINE_TOP_POSITION)) - 10) * 0.01f);
         PercentRelativeLayout.LayoutParams subHeadlineParams = (PercentRelativeLayout.LayoutParams) txtSubHeadline.getLayoutParams();
         PercentLayoutHelper.PercentLayoutInfo subHeadlinePercentLayoutInfo = subHeadlineParams.getPercentLayoutInfo();
-        subHeadlinePercentLayoutInfo.leftMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_SUBHEADLINE_LEFT_POSITION))-10) * 0.01f);
-        subHeadlinePercentLayoutInfo.topMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_SUBHEADLINE_TOP_POSITION))-10) * 0.01f);
+        subHeadlinePercentLayoutInfo.leftMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_SUBHEADLINE_LEFT_POSITION)) - 10) * 0.01f);
+        subHeadlinePercentLayoutInfo.topMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_SUBHEADLINE_TOP_POSITION)) - 10) * 0.01f);
         PercentRelativeLayout.LayoutParams frontLineParams = (PercentRelativeLayout.LayoutParams) txtFrontLine.getLayoutParams();
         PercentLayoutHelper.PercentLayoutInfo frontLinePercentLayoutInfo = frontLineParams.getPercentLayoutInfo();
-        frontLinePercentLayoutInfo.leftMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE_LEFT_POSITION))-10) * 0.01f);
-        frontLinePercentLayoutInfo.topMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE_TOP_POSITION))-10) * 0.01f);
+        frontLinePercentLayoutInfo.leftMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE_LEFT_POSITION)) - 10) * 0.01f);
+        frontLinePercentLayoutInfo.topMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE_TOP_POSITION)) - 10) * 0.01f);
         txtHeadline.setLayoutParams(headlineParams);
         txtSubHeadline.setLayoutParams(subHeadlineParams);
         txtFrontLine.setLayoutParams(frontLineParams);
     }
 
-    public void changeUserImagePoint(boolean isEditable){
-        if(!isEditable){
+    public void changeUserImagePoint(boolean isEditable) {
+        if (!isEditable) {
             /*userImageView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -577,36 +588,36 @@ public class ImageEditor extends AppCompatActivity {
 
             });*/
 
-             userImageView.setOnTouchListener(new View.OnTouchListener() {
+            userImageView.setOnTouchListener(new View.OnTouchListener() {
 
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                switch (event.getActionMasked()) {
-                    case MotionEvent.ACTION_DOWN:
-                        dX = view.getX() - event.getRawX();
-                        dY = view.getY() - event.getRawY();
-                        lastAction = MotionEvent.ACTION_DOWN;
-                        break;
+                @Override
+                public boolean onTouch(View view, MotionEvent event) {
+                    switch (event.getActionMasked()) {
+                        case MotionEvent.ACTION_DOWN:
+                            dX = view.getX() - event.getRawX();
+                            dY = view.getY() - event.getRawY();
+                            lastAction = MotionEvent.ACTION_DOWN;
+                            break;
 
-                    case MotionEvent.ACTION_MOVE:
-                        lastY = (event.getRawY() + dY);
-                        lastX = (event.getRawX() + dX);
-                        view.setY(event.getRawY() + dY);
-                        view.setX(event.getRawX() + dX);
-                        lastAction = MotionEvent.ACTION_MOVE;
-                        break;
+                        case MotionEvent.ACTION_MOVE:
+                            lastY = (event.getRawY() + dY);
+                            lastX = (event.getRawX() + dX);
+                            view.setY(event.getRawY() + dY);
+                            view.setX(event.getRawX() + dX);
+                            lastAction = MotionEvent.ACTION_MOVE;
+                            break;
 
-                    case MotionEvent.ACTION_UP:
-                        if (lastAction == MotionEvent.ACTION_DOWN)
-                        //Toast.makeText(getBaseContext(), "Clicked!", Toast.LENGTH_SHORT).show();
-                        break;
+                        case MotionEvent.ACTION_UP:
+                            if (lastAction == MotionEvent.ACTION_DOWN)
+                                //Toast.makeText(getBaseContext(), "Clicked!", Toast.LENGTH_SHORT).show();
+                                break;
 
-                    default:
-                        return false;
+                        default:
+                            return false;
+                    }
+                    return true;
                 }
-                return true;
-            }
-        });
+            });
         } else {
             userImageView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -622,8 +633,8 @@ public class ImageEditor extends AppCompatActivity {
     }
 
     private void dumpEvent(MotionEvent event) {
-        String names[] = { "DOWN", "UP", "MOVE", "CANCEL", "OUTSIDE",
-                "POINTER_DOWN", "POINTER_UP", "7?", "8?", "9?" };
+        String names[] = {"DOWN", "UP", "MOVE", "CANCEL", "OUTSIDE",
+                "POINTER_DOWN", "POINTER_UP", "7?", "8?", "9?"};
         StringBuilder sb = new StringBuilder();
         int action = event.getAction();
         int actionCode = action & MotionEvent.ACTION_MASK;
@@ -647,14 +658,18 @@ public class ImageEditor extends AppCompatActivity {
         Log.d(TAG, sb.toString());
     }
 
-    /** Determine the space between the first two fingers */
+    /**
+     * Determine the space between the first two fingers
+     */
     private float spacing(MotionEvent event) {
         float x = event.getX(0) - event.getX(1);
         float y = event.getY(0) - event.getY(1);
-        return (float)Math.sqrt(x * x + y * y);
+        return (float) Math.sqrt(x * x + y * y);
     }
 
-    /** Calculate the mid point of the first two fingers */
+    /**
+     * Calculate the mid point of the first two fingers
+     */
     private void midPoint(PointF point, MotionEvent event) {
         float x = event.getX(0) + event.getX(1);
         float y = event.getY(0) + event.getY(1);
@@ -697,14 +712,12 @@ public class ImageEditor extends AppCompatActivity {
         LimeFx = (CircleImageView) findViewById(R.id.lime_fx);
         NightFx = (CircleImageView) findViewById(R.id.night_fx);
 
-        //Bitmap outputImage = null;
-        Filter filter = null;
 
-        filter = SampleFilters.getStarLitFilter();
+        Filter filter = SampleFilters.getStarLitFilter();
         NormalFx.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (normal == false) {
+                if (!normal) {
                     normal = true;
                     litFx = false;
                     bluFx = false;
@@ -723,7 +736,7 @@ public class ImageEditor extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (litFx == false) {
+                if (!litFx) {
                     litFx = true;
                     normal = false;
                     bluFx = false;
@@ -740,13 +753,12 @@ public class ImageEditor extends AppCompatActivity {
         });
 
 
-
         filter = SampleFilters.getBlueMessFilter();
         BlueFx.setImageBitmap(filter.processFilter(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(this.getApplicationContext().getResources(), R.drawable.compress_sample), 500, 333, false)));
         BlueFx.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (bluFx == false) {
+                if (!bluFx) {
                     bluFx = true;
                     normal = false;
                     litFx = false;
@@ -766,7 +778,7 @@ public class ImageEditor extends AppCompatActivity {
         StruckVibe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (stVibe == false) {
+                if (!stVibe) {
                     stVibe = true;
                     normal = false;
                     litFx = false;
@@ -786,7 +798,7 @@ public class ImageEditor extends AppCompatActivity {
         LimeFx.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (lime == false) {
+                if (!lime) {
                     lime = true;
                     normal = false;
                     litFx = false;
@@ -806,7 +818,7 @@ public class ImageEditor extends AppCompatActivity {
         NightFx.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (nit == false) {
+                if (!nit) {
                     nit = true;
                     normal = false;
                     litFx = false;
@@ -965,7 +977,7 @@ public class ImageEditor extends AppCompatActivity {
                     public void run() {
                         if (for_.equals("brightness")) {
                             brightness = seekBar.getProgress();
-                            userImageView.setColorFilter(brightIt(brightness/2));
+                            userImageView.setColorFilter(brightIt(brightness / 2));
                             changeEffectOnPic();
                         } else if (for_.equals("blur")) {
                             blur = seekBar.getProgress();
@@ -999,7 +1011,7 @@ public class ImageEditor extends AppCompatActivity {
                 .placeholder(R.drawable.image_processing)
                 .error(R.drawable.no_image)
                 .into(imageView);
-        if(getIntent().hasExtra("userUri")){
+        if (getIntent().hasExtra("userUri")) {
             Picasso.with(getBaseContext())
                     .load(Uri.parse((getIntent().getStringExtra("userUri"))))
                     .placeholder(R.drawable.image_processing)
@@ -1019,7 +1031,7 @@ public class ImageEditor extends AppCompatActivity {
         if (saturation > 0) {
             Bitmap bitmap = userImageView.getDrawingCache();
             //Bitmap saturated = applySaturationFilter(bitmap, saturation); //second parametre is radius
-            Bitmap changeBitmap = BitmapFilter.changeStyle(bitmap, BitmapFilter.OIL_STYLE, saturation/4);
+            Bitmap changeBitmap = BitmapFilter.changeStyle(bitmap, BitmapFilter.OIL_STYLE, saturation / 4);
             userImageView.setImageBitmap(changeBitmap);
             userImageView.invalidate();
             saturation_btn.setBackgroundColor(getResources().getColor(R.color.blue));
@@ -1034,8 +1046,8 @@ public class ImageEditor extends AppCompatActivity {
         }
         if (blur > 0) {
             Bitmap bitmap = userImageView.getDrawingCache();
-            Bitmap blurred = processingBitmap_Blur(bitmap,blur);
-            Bitmap blurred1 =processingBitmap_Blur(blurred,blur);
+            Bitmap blurred = processingBitmap_Blur(bitmap, blur);
+            Bitmap blurred1 = processingBitmap_Blur(blurred, blur);
             userImageView.setImageBitmap(blurred1);
 
             userImageView.invalidate();
@@ -1103,7 +1115,7 @@ public class ImageEditor extends AppCompatActivity {
         } else {
             NightFx.setBackgroundColor(Color.TRANSPARENT);
         }
-        if(normal){
+        if (normal) {
             NormalFx.setBackgroundColor(getResources().getColor(R.color.blue));
         } else {
             NormalFx.setBackgroundColor(Color.TRANSPARENT);
@@ -1402,7 +1414,7 @@ public class ImageEditor extends AppCompatActivity {
 
         final EditText edt_unit = (EditText) dialog.findViewById(R.id.input_unit);
         TextView title_dialog = (TextView) dialog.findViewById(R.id.text_dialog);
-        if (position == "headline") {
+        if (position.equals("headline")) {
             title_dialog.setText("Change your headline here");
             if (txtHeadline.getText().equals("Your Headline")) {
                 edt_unit.setHint("Your headline here");
@@ -1411,7 +1423,7 @@ public class ImageEditor extends AppCompatActivity {
                 edt_unit.append("");
             }
 
-        } else if (position == "sub headline") {
+        } else if (position.equals("sub headline")) {
             title_dialog.setText("Change your sub headline here");
             if (txtSubHeadline.getText().equals("Your Sub Headline")) {
                 edt_unit.setHint("Your sub headline here");
@@ -1421,7 +1433,7 @@ public class ImageEditor extends AppCompatActivity {
             }
 
 
-        } else if (position == "front line") {
+        } else if (position.equals("front line")) {
             title_dialog.setText("Change your front line here");
             if (txtFrontLine.getText().equals("Your Front Line")) {
                 edt_unit.setHint("Your front line here");
@@ -1444,11 +1456,11 @@ public class ImageEditor extends AppCompatActivity {
                 if (edt_unit.getText().toString().equals("")) {
                     dialog.dismiss();
                 } else {
-                    if (position == "headline") {
+                    if (position.equals("headline")) {
                         txtHeadline.setText(edt_unit.getText().toString());
-                    } else if (position == "sub headline") {
+                    } else if (position.equals("sub headline")) {
                         txtSubHeadline.setText(edt_unit.getText().toString());
-                    } else if (position == "front line") {
+                    } else if (position.equals("front line")) {
                         txtFrontLine.setText(edt_unit.getText().toString());
                     }
 
@@ -1460,11 +1472,11 @@ public class ImageEditor extends AppCompatActivity {
         txt_color.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (position == "headline") {
+                if (position.equals("headline")) {
                     changeTextColor(txtHeadline.getCurrentTextColor(), position);
-                } else if (position == "sub headline") {
+                } else if (position.equals("sub headline")) {
                     changeTextColor(txtSubHeadline.getCurrentTextColor(), position);
-                } else if (position == "front line") {
+                } else if (position.equals("front line")) {
                     changeTextColor(txtFrontLine.getCurrentTextColor(), position);
                 }
                 dialog.dismiss();
@@ -1474,15 +1486,15 @@ public class ImageEditor extends AppCompatActivity {
         increaseTextSize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (position == "headline") {
+                if (position.equals("headline")) {
                     Log.e("text size", (txtHeadline.getTextSize()) + "");
                     headlineTxtSize = headlineTxtSize + 5;
                     txtHeadline.setTextSize(headlineTxtSize);
                     Log.e("text size after", (txtHeadline.getTextSize()) + "");
-                } else if (position == "sub headline") {
+                } else if (position.equals("sub headline")) {
                     subHeadlineTxtSize = subHeadlineTxtSize + 5;
                     txtSubHeadline.setTextSize(subHeadlineTxtSize);
-                } else if (position == "front line") {
+                } else if (position.equals("front line")) {
                     frontLineTxtSize = frontLineTxtSize + 5;
                     txtFrontLine.setTextSize(frontLineTxtSize);
                 }
@@ -1495,15 +1507,15 @@ public class ImageEditor extends AppCompatActivity {
         decreaseTextSize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (position == "headline") {
+                if (position.equals("headline")) {
                     Log.e("text size", (txtHeadline.getTextSize()) + "");
                     headlineTxtSize = headlineTxtSize - 5;
                     txtHeadline.setTextSize(headlineTxtSize);
                     Log.e("text size after", (txtHeadline.getTextSize()) + "");
-                } else if (position == "sub headline") {
+                } else if (position.equals("sub headline")) {
                     subHeadlineTxtSize = subHeadlineTxtSize - 5;
                     txtSubHeadline.setTextSize(subHeadlineTxtSize);
-                } else if (position == "front line") {
+                } else if (position.equals("front line")) {
                     frontLineTxtSize = frontLineTxtSize - 5;
                     txtFrontLine.setTextSize(frontLineTxtSize);
                 }
@@ -1534,12 +1546,12 @@ public class ImageEditor extends AppCompatActivity {
                 .setAdapter(fontsAdapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
-                        if (position == "headline") {
+                        if (position.equals("headline")) {
                             txtHeadline.setTypeface(fontProvider.getTypeface(fonts.get(which)));
                             //txtHeadline.setTypeface(fonts.get(which));
-                        } else if (position == "sub headline") {
+                        } else if (position.equals("sub headline")) {
                             txtSubHeadline.setTypeface(fontProvider.getTypeface(fonts.get(which)));
-                        } else if (position == "front line") {
+                        } else if (position.equals("front line")) {
                             txtFrontLine.setTypeface(fontProvider.getTypeface(fonts.get(which)));
                         }
                        /* if (textEntity != null) {
@@ -1568,11 +1580,11 @@ public class ImageEditor extends AppCompatActivity {
                 .setPositiveButton("OK", new ColorPickerClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
-                        if (position == "headline") {
+                        if (position.equals("headline")) {
                             txtHeadline.setTextColor(selectedColor);
-                        } else if (position == "sub headline") {
+                        } else if (position.equals("sub headline")) {
                             txtSubHeadline.setTextColor(selectedColor);
-                        } else if (position == "front line") {
+                        } else if (position.equals("front line")) {
                             txtFrontLine.setTextColor(selectedColor);
                         }
                         dialog.dismiss();
