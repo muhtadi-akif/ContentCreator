@@ -130,6 +130,14 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
         holder.frontLine.setTextColor(Color.parseColor(temp.getFrontLine_text_color()));
         holder.frontLine.setTextSize(TypedValue.COMPLEX_UNIT_PX, Integer.parseInt(temp.getFrontLine_font_size())*2);
         holder.frontLine.setLayoutParams(frontLineParams);
+        PercentRelativeLayout.LayoutParams callToActionParams = (PercentRelativeLayout.LayoutParams) holder.callToAction.getLayoutParams();
+        PercentLayoutHelper.PercentLayoutInfo callToActionPercentLayoutInfo = callToActionParams.getPercentLayoutInfo();
+        callToActionPercentLayoutInfo.leftMarginPercent =  ((Integer.parseInt(temp.getCallToAction_left_position())-10) * 0.01f);//45%
+        callToActionPercentLayoutInfo.topMarginPercent =  ((Integer.parseInt(temp.getCallToAction_top_position())-10) * 0.01f); //45%
+        //holder.frontLine.setText(temp.getFrontLine());
+        holder.callToAction.setTextColor(Color.parseColor(temp.getCallToAction_text_color()));
+        holder.callToAction.setTextSize(TypedValue.COMPLEX_UNIT_PX, Integer.parseInt(temp.getCallToAction_font_size())*2);
+        holder.callToAction.setLayoutParams(callToActionParams);
 
        /* if(position == 0){
             RelativeLayout.LayoutParams headlineParams = (RelativeLayout.LayoutParams) holder.headLine.getLayoutParams();
@@ -222,6 +230,10 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
                     i.putExtra(new JsonConstants().TEMPLATE_FRONTLINE_TOP_POSITION,temp.getFronLine_top_position());
                     i.putExtra(new JsonConstants().TEMPLATE_FRONTLINE_TEXT_SIZE,temp.getFrontLine_font_size());
                     i.putExtra(new JsonConstants().TEMPLATE_FRONTLINE_TEXT_COLOR,temp.getFrontLine_text_color());
+                    i.putExtra(new JsonConstants().TEMPLATE_CALL_TO_ACTION_LEFT_POSITION,temp.getCallToAction_left_position());
+                    i.putExtra(new JsonConstants().TEMPLATE_CALL_TO_ACTION_TOP_POSITION,temp.getCallToAction_top_position());
+                    i.putExtra(new JsonConstants().TEMPLATE_CALL_TO_ACTION_TEXT_SIZE,temp.getCallToAction_font_size());
+                    i.putExtra(new JsonConstants().TEMPLATE_CALL_TO_ACTION_TEXT_COLOR,temp.getCallToAction_text_color());
 
                     mContext.startActivity(i);
                 } else {
@@ -242,6 +254,11 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
                     i.putExtra(new JsonConstants().TEMPLATE_FRONTLINE_TOP_POSITION,temp.getFronLine_top_position());
                     i.putExtra(new JsonConstants().TEMPLATE_FRONTLINE_TEXT_SIZE,temp.getFrontLine_font_size());
                     i.putExtra(new JsonConstants().TEMPLATE_FRONTLINE_TEXT_COLOR,temp.getFrontLine_text_color());
+                    i.putExtra(new JsonConstants().TEMPLATE_CALL_TO_ACTION_LEFT_POSITION,temp.getCallToAction_left_position());
+                    i.putExtra(new JsonConstants().TEMPLATE_CALL_TO_ACTION_TOP_POSITION,temp.getCallToAction_top_position());
+                    i.putExtra(new JsonConstants().TEMPLATE_CALL_TO_ACTION_TEXT_SIZE,temp.getCallToAction_font_size());
+                    i.putExtra(new JsonConstants().TEMPLATE_CALL_TO_ACTION_TEXT_COLOR,temp.getCallToAction_text_color());
+
                     mContext.startActivity(i);
                     //Toast.makeText(mContext,"Choose a picture from above",Toast.LENGTH_LONG).show();
                 }
@@ -292,7 +309,7 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView headLine, subHeadline, frontLine;
+        public TextView headLine, subHeadline, frontLine,callToAction;
         ImageView backgroundImage;
         AutoImageView userImage;
         RelativeLayout parentLayout;
@@ -301,6 +318,7 @@ public class Template_adapter extends RecyclerView.Adapter<Template_adapter.View
             headLine = (TextView) itemView.findViewById(R.id.headline);
             subHeadline = (TextView) itemView.findViewById(R.id.subHeadline);
             frontLine = (TextView) itemView.findViewById(R.id.frontLine);
+            callToAction = (TextView) itemView.findViewById(R.id.callToAction);
             backgroundImage = (ImageView) itemView.findViewById(R.id.backgroundImg);
             userImage = (AutoImageView) itemView.findViewById(R.id.userImg);
             parentLayout = (RelativeLayout) itemView.findViewById(R.id.parentLayout);

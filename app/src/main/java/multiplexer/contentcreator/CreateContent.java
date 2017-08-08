@@ -286,6 +286,14 @@ public class CreateContent extends AppCompatActivity
                     template.setFrontLine_text_color(c.getString(new JsonConstants().TEMPLATE_FRONTLINE_TEXT_COLOR));
                     template.setFront_line_font(c.getString(new JsonConstants().TEMPLATE_FRONTLINE_FONT));
 
+                    //setting call to action attributes
+                    template.setCallToAction_font_size(c.getString(new JsonConstants().TEMPLATE_CALL_TO_ACTION_TEXT_SIZE));
+                    template.setCallToAction_left_position(c.getString(new JsonConstants().TEMPLATE_CALL_TO_ACTION_LEFT_POSITION));
+                    template.setCallToAction_top_position(c.getString(new JsonConstants().TEMPLATE_CALL_TO_ACTION_TOP_POSITION));
+                    template.setCallToAction_text_color(c.getString(new JsonConstants().TEMPLATE_CALL_TO_ACTION_TEXT_COLOR));
+                    template.setCallToAction_font(c.getString(new JsonConstants().TEMPLATE_CALL_TO_ACTION_FONT));
+
+
                     if(pref.contains("picUri")){
                         template.setUser_img_uri(pref.getString("picUri",""));
                     }

@@ -8,7 +8,8 @@ public class Template {
     private String headline, subHeadline, frontLine,img_url,user_img_uri,
             headline_top_position,headline_left_position,headline_font_size,headline_text_color,headline_font,
             sub_headline_top_position,sub_headline_left_position,sub_headline_font_size,sub_headline_text_color,sub_headline_font,
-            fronLine_top_position,frontLine_left_position,frontLine_font_size,frontLine_text_color,front_line_font;
+            fronLine_top_position,frontLine_left_position,frontLine_font_size,frontLine_text_color,front_line_font,
+            callToAction_top_position,callToAction_left_position,callToAction_font_size,callToAction_text_color,callToAction_font;
     public Template(String headline,String subHeadline, String frontLine,String img_url){
         this.headline = headline;
         this.subHeadline = subHeadline;
@@ -175,5 +176,45 @@ public class Template {
 
     public void setFront_line_font(String front_line_font) {
         this.front_line_font = front_line_font;
+    }
+
+    public String getCallToAction_font() {
+        return callToAction_font;
+    }
+
+    public void setCallToAction_font(String callToAction_font) {
+        this.callToAction_font = callToAction_font;
+    }
+
+    public String getCallToAction_font_size() {
+        return callToAction_font_size;
+    }
+
+    public void setCallToAction_font_size(String callToAction_font_size) {
+        this.callToAction_font_size = callToAction_font_size;
+    }
+
+    public String getCallToAction_left_position() {
+        return callToAction_left_position;
+    }
+
+    public void setCallToAction_left_position(String callToAction_left_position) {
+        this.callToAction_left_position = callToAction_left_position;
+    }
+
+    public String getCallToAction_text_color() {
+        return callToAction_text_color;
+    }
+
+    public void setCallToAction_text_color(String callToAction_text_color) {
+        this.callToAction_text_color = callToAction_text_color;
+    }
+
+    public String getCallToAction_top_position() {
+        return callToAction_top_position;
+    }
+
+    public void setCallToAction_top_position(String callToAction_top_position) {
+        this.callToAction_top_position = callToAction_top_position;
     }
 }

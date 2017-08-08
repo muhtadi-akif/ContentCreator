@@ -25,4 +25,10 @@ public class JsonConstants {
     public String TEMPLATE_FRONTLINE_FONT = "frontline_font";
     public String TEMPLATE_FRONTLINE_TEXT_SIZE = "frontline_text_size";
     public String TEMPLATE_FRONTLINE_TEXT_COLOR = "frontline_text_color";
+
+    public String TEMPLATE_CALL_TO_ACTION_TOP_POSITION = "calltoaction_position";
+    public String TEMPLATE_CALL_TO_ACTION_LEFT_POSITION = "calltoaction_left_position";
+    public String TEMPLATE_CALL_TO_ACTION_FONT = "calltoaction_font";
+    public String TEMPLATE_CALL_TO_ACTION_TEXT_SIZE = "calltoaction_text_size";
+    public String TEMPLATE_CALL_TO_ACTION_TEXT_COLOR = "calltoaction_text_color";
 }

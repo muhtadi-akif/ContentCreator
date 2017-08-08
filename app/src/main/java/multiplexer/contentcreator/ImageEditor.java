@@ -44,6 +44,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -71,6 +72,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import me.panavtec.drawableview.DrawableView;
 import me.panavtec.drawableview.DrawableViewConfig;
 import multiplexer.contentcreator.Helper.ConvolutionMatrix;
+import multiplexer.contentcreator.Helper.EndPoints;
 import multiplexer.contentcreator.Helper.FontProvider;
 import multiplexer.contentcreator.Helper.JsonConstants;
 import multiplexer.contentcreator.adapter.FontsAdapter;
@@ -88,7 +90,7 @@ public class ImageEditor extends AppCompatActivity {
     }
 
     private int screenWidth;
-    TextView txtHeadline, txtSubHeadline, txtFrontLine;
+    TextView txtHeadline, txtSubHeadline, txtFrontLine,txtCallToAction;
     int selectedColor;
     int darkenedColor;
     int BGselectedColor;
@@ -100,8 +102,8 @@ public class ImageEditor extends AppCompatActivity {
     float lastY;
     float headlineTxtSize = 22f, subHeadlineTxtSize = 18f, frontLineTxtSize = 18f;
     String TAG = "Photo save testing";
-    AutoImageView imageView, userImageView;
-    RelativeLayout saveViewLayout;
+    AutoImageView imageView, userImageView,editedUserImg;
+    RelativeLayout saveViewLayout,holderUserImg;
     ImageButton blur_btn, brightness_btn, sharpen_btn, saturation_btn, colorify_btn, background_btn;
     int brightness = 0, blur = 0, sharpen = 0, saturation = 0;
     private DrawableView drawableView;
@@ -127,6 +129,8 @@ public class ImageEditor extends AppCompatActivity {
     PointF start = new PointF();
     PointF mid = new PointF();
     float oldDist = 1f;
+    float lastEvent[];
+    float d,newRot;
     String savedItemClicked;
 
     boolean isEditable = false;
@@ -134,7 +138,7 @@ public class ImageEditor extends AppCompatActivity {
     RelativeLayout effectsHolder;
     ImageButton btnProceed;
     Button turnOnDoodle, strokeWidthMinusButton, strokeWidthPlusButton, changeColorButton, undoButton;
-
+    ProgressDialog p;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,12 +154,15 @@ public class ImageEditor extends AppCompatActivity {
         darkenedColor = Utils.getDarkColor(selectedColor);
         BGselectedColor = getResources().getColor(android.R.color.white);
         BGdarkenedColor = Utils.getDarkColor(selectedColor);
+        editedUserImg = (AutoImageView) findViewById(R.id.editedUserImg);
         imageView = (AutoImageView) findViewById(R.id.imageView);
         imageView.setDrawingCacheEnabled(true);
         userImageView = (AutoImageView) findViewById(R.id.userImageView);
         userImageView.setDrawingCacheEnabled(true);
         saveViewLayout = (RelativeLayout) findViewById(R.id.actualView);
         saveViewLayout.setDrawingCacheEnabled(true);
+        holderUserImg = (RelativeLayout) findViewById(R.id.holderUserImg);
+        holderUserImg.setDrawingCacheEnabled(true);
         nextHolder = (LinearLayout) findViewById(R.id.nextHolder);
         effectsHolder = (RelativeLayout) findViewById(R.id.effectsHolder);
         btnProceed = (ImageButton) findViewById(R.id.btnProceed);
@@ -271,12 +278,7 @@ public class ImageEditor extends AppCompatActivity {
         holder.frontLine.setText(temp.getFrontLine());*/
 
 
-        btnProceed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                makePicEditable();
-            }
-        });
+
 
         float height;
         if (isPortraitImage(Uri.parse((getIntent().getStringExtra("uri"))))) {
@@ -352,6 +354,7 @@ public class ImageEditor extends AppCompatActivity {
         txtHeadline = (TextView) findViewById(R.id.text);
         txtSubHeadline = (TextView) findViewById(R.id.subHeadlineText);
         txtFrontLine = (TextView) findViewById(R.id.frontLineText);
+        txtCallToAction = (TextView) findViewById(R.id.callToActionText);
         txtHeadline.setTextSize(headlineTxtSize);
         txtSubHeadline.setTextSize(subHeadlineTxtSize);
         txtFrontLine.setTextSize(frontLineTxtSize);
@@ -453,6 +456,39 @@ public class ImageEditor extends AppCompatActivity {
                 return true;
             }
         });
+
+
+        txtCallToAction.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        dX = view.getX() - event.getRawX();
+                        dY = view.getY() - event.getRawY();
+                        lastAction = MotionEvent.ACTION_DOWN;
+                        break;
+
+                    case MotionEvent.ACTION_MOVE:
+                        lastY = (event.getRawY() + dY);
+                        lastX = (event.getRawX() + dX);
+                        view.setY(event.getRawY() + dY);
+                        view.setX(event.getRawX() + dX);
+                        lastAction = MotionEvent.ACTION_MOVE;
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                      /*  if (lastAction == MotionEvent.ACTION_DOWN)*/
+                        //Toast.makeText(getBaseContext(), "Clicked!", Toast.LENGTH_SHORT).show();
+                        editDialog("call to action");
+                        break;
+
+                    default:
+                        return false;
+                }
+                return true;
+            }
+        });
         //image move options
         /*userImageView.setOnTouchListener(new View.OnTouchListener() {
 
@@ -487,6 +523,12 @@ public class ImageEditor extends AppCompatActivity {
         if (!getIntent().hasExtra("userUri")) {
             templateEditor();
         }
+        btnProceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makePicEditable();
+            }
+        });
         changeUserImagePoint(isEditable);
         setTextAttributes();
 
@@ -499,6 +541,7 @@ public class ImageEditor extends AppCompatActivity {
         txtHeadline.setVisibility(View.VISIBLE);
         txtSubHeadline.setVisibility(View.VISIBLE);
         txtFrontLine.setVisibility(View.VISIBLE);
+        txtCallToAction.setVisibility(View.VISIBLE);
         changeUserImagePoint(isEditable);
     }
 
@@ -509,6 +552,7 @@ public class ImageEditor extends AppCompatActivity {
         txtHeadline.setVisibility(View.VISIBLE);
         txtSubHeadline.setVisibility(View.VISIBLE);
         txtFrontLine.setVisibility(View.VISIBLE);
+        txtCallToAction.setVisibility(View.VISIBLE);
         changeUserImagePoint(isEditable);
     }
 
@@ -522,6 +566,8 @@ public class ImageEditor extends AppCompatActivity {
         txtFrontLine.setText(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE));
         txtFrontLine.setTextColor(Color.parseColor(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE_TEXT_COLOR)));
         txtFrontLine.setTextSize(TypedValue.COMPLEX_UNIT_PX, Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE_TEXT_SIZE)) * 4);
+        txtCallToAction.setTextColor(Color.parseColor(getIntent().getStringExtra(new JsonConstants().TEMPLATE_CALL_TO_ACTION_TEXT_COLOR)));
+        txtCallToAction.setTextSize(TypedValue.COMPLEX_UNIT_PX, Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_CALL_TO_ACTION_TEXT_SIZE)) * 4);
         PercentRelativeLayout.LayoutParams headlineParams = (PercentRelativeLayout.LayoutParams) txtHeadline.getLayoutParams();
         PercentLayoutHelper.PercentLayoutInfo headlinePercentLayoutInfo = headlineParams.getPercentLayoutInfo();
         headlinePercentLayoutInfo.leftMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_HEADLINE_LEFT_POSITION)) - 10) * 0.01f);
@@ -534,9 +580,14 @@ public class ImageEditor extends AppCompatActivity {
         PercentLayoutHelper.PercentLayoutInfo frontLinePercentLayoutInfo = frontLineParams.getPercentLayoutInfo();
         frontLinePercentLayoutInfo.leftMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE_LEFT_POSITION)) - 10) * 0.01f);
         frontLinePercentLayoutInfo.topMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_FRONTLINE_TOP_POSITION)) - 10) * 0.01f);
+        PercentRelativeLayout.LayoutParams callToActionParams = (PercentRelativeLayout.LayoutParams) txtCallToAction.getLayoutParams();
+        PercentLayoutHelper.PercentLayoutInfo callToActionPercentLayoutInfo = callToActionParams.getPercentLayoutInfo();
+        callToActionPercentLayoutInfo.leftMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_CALL_TO_ACTION_LEFT_POSITION)) - 10) * 0.01f);
+        callToActionPercentLayoutInfo.topMarginPercent = ((Integer.parseInt(getIntent().getStringExtra(new JsonConstants().TEMPLATE_CALL_TO_ACTION_TOP_POSITION)) - 10) * 0.01f);
         txtHeadline.setLayoutParams(headlineParams);
         txtSubHeadline.setLayoutParams(subHeadlineParams);
         txtFrontLine.setLayoutParams(frontLineParams);
+        txtCallToAction.setLayoutParams(callToActionParams);
     }
 
     public void changeUserImagePoint(boolean isEditable) {
@@ -596,7 +647,7 @@ public class ImageEditor extends AppCompatActivity {
 
             });*/
 
-            userImageView.setOnTouchListener(new View.OnTouchListener() {
+        /*    userImageView.setOnTouchListener(new View.OnTouchListener() {
 
                 @Override
                 public boolean onTouch(View view, MotionEvent event) {
@@ -625,7 +676,77 @@ public class ImageEditor extends AppCompatActivity {
                     }
                     return true;
                 }
-            });
+            });*/
+        userImageView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                AutoImageView view = (AutoImageView) v;
+                view.setScaleType(ImageView.ScaleType.MATRIX);
+                float scale;
+
+                // Dump touch event to log
+                dumpEvent(event);
+
+                // Handle touch events here...
+                switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_DOWN: //first finger down only
+                        savedMatrix.set(matrix);
+                        start.set(event.getX(), event.getY());
+                        Log.d(TAG, "mode=DRAG" );
+                        mode = DRAG;
+                        break;
+
+                    case MotionEvent.ACTION_POINTER_DOWN:
+                        oldDist = spacing(event);
+                        if (oldDist > 10f) {
+                            savedMatrix.set(matrix);
+                            midPoint(mid, event);
+                            mode = ZOOM;
+                        }
+                        lastEvent = new float[4];
+                        lastEvent[0] = event.getX(0);
+                        lastEvent[1] = event.getX(1);
+                        lastEvent[2] = event.getY(0);
+                        lastEvent[3] = event.getY(1);
+                        d = rotation(event);
+                        break;
+
+                    case MotionEvent.ACTION_UP: //first finger lifted
+                    case MotionEvent.ACTION_POINTER_UP: //second finger lifted
+                        mode = NONE;
+                        Log.d(TAG, "mode=NONE" );
+                        break;
+
+
+                    case MotionEvent.ACTION_MOVE:
+                        if (mode == DRAG) {
+                            // ...
+                            matrix.set(savedMatrix);
+                            matrix.postTranslate(event.getX() - start.x, event.getY()
+                                    - start.y);
+                        } else if (mode == ZOOM && event.getPointerCount() == 2) {
+                            float newDist = spacing(event);
+                            matrix.set(savedMatrix);
+                            if (newDist > 10f) {
+                                scale = newDist / oldDist;
+                                matrix.postScale(scale, scale, mid.x, mid.y);
+                            }
+                            if (lastEvent != null) {
+                                newRot = rotation(event);
+                                float r = newRot - d;
+                                matrix.postRotate(r, view.getMeasuredWidth() / 2,
+                                        view.getMeasuredHeight() / 2);
+                            }
+                        }
+                        break;
+
+                }
+                // Perform the transformation
+                view.setImageMatrix(matrix);
+
+                return true; // indicate event was handled
+            }
+        });
         } else {
             userImageView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -664,6 +785,14 @@ public class ImageEditor extends AppCompatActivity {
         }
         sb.append("]");
         Log.d(TAG, sb.toString());
+    }
+
+    private float rotation(MotionEvent event) {
+        double delta_x = (event.getX(0) - event.getX(1));
+        double delta_y = (event.getY(0) - event.getY(1));
+        double radians = Math.atan2(delta_y, delta_x);
+
+        return (float) Math.toDegrees(radians);
     }
 
     /**
@@ -987,7 +1116,6 @@ public class ImageEditor extends AppCompatActivity {
                     public void run() {
                         if (for_.equals("brightness")) {
                             brightness = seekBar.getProgress();
-                            userImageView.setColorFilter(brightIt(brightness / 2));
                             changeEffectOnPic();
                         } else if (for_.equals("blur")) {
                             blur = seekBar.getProgress();
@@ -1016,120 +1144,132 @@ public class ImageEditor extends AppCompatActivity {
     }
 
     public void changeEffectOnPic() {
-        Picasso.with(getBaseContext())
-                .load(Uri.parse((getIntent().getStringExtra("uri"))))
-                .placeholder(R.drawable.image_processing)
-                .error(R.drawable.no_image)
-                .into(imageView);
-        if (getIntent().hasExtra("userUri")) {
-            Picasso.with(getBaseContext())
-                    .load(Uri.parse((getIntent().getStringExtra("userUri"))))
-                    .placeholder(R.drawable.image_processing)
-                    .error(R.drawable.no_image)
-                    .into(userImageView);
-        }
+        p = new EndPoints().showProgressDialog(this);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Picasso.with(getBaseContext())
+                        .load(Uri.parse((getIntent().getStringExtra("uri"))))
+                        .placeholder(R.drawable.image_processing)
+                        .error(R.drawable.no_image)
+                        .into(imageView);
+                if (getIntent().hasExtra("userUri")) {
+                    Picasso.with(getBaseContext())
+                            .load(Uri.parse((getIntent().getStringExtra("userUri"))))
+                            .placeholder(R.drawable.image_processing)
+                            .error(R.drawable.no_image)
+                            .into(userImageView);
+                }
+                editedUserImg.setImageBitmap(null);
+                if (sharpen > 0) {
+                    Bitmap bitmap = holderUserImg.getDrawingCache();
+                    Bitmap sharpened = BitmapFilter.changeStyle(bitmap, BitmapFilter.SHARPEN_STYLE, sharpen); //second parametre is radius
+                    editedUserImg.setImageBitmap(sharpened);
+                    editedUserImg.invalidate();
+                    sharpen_btn.setBackgroundColor(getResources().getColor(R.color.blue));
+                } else {
+                    sharpen_btn.setBackgroundColor(Color.TRANSPARENT);
+                }
+                if (saturation > 0) {
+                    Bitmap bitmap = holderUserImg.getDrawingCache();
+                    //Bitmap saturated = applySaturationFilter(bitmap, saturation); //second parametre is radius
+                    Bitmap changeBitmap = BitmapFilter.changeStyle(bitmap, BitmapFilter.OIL_STYLE, saturation / 4);
+                    editedUserImg.setImageBitmap(changeBitmap);
+                    editedUserImg.invalidate();
+                    saturation_btn.setBackgroundColor(getResources().getColor(R.color.blue));
+                } else {
+                    saturation_btn.setBackgroundColor(Color.TRANSPARENT);
+                }
+                if (brightness > 0) {
+                    //imageView.setColorFilter(brightIt(brightness));
+                    if(editedUserImg!=null){
+                        editedUserImg.setColorFilter(brightIt(brightness / 2));
+                    } else {
+                        userImageView.setColorFilter(brightIt(brightness / 2));
+                    }
+                    brightness_btn.setBackgroundColor(getResources().getColor(R.color.blue));
+                } else {
+                    brightness_btn.setBackgroundColor(Color.TRANSPARENT);
+                }
+                if (blur > 0) {
+                    Bitmap bitmap = holderUserImg.getDrawingCache();
+                    Bitmap blurred = processingBitmap_Blur(bitmap, blur);
+                    Bitmap blurred1 = processingBitmap_Blur(blurred, blur);
+                    editedUserImg.setImageBitmap(blurred1);
 
-        if (sharpen > 0) {
-            Bitmap bitmap = userImageView.getDrawingCache();
-            Bitmap sharpened = BitmapFilter.changeStyle(bitmap, BitmapFilter.SHARPEN_STYLE, sharpen); //second parametre is radius
-            userImageView.setImageBitmap(sharpened);
-            userImageView.invalidate();
-            sharpen_btn.setBackgroundColor(getResources().getColor(R.color.blue));
-        } else {
-            sharpen_btn.setBackgroundColor(Color.TRANSPARENT);
-        }
-        if (saturation > 0) {
-            Bitmap bitmap = userImageView.getDrawingCache();
-            //Bitmap saturated = applySaturationFilter(bitmap, saturation); //second parametre is radius
-            Bitmap changeBitmap = BitmapFilter.changeStyle(bitmap, BitmapFilter.OIL_STYLE, saturation / 4);
-            userImageView.setImageBitmap(changeBitmap);
-            userImageView.invalidate();
-            saturation_btn.setBackgroundColor(getResources().getColor(R.color.blue));
-        } else {
-            saturation_btn.setBackgroundColor(Color.TRANSPARENT);
-        }
-        if (brightness > 0) {
-            //imageView.setColorFilter(brightIt(brightness));
-            brightness_btn.setBackgroundColor(getResources().getColor(R.color.blue));
-        } else {
-            brightness_btn.setBackgroundColor(Color.TRANSPARENT);
-        }
-        if (blur > 0) {
-            Bitmap bitmap = userImageView.getDrawingCache();
-            Bitmap blurred = processingBitmap_Blur(bitmap, blur);
-            Bitmap blurred1 = processingBitmap_Blur(blurred, blur);
-            userImageView.setImageBitmap(blurred1);
+                    editedUserImg.invalidate();
+                    blur_btn.setBackgroundColor(getResources().getColor(R.color.blue));
 
-            userImageView.invalidate();
-            blur_btn.setBackgroundColor(getResources().getColor(R.color.blue));
+                } else {
+                    blur_btn.setBackgroundColor(Color.TRANSPARENT);
+                }
 
-        } else {
-            blur_btn.setBackgroundColor(Color.TRANSPARENT);
-        }
-
-        if (litFx) {
-            Bitmap bitmap = userImageView.getDrawingCache();
-            Filter myFilter = SampleFilters.getStarLitFilter();
+                if (litFx) {
+                    Bitmap bitmap = holderUserImg.getDrawingCache();
+                    Filter myFilter = SampleFilters.getStarLitFilter();
                 /*Bitmap outputImage = myFilter.processFilter(bitmap);
                 imageView.setImageBitmap(outputImage);
                 imageView.invalidate();*/
-            LightFx.setBackgroundColor(getResources().getColor(R.color.blue));
-            userImageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
-        } else {
-            LightFx.setBackgroundColor(Color.TRANSPARENT);
-        }
-        if (bluFx) {
-            Bitmap bitmap = userImageView.getDrawingCache();
-            Filter myFilter = SampleFilters.getBlueMessFilter();
+                    LightFx.setBackgroundColor(getResources().getColor(R.color.blue));
+                    editedUserImg.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+                } else {
+                    LightFx.setBackgroundColor(Color.TRANSPARENT);
+                }
+                if (bluFx) {
+                    Bitmap bitmap = holderUserImg.getDrawingCache();
+                    Filter myFilter = SampleFilters.getBlueMessFilter();
                 /*Bitmap outputImage = myFilter.processFilter(bitmap);
                 imageView.setImageBitmap(outputImage);
                 imageView.invalidate();*/
-            BlueFx.setBackgroundColor(getResources().getColor(R.color.blue));
-            userImageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
-        } else {
-            BlueFx.setBackgroundColor(Color.TRANSPARENT);
-        }
+                    BlueFx.setBackgroundColor(getResources().getColor(R.color.blue));
+                    editedUserImg.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+                } else {
+                    BlueFx.setBackgroundColor(Color.TRANSPARENT);
+                }
 
-        if (stVibe) {
-            Bitmap bitmap = userImageView.getDrawingCache();
-            Filter myFilter = SampleFilters.getAweStruckVibeFilter();
+                if (stVibe) {
+                    Bitmap bitmap = holderUserImg.getDrawingCache();
+                    Filter myFilter = SampleFilters.getAweStruckVibeFilter();
                 /*Bitmap outputImage = myFilter.processFilter(bitmap);
                 imageView.setImageBitmap(outputImage);
                 imageView.invalidate();*/
-            StruckVibe.setBackgroundColor(getResources().getColor(R.color.blue));
-            userImageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
-        } else {
-            StruckVibe.setBackgroundColor(Color.TRANSPARENT);
-        }
+                    StruckVibe.setBackgroundColor(getResources().getColor(R.color.blue));
+                    editedUserImg.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+                } else {
+                    StruckVibe.setBackgroundColor(Color.TRANSPARENT);
+                }
 
-        if (lime) {
-            Bitmap bitmap = userImageView.getDrawingCache();
-            Filter myFilter = SampleFilters.getLimeStutterFilter();
+                if (lime) {
+                    Bitmap bitmap = holderUserImg.getDrawingCache();
+                    Filter myFilter = SampleFilters.getLimeStutterFilter();
                 /*Bitmap outputImage = myFilter.processFilter(bitmap);
                 imageView.setImageBitmap(outputImage);
                 imageView.invalidate();*/
-            LimeFx.setBackgroundColor(getResources().getColor(R.color.blue));
-            userImageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
-        } else {
-            LimeFx.setBackgroundColor(Color.TRANSPARENT);
-        }
-        if (nit) {
-            Bitmap bitmap = userImageView.getDrawingCache();
-            Filter myFilter = SampleFilters.getNightWhisperFilter();
+                    LimeFx.setBackgroundColor(getResources().getColor(R.color.blue));
+                    editedUserImg.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+                } else {
+                    LimeFx.setBackgroundColor(Color.TRANSPARENT);
+                }
+                if (nit) {
+                    Bitmap bitmap = holderUserImg.getDrawingCache();
+                    Filter myFilter = SampleFilters.getNightWhisperFilter();
                 /*Bitmap outputImage = myFilter.processFilter(bitmap);
                 imageView.setImageBitmap(outputImage);
                 imageView.invalidate();*/
-            NightFx.setBackgroundColor(getResources().getColor(R.color.blue));
-            userImageView.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
-            //userImageView.setImageMatrix(matrix);
-        } else {
-            NightFx.setBackgroundColor(Color.TRANSPARENT);
-        }
-        if (normal) {
-            NormalFx.setBackgroundColor(getResources().getColor(R.color.blue));
-        } else {
-            NormalFx.setBackgroundColor(Color.TRANSPARENT);
-        }
+                    NightFx.setBackgroundColor(getResources().getColor(R.color.blue));
+                    editedUserImg.setImageBitmap(myFilter.processFilter(Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), false)));
+                    //userImageView.setImageMatrix(matrix);
+                } else {
+                    NightFx.setBackgroundColor(Color.TRANSPARENT);
+                }
+                if (normal) {
+                    NormalFx.setBackgroundColor(getResources().getColor(R.color.blue));
+                } else {
+                    NormalFx.setBackgroundColor(Color.TRANSPARENT);
+                }
+                new EndPoints().cancelProgressDialog(p);
+            }
+        }, 500);
     }
 
 
@@ -1451,7 +1591,18 @@ public class ImageEditor extends AppCompatActivity {
                 edt_unit.setText(txtFrontLine.getText());
                 edt_unit.append("");
             }
+        }  else if (position.equals("call to action")) {
+        title_dialog.setText("Change your call to action text here");
+        if (txtCallToAction.getText().equals("Call To Action")) {
+            edt_unit.setHint("Your Call To Action");
+        } else {
+            edt_unit.setText(txtFrontLine.getText());
+            edt_unit.append("");
         }
+    }
+
+
+
         Button neg_dialogButton = (Button) dialog.findViewById(R.id.btn_neg);
         neg_dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
