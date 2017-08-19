@@ -34,16 +34,15 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:orientation="vertical"
-            android:layout_margin="4dp"
             >
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                android:padding="8dp"
+                android:background="@color/colorAccent"
+
                 >
                 <TextView
                     android:layout_width="match_parent"
@@ -52,6 +51,7 @@
                     android:textColor="@android:color/white"
                     android:textSize="18sp"
                     android:layout_centerVertical="true"
+                    android:padding="8dp"
                     />
 
                 <ImageButton
@@ -59,6 +59,8 @@
                     android:background="@drawable/reload"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="8dp"
                     android:layout_alignParentRight="true"
                     />
 
@@ -66,6 +68,7 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/templates"
+                android:layout_margin="4dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"

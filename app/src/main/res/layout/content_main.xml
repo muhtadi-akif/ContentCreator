@@ -5,23 +5,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="multiplexer.contentcreator.MainListActivity"
     tools:showIn="@layout/app_bar_list">
 
     <TextView
         android:layout_alignParentTop="true"
-        android:padding="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:text="Your Campaign List"
-        android:textSize="22sp"
-        android:background="@color/colorPrimary"
+        android:textSize="18sp"
+        android:id="@+id/title"
+        android:background="@color/appBarColorDark"
         android:textColor="@android:color/white"
         />
     <android.support.v4.widget.NestedScrollView
-        android:layout_marginTop="16dp"
+        android:layout_below="@+id/title"
+        android:layout_marginBottom="64dp"
         android:id="@+id/myScrollingContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -36,6 +40,8 @@
         <!-- Your loooooong scrolling content here. -->
 
     </android.support.v4.widget.NestedScrollView>
+
+
 
     <TextView
         android:id="@+id/noData"

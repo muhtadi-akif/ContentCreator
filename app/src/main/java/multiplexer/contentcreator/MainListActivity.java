@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -23,7 +22,9 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.view.View;
-import android.widget.Button;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,10 +50,11 @@ public class MainListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         db = new DatabaseHelper(MainListActivity.this);
         setContentView(R.layout.app_bar_list);
+        changeStatusBarColor();
         pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         editor = pref.edit();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        Button skipBtn = (Button) toolbar.findViewById(R.id.buttonSkip);
+        ImageButton skipBtn = (ImageButton) findViewById(R.id.buttonSkip);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
 
@@ -80,12 +82,12 @@ public class MainListActivity extends AppCompatActivity {
         recyclerView.setAdapter(mAdapter);
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        ImageButton fab = (ImageButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(MainListActivity.this);
-                dialog.setTitle(getSmallCapsString("Add Brand And Campaigns!")).setCancelable(false);
+                dialog.setTitle(getSmallCapsString("Add Brand And Campaigns!")).setCancelable(true);
                 dialog.setMessage("Do you want to add your brand information and campaign details?");
                 dialog.setPositiveButton("SKIP", new DialogInterface.OnClickListener() {
                     @Override
@@ -136,7 +138,14 @@ public class MainListActivity extends AppCompatActivity {
             }
         });
         checkForPermissions();
+    }
 
+    public void changeStatusBarColor(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(R.color.appBarColorDark));
+        }
     }
 
     public static SpannableString getSmallCapsString(String input) {

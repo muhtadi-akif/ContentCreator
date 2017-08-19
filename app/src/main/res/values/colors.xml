@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#C70039</color>
-    <color name="colorPrimaryDark">#900C3F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#f27405</color>
+    <color name="colorPrimaryDark">#c15c04</color>
+    <color name="colorAccent">#069198</color>
+    <color name="appBarColor">#98FF9C</color>
+    <color name="appBarColorDark">#2E9D35</color>
+
 
 
     <color name="themeColor">#196E15</color>
