@@ -260,10 +260,17 @@ public class CreateContent extends AppCompatActivity
                 // looping through All Students
                 for (int i = 0; i < templates.length(); i++) {
                     JSONObject c = templates.getJSONObject(i);
+                    String headline,sub_headline,front_line;
+                    if(getIntent().hasExtra("headline")){
+                         headline = getIntent().getStringExtra("headline");
+                         sub_headline = getIntent().getStringExtra("subHeadline");
+                         front_line =  getIntent().getStringExtra("frontLine");
+                    } else {
+                         headline = c.getString(new JsonConstants().TEMPLATE_HEADLINE);
+                         sub_headline = c.getString(new JsonConstants().TEMPLATE_SUBHEADLINE);
+                         front_line = c.getString(new JsonConstants().TEMPLATE_FRONTLINE);
+                    }
 
-                    String headline = c.getString(new JsonConstants().TEMPLATE_HEADLINE);
-                    String sub_headline = c.getString(new JsonConstants().TEMPLATE_SUBHEADLINE);
-                    String front_line = c.getString(new JsonConstants().TEMPLATE_FRONTLINE);
                     String img_url = c.getString(new JsonConstants().TEMPLATE_IMAGE);
 
                     Template template = new Template(headline,sub_headline,front_line,img_url);

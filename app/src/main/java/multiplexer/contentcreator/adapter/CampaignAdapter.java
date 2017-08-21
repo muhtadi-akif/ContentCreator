@@ -66,6 +66,7 @@ public class CampaignAdapter extends RecyclerView.Adapter<CampaignAdapter.MyView
                 i.putExtra("headline",campaign.getHeadline());
                 i.putExtra("subHeadline",campaign.getSub_headline());
                 i.putExtra("frontLine",campaign.getFront_lines());
+                i.putExtra("callToActions",campaign.getCall_to_action());
                 i.putExtra("outcome",campaign.getOutcome());
                 i.putExtra("audience",campaign.getAudience());
                 i.putExtra("flagPosition",position+1);
@@ -81,6 +82,7 @@ public class CampaignAdapter extends RecyclerView.Adapter<CampaignAdapter.MyView
                 intentMain.putExtra("headline",campaign.getHeadline());
                 intentMain.putExtra("subHeadline",campaign.getSub_headline());
                 intentMain.putExtra("frontLine",campaign.getFront_lines());
+                intentMain.putExtra("callToActions",campaign.getCall_to_action());
                 context.startActivity(intentMain);
             }
         });

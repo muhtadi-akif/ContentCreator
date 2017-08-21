@@ -66,6 +66,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(TableAttributes.CAMPAIGN_FRONT_LINES, campaign.getFront_lines());
         values.put(TableAttributes.CAMPAIGN_HEADLINE, campaign.getHeadline());
         values.put(TableAttributes.CAMPAIGN_SUB_HEADLINE, campaign.getSub_headline());
+        values.put(TableAttributes.CAMPAIGN_STORY, campaign.getCall_to_action());
         try {
             dbInsert.insert(TableAttributes.CAMPAIGN_TABLE_NAME, null, values);
             Log.i("Data", values.toString());
@@ -82,6 +83,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(TableAttributes.CAMPAIGN_FRONT_LINES, campaign.getFront_lines());
         values.put(TableAttributes.CAMPAIGN_HEADLINE, campaign.getHeadline());
         values.put(TableAttributes.CAMPAIGN_SUB_HEADLINE, campaign.getSub_headline());
+        values.put(TableAttributes.CAMPAIGN_STORY, campaign.getCall_to_action());
         dbInsert.update(TableAttributes.CAMPAIGN_TABLE_NAME, values, "campaign_id = ?",
                 new String[] { position+"" });
     }
@@ -131,16 +133,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cur = dbFetch.rawQuery(query, null);
         cur.moveToFirst();
         while (!cur.isAfterLast()) {
-            String headline, outcome, audience, subHeadline, story, frontLines;
+            String headline, outcome, audience, subHeadline, call_to_action, frontLines;
             int camp_id;
             camp_id = cur.getInt(cur.getColumnIndex("campaign_id"));
             headline = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_HEADLINE));
             outcome = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_EXPECTED_OUTCOME));
             audience = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_AUDIENCE));
             subHeadline = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_SUB_HEADLINE));
-            story = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_STORY));
+            call_to_action = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_STORY));
             frontLines = cur.getString(cur.getColumnIndex(TableAttributes.CAMPAIGN_FRONT_LINES));
-            Campaign campaign = new Campaign(camp_id,headline, outcome, audience, subHeadline, frontLines);
+            Campaign campaign = new Campaign(camp_id,headline, outcome, audience, subHeadline, frontLines,call_to_action);
            /* campaign.setUsername(cur.getString(cur.getColumnIndex(TableAttributes.STUDENT_NAME)));
             campaign.setPassword(cur.getString(cur.getColumnIndex(TableAttributes.STUDENT_PASSWORD)));
             campaign.setPhoneNo(cur.getString(cur.getColumnIndex(TableAttributes.STUDENT_PHONENO)));

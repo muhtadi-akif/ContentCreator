@@ -62,9 +62,9 @@ public class MainListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intentMain = new Intent(MainListActivity.this, CreateContent.class);
-                intentMain.putExtra("headline","Headline");
+               /* intentMain.putExtra("headline","Headline");
                 intentMain.putExtra("subHeadline","Sub Headline");
-                intentMain.putExtra("frontLine","Front Line");
+                intentMain.putExtra("frontLine","Front Line");*/
                 startActivity(intentMain);
             }
         });
@@ -93,9 +93,9 @@ public class MainListActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intentMain = new Intent(MainListActivity.this, CreateContent.class);
-                        intentMain.putExtra("headline","Headline");
+                        /*intentMain.putExtra("headline","Headline");
                         intentMain.putExtra("subHeadline","Sub Headline");
-                        intentMain.putExtra("frontLine","Front Line");
+                        intentMain.putExtra("frontLine","Front Line");*/
                         startActivity(intentMain);
                         dialog.cancel();
                     }

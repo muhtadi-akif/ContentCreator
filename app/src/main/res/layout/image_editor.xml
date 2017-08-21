@@ -33,6 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
+                    android:scaleType="matrix"
                     android:adjustViewBounds="true" />
                 <multiplexer.contentcreator.views.AutoImageView
                     android:id="@+id/editedUserImg"

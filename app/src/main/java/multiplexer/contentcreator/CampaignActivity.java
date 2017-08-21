@@ -75,11 +75,12 @@ public class CampaignActivity extends AppCompatActivity {
         }
         if(getIntent().hasExtra("flagPosition")){
             getSupportActionBar().setTitle("Campaign Details");
-            headline.setText(getIntent().getStringExtra("headline"));
-            subHeader.setText(getIntent().getStringExtra("subHeadline"));
-            finePrints.setText(getIntent().getStringExtra("frontLine"));
-            outcome.setText(getIntent().getStringExtra("outcome"));
-            audience.setText(getIntent().getStringExtra("audience"));
+            headline.append(getIntent().getStringExtra("headline"));
+            subHeader.append(getIntent().getStringExtra("subHeadline"));
+            finePrints.append(getIntent().getStringExtra("frontLine"));
+            callToActions.append(getIntent().getStringExtra("callToActions"));
+            outcome.append(getIntent().getStringExtra("outcome"));
+            audience.append(getIntent().getStringExtra("audience"));
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(CampaignActivity.this, android.R.layout.simple_spinner_dropdown_item, arr);
@@ -98,7 +99,11 @@ public class CampaignActivity extends AppCompatActivity {
                     alertSuggestion("Headline",parent.getSelectedItem().toString());
                     //headline.setText(parent.getSelectedItem().toString());
                 } else {
-                    headline.setText("");
+                    if(getIntent().hasExtra("flagPosition")){
+                        //do nothing
+                    }else {
+                        headline.setText("");
+                    }
                 }
             }
 
@@ -114,7 +119,11 @@ public class CampaignActivity extends AppCompatActivity {
                     alertSuggestion("Sub Headline",parent.getSelectedItem().toString());
                     //subHeader.setText(parent.getSelectedItem().toString());
                 } else {
-                    subHeader.setText("");
+                    if(getIntent().hasExtra("flagPosition")){
+                        //do nothing
+                    }else {
+                        subHeader.setText("");
+                    }
                 }
             }
 
@@ -130,8 +139,13 @@ public class CampaignActivity extends AppCompatActivity {
                     alertSuggestion("Fine Prints",parent.getSelectedItem().toString());
                     //finePrints.setText(parent.getSelectedItem().toString());
                 } else {
-                    finePrints.setText("");
-                }
+                    if(getIntent().hasExtra("flagPosition")){
+                        //do nothing
+                    }else {
+                        finePrints.setText("");
+                    }
+                    }
+
             }
 
             @Override
@@ -147,7 +161,11 @@ public class CampaignActivity extends AppCompatActivity {
                     alertSuggestion("Call To Actions",parent.getSelectedItem().toString());
                     //finePrints.setText(parent.getSelectedItem().toString());
                 } else {
-                    callToActions.setText("");
+                    if(getIntent().hasExtra("flagPosition")){
+                        //do nothing
+                    }else {
+                        callToActions.setText("");
+                    }
                 }
             }
 
@@ -219,12 +237,14 @@ public class CampaignActivity extends AppCompatActivity {
             headline.setError("Please write something about headline or choose from the suggestion");
         } else if(subHeader.getText().toString().equals("")){
             subHeader.setError("Please write something about sub headline or choose from the suggestion");
+        } else if(callToActions.getText().toString().equals("")){
+            callToActions.setError("Please write your call to actions or choose from the suggestion");
         } else if(finePrints.getText().toString().equals("")){
             finePrints.setError("Please write something about front line or choose from the suggestion");
         }
         else {
             Campaign c = new Campaign(getIntent().getIntExtra("camp_id",0), headline.getText().toString(),outcome.getText().toString(),audience.getText().toString(),
-                    subHeader.getText().toString(),finePrints.getText().toString());
+                    subHeader.getText().toString(),finePrints.getText().toString(),callToActions.getText().toString());
             if(getIntent().hasExtra("flagPosition")){
                 db.updateCampaignData(c,getIntent().getIntExtra("camp_id",0));
             } else {
@@ -236,6 +256,7 @@ public class CampaignActivity extends AppCompatActivity {
             intentMain.putExtra("headline",headline.getText().toString());
             intentMain.putExtra("subHeadline",subHeader.getText().toString());
             intentMain.putExtra("frontLine",finePrints.getText().toString());
+            intentMain.putExtra("callToActions",callToActions.getText().toString());
             startActivity(intentMain);
             finishAffinity();
         }
