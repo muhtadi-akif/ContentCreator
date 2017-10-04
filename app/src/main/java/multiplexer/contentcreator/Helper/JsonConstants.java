@@ -31,4 +31,21 @@ public class JsonConstants {
     public String TEMPLATE_CALL_TO_ACTION_FONT = "calltoaction_font";
     public String TEMPLATE_CALL_TO_ACTION_TEXT_SIZE = "calltoaction_text_size";
     public String TEMPLATE_CALL_TO_ACTION_TEXT_COLOR = "calltoaction_text_color";
+
+
+    public String SUGGESTION_HEADLINE_ARRAY = "headlines";
+    public String SUGGESTION_HEADLINE = "headline";
+    public String SUGGESTION_SUBHEADLINE_ARRAY = "subheadlines";
+    public String SUGGESTION_SUBHEADLINE = "subheadline";
+    public String SUGGESTION_FRONT_LINE_ARRAY = "frontlines";
+    public String SUGGESTION_FRONT_LINE = "frontline";
+    public String SUGGESTION_CALL_TO_ACTION_ARRAY = "actions";
+    public String SUGGESTION_CALL_TO_ACTION = "action";
+
+    public String JSON_HEADLINE = "headline";
+    public String JSON_SUBHEADLINE = "sub_headline";
+    public String JSON_FRONTLINE = "front_line";
+    public String JSON_CALL_TO_ACTION = "call_to_action";
+
+
 }

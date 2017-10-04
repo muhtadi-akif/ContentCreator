@@ -33,6 +33,7 @@ import java.util.List;
 
 import multiplexer.contentcreator.Database.DatabaseHelper;
 import multiplexer.contentcreator.Model.Campaign;
+import multiplexer.contentcreator.Service.FetchData;
 import multiplexer.contentcreator.adapter.CampaignAdapter;
 import multiplexer.contentcreator.utils.Constants;
 
@@ -50,6 +51,7 @@ public class MainListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         db = new DatabaseHelper(MainListActivity.this);
         setContentView(R.layout.app_bar_list);
+        startService(new Intent(getBaseContext(), FetchData.class));
         changeStatusBarColor();
         pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         editor = pref.edit();

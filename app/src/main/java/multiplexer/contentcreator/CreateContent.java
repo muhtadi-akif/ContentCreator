@@ -269,6 +269,11 @@ public class CreateContent extends AppCompatActivity
                          headline = c.getString(new JsonConstants().TEMPLATE_HEADLINE);
                          sub_headline = c.getString(new JsonConstants().TEMPLATE_SUBHEADLINE);
                          front_line = c.getString(new JsonConstants().TEMPLATE_FRONTLINE);
+                        editor.putString(new JsonConstants().JSON_HEADLINE,c.getString(new JsonConstants().TEMPLATE_HEADLINE));
+                        editor.putString(new JsonConstants().JSON_SUBHEADLINE,c.getString(new JsonConstants().TEMPLATE_SUBHEADLINE));
+                        editor.putString(new JsonConstants().JSON_FRONTLINE,c.getString(new JsonConstants().TEMPLATE_FRONTLINE));
+                        //editor.putString(new JsonConstants().JSON_CALL_TO_ACTION,c.getString(new JsonConstants().TEMPC));
+                        editor.commit();
                     }
 
                     String img_url = c.getString(new JsonConstants().TEMPLATE_IMAGE);
@@ -647,9 +652,19 @@ public class CreateContent extends AppCompatActivity
                     editor.putString("picUri",selectedImage+"");
                     editor.commit();
                     Intent i = new Intent(getBaseContext(),CreateContent.class);
-                    i.putExtra("headline",getIntent().getStringExtra("headline"));
-                    i.putExtra("subHeadline",getIntent().getStringExtra("subHeadline"));
-                    i.putExtra("frontLine",getIntent().getStringExtra("frontLine"));
+                    if(getIntent().hasExtra(new JsonConstants().JSON_HEADLINE)){
+                        i.putExtra("headline",getIntent().getStringExtra("headline"));
+                        i.putExtra("subHeadline",getIntent().getStringExtra("subHeadline"));
+                        i.putExtra("frontLine",getIntent().getStringExtra("frontLine"));
+                    }else {
+                        i.putExtra("headline",pref.getString(new JsonConstants().JSON_HEADLINE,""));
+                        //Log.e("headline", activity.getIntent().getStringExtra("headline"));
+                        i.putExtra("subHeadline",pref.getString(new JsonConstants().JSON_SUBHEADLINE,""));
+                        //Log.e("subHeadline", activity.getIntent().getStringExtra("subHeadline"));
+                        i.putExtra("frontLine",pref.getString(new JsonConstants().JSON_FRONTLINE,""));
+                        //Log.e("frontLine", activity.getIntent().getStringExtra("frontLine"));
+                    }
+
                     startActivity(i);
                     finish();
                     overridePendingTransition(0,0);

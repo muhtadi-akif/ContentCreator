@@ -90,7 +90,7 @@ public class ImageEditor extends AppCompatActivity {
     }
 
     private int screenWidth;
-    TextView txtHeadline, txtSubHeadline, txtFrontLine,txtCallToAction;
+    TextView txtHeadline, txtSubHeadline, txtFrontLine, txtCallToAction;
     int selectedColor;
     int darkenedColor;
     int BGselectedColor;
@@ -102,8 +102,8 @@ public class ImageEditor extends AppCompatActivity {
     float lastY;
     float headlineTxtSize = 22f, subHeadlineTxtSize = 18f, frontLineTxtSize = 18f;
     String TAG = "Photo save testing";
-    AutoImageView imageView, userImageView,editedUserImg;
-    RelativeLayout saveViewLayout,holderUserImg;
+    AutoImageView imageView, userImageView, editedUserImg;
+    RelativeLayout saveViewLayout, holderUserImg;
     ImageButton blur_btn, brightness_btn, sharpen_btn, saturation_btn, colorify_btn, background_btn;
     int brightness = 0, blur = 0, sharpen = 0, saturation = 0;
     private DrawableView drawableView;
@@ -130,7 +130,7 @@ public class ImageEditor extends AppCompatActivity {
     PointF mid = new PointF();
     float oldDist = 1f;
     float lastEvent[];
-    float d,newRot;
+    float d, newRot;
     String savedItemClicked;
 
     boolean isEditable = false;
@@ -139,6 +139,7 @@ public class ImageEditor extends AppCompatActivity {
     ImageButton btnProceed;
     Button turnOnDoodle, strokeWidthMinusButton, strokeWidthPlusButton, changeColorButton, undoButton;
     ProgressDialog p;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -276,8 +277,6 @@ public class ImageEditor extends AppCompatActivity {
        /* holder.headLine.setText(temp.getHeadline());
         holder.subHeadline.setText(temp.getSubHeadline());
         holder.frontLine.setText(temp.getFrontLine());*/
-
-
 
 
         float height;
@@ -677,76 +676,76 @@ public class ImageEditor extends AppCompatActivity {
                     return true;
                 }
             });*/
-        userImageView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                AutoImageView view = (AutoImageView) v;
-                view.setScaleType(ImageView.ScaleType.MATRIX);
-                float scale;
+            userImageView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    AutoImageView view = (AutoImageView) v;
+                    view.setScaleType(ImageView.ScaleType.MATRIX);
+                    float scale;
 
-                // Dump touch event to log
-                dumpEvent(event);
+                    // Dump touch event to log
+                    dumpEvent(event);
 
-                // Handle touch events here...
-                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                    case MotionEvent.ACTION_DOWN: //first finger down only
-                        savedMatrix.set(matrix);
-                        start.set(event.getX(), event.getY());
-                        Log.d(TAG, "mode=DRAG" );
-                        mode = DRAG;
-                        break;
-
-                    case MotionEvent.ACTION_POINTER_DOWN:
-                        oldDist = spacing(event);
-                        if (oldDist > 10f) {
+                    // Handle touch events here...
+                    switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                        case MotionEvent.ACTION_DOWN: //first finger down only
                             savedMatrix.set(matrix);
-                            midPoint(mid, event);
-                            mode = ZOOM;
-                        }
-                        lastEvent = new float[4];
-                        lastEvent[0] = event.getX(0);
-                        lastEvent[1] = event.getX(1);
-                        lastEvent[2] = event.getY(0);
-                        lastEvent[3] = event.getY(1);
-                        d = rotation(event);
-                        break;
+                            start.set(event.getX(), event.getY());
+                            Log.d(TAG, "mode=DRAG");
+                            mode = DRAG;
+                            break;
 
-                    case MotionEvent.ACTION_UP: //first finger lifted
-                    case MotionEvent.ACTION_POINTER_UP: //second finger lifted
-                        mode = NONE;
-                        Log.d(TAG, "mode=NONE" );
-                        break;
-
-
-                    case MotionEvent.ACTION_MOVE:
-                        if (mode == DRAG) {
-                            // ...
-                            matrix.set(savedMatrix);
-                            matrix.postTranslate(event.getX() - start.x, event.getY()
-                                    - start.y);
-                        } else if (mode == ZOOM && event.getPointerCount() == 2) {
-                            float newDist = spacing(event);
-                            matrix.set(savedMatrix);
-                            if (newDist > 10f) {
-                                scale = newDist / oldDist;
-                                matrix.postScale(scale, scale, mid.x, mid.y);
+                        case MotionEvent.ACTION_POINTER_DOWN:
+                            oldDist = spacing(event);
+                            if (oldDist > 10f) {
+                                savedMatrix.set(matrix);
+                                midPoint(mid, event);
+                                mode = ZOOM;
                             }
-                            if (lastEvent != null) {
-                                newRot = rotation(event);
-                                float r = newRot - d;
-                                matrix.postRotate(r, view.getMeasuredWidth() / 2,
-                                        view.getMeasuredHeight() / 2);
-                            }
-                        }
-                        break;
+                            lastEvent = new float[4];
+                            lastEvent[0] = event.getX(0);
+                            lastEvent[1] = event.getX(1);
+                            lastEvent[2] = event.getY(0);
+                            lastEvent[3] = event.getY(1);
+                            d = rotation(event);
+                            break;
 
+                        case MotionEvent.ACTION_UP: //first finger lifted
+                        case MotionEvent.ACTION_POINTER_UP: //second finger lifted
+                            mode = NONE;
+                            Log.d(TAG, "mode=NONE");
+                            break;
+
+
+                        case MotionEvent.ACTION_MOVE:
+                            if (mode == DRAG) {
+                                // ...
+                                matrix.set(savedMatrix);
+                                matrix.postTranslate(event.getX() - start.x, event.getY()
+                                        - start.y);
+                            } else if (mode == ZOOM && event.getPointerCount() == 2) {
+                                float newDist = spacing(event);
+                                matrix.set(savedMatrix);
+                                if (newDist > 10f) {
+                                    scale = newDist / oldDist;
+                                    matrix.postScale(scale, scale, mid.x, mid.y);
+                                }
+                                if (lastEvent != null) {
+                                    newRot = rotation(event);
+                                    float r = newRot - d;
+                                    matrix.postRotate(r, view.getMeasuredWidth() / 2,
+                                            view.getMeasuredHeight() / 2);
+                                }
+                            }
+                            break;
+
+                    }
+                    // Perform the transformation
+                    view.setImageMatrix(matrix);
+
+                    return true; // indicate event was handled
                 }
-                // Perform the transformation
-                view.setImageMatrix(matrix);
-
-                return true; // indicate event was handled
-            }
-        });
+            });
         } else {
             userImageView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -1182,7 +1181,7 @@ public class ImageEditor extends AppCompatActivity {
                 }
                 if (brightness > 0) {
                     //imageView.setColorFilter(brightIt(brightness));
-                    if(editedUserImg!=null){
+                    if (editedUserImg != null) {
                         editedUserImg.setColorFilter(brightIt(brightness / 2));
                     } else {
                         userImageView.setColorFilter(brightIt(brightness / 2));
@@ -1591,16 +1590,15 @@ public class ImageEditor extends AppCompatActivity {
                 edt_unit.setText(txtFrontLine.getText());
                 edt_unit.append("");
             }
-        }  else if (position.equals("call to action")) {
-        title_dialog.setText("Change your call to action text here");
-        if (txtCallToAction.getText().equals("Call To Action")) {
-            edt_unit.setHint("Your Call To Action");
-        } else {
-            edt_unit.setText(txtFrontLine.getText());
-            edt_unit.append("");
+        } else if (position.equals("call to action")) {
+            title_dialog.setText("Change your call to action text here");
+            if (txtCallToAction.getText().equals("Call To Action")) {
+                edt_unit.setHint("Your Call To Action");
+            } else {
+                edt_unit.setText(txtFrontLine.getText());
+                edt_unit.append("");
+            }
         }
-    }
-
 
 
         Button neg_dialogButton = (Button) dialog.findViewById(R.id.btn_neg);
@@ -1623,6 +1621,8 @@ public class ImageEditor extends AppCompatActivity {
                         txtSubHeadline.setText(edt_unit.getText().toString());
                     } else if (position.equals("front line")) {
                         txtFrontLine.setText(edt_unit.getText().toString());
+                    } else if (position.equals("call to action")) {
+                        txtCallToAction.setText(edt_unit.getText().toString());
                     }
 
                     dialog.dismiss();
@@ -1861,7 +1861,7 @@ public class ImageEditor extends AppCompatActivity {
             if (prog_dialog.isShowing()) {
                 prog_dialog.dismiss();
             }
-            finish();
+            //finish();
         } catch (FileNotFoundException e) {
             Log.d(TAG, "File not found: " + e.getMessage());
         } catch (IOException e) {

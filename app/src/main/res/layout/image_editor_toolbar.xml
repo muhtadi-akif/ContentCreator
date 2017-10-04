@@ -18,6 +18,14 @@
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             android:background="@color/custom_grey"
+            android:contentInsetLeft="0dp"
+            android:contentInsetStart="0dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+            android:contentInsetRight="0dp"
+            android:contentInsetEnd="0dp"
+            app:contentInsetRight="0dp"
+            app:contentInsetEnd="0dp"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -29,6 +37,19 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
                     >
+
+                    <ImageButton
+                        android:id="@+id/save"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_done"
+                        android:background="@color/blue"
+                        android:layout_weight="1.5"
+                        android:layout_gravity="center"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        />
                     <ImageButton
                         android:id="@+id/homeButton"
                         android:layout_width="wrap_content"
@@ -40,8 +61,10 @@
                         android:foreground="?android:attr/selectableItemBackground"
                         android:paddingLeft="8dp"
                         android:paddingRight="8dp"
+                        android:visibility="gone"
                         />
                     <Button
+                        android:layout_marginLeft="8dp"
                         android:id="@+id/turnOnDoodle"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -106,18 +129,7 @@
                         />
 
 
-                    <ImageButton
-                        android:id="@+id/save"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/ic_done"
-                        android:background="@color/blue"
-                        android:layout_weight="1.5"
-                        android:layout_gravity="center"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        android:paddingLeft="8dp"
-                        android:paddingRight="8dp"
-                        />
+
 
                 </LinearLayout>
 

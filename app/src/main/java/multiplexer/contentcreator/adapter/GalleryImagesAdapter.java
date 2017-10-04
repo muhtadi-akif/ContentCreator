@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import multiplexer.contentcreator.CreateContent;
+import multiplexer.contentcreator.Helper.JsonConstants;
 import multiplexer.contentcreator.R;
 import multiplexer.contentcreator.utils.Image;
 import multiplexer.contentcreator.utils.Params;
@@ -139,9 +140,22 @@ public class GalleryImagesAdapter extends RecyclerView.Adapter<RecyclerView.View
                 editor.commit();
                 Log.e("Selected File Size", calculateFileSize(entity.uri));
                 Intent i = new Intent(activity.getBaseContext(),CreateContent.class);
-                i.putExtra("headline",activity.getIntent().getStringExtra("headline"));
-                i.putExtra("subHeadline",activity.getIntent().getStringExtra("subHeadline"));
-                i.putExtra("frontLine",activity.getIntent().getStringExtra("frontLine"));
+                if(activity.getIntent().hasExtra(new JsonConstants().TEMPLATE_HEADLINE)){
+                    i.putExtra("headline",activity.getIntent().getStringExtra("headline"));
+                    //Log.e("headline", activity.getIntent().getStringExtra("headline"));
+                    i.putExtra("subHeadline",activity.getIntent().getStringExtra("subHeadline"));
+                    //Log.e("subHeadline", activity.getIntent().getStringExtra("subHeadline"));
+                    i.putExtra("frontLine",activity.getIntent().getStringExtra("frontLine"));
+                    //Log.e("frontLine", activity.getIntent().getStringExtra("frontLine"));
+                } else {
+                    i.putExtra("headline",pref.getString(new JsonConstants().JSON_HEADLINE,""));
+                    //Log.e("headline", activity.getIntent().getStringExtra("headline"));
+                    i.putExtra("subHeadline",pref.getString(new JsonConstants().JSON_SUBHEADLINE,""));
+                    //Log.e("subHeadline", activity.getIntent().getStringExtra("subHeadline"));
+                    i.putExtra("frontLine",pref.getString(new JsonConstants().JSON_FRONTLINE,""));
+                    //Log.e("frontLine", activity.getIntent().getStringExtra("frontLine"));
+                }
+
                 activity.startActivity(i);
                 activity.finish();
                 activity.overridePendingTransition(0,0);

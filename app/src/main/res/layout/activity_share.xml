@@ -30,23 +30,11 @@
         android:orientation="horizontal"
         >
         <ImageButton
-            android:id="@+id/btn_instagram"
-            android:layout_gravity="center"
-            android:layout_margin="8dp"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_weight="1"
-            android:background="@null"
-            android:adjustViewBounds="true"
-            android:src="@drawable/instagram_logo"
-            android:scaleType="fitCenter"
-            />
-        <ImageButton
             android:id="@+id/btn_fb"
             android:layout_gravity="center"
             android:layout_margin="8dp"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_weight="1"
             android:background="@null"
             android:adjustViewBounds="true"
@@ -54,11 +42,36 @@
             android:scaleType="fitCenter"
             />
         <ImageButton
+            android:id="@+id/btn_instagram"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:adjustViewBounds="true"
+            android:src="@drawable/instagram_logo"
+            android:scaleType="fitCenter"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_twitter"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/twitter_logo"
+            />
+        <ImageButton
             android:id="@+id/btn_share"
             android:layout_gravity="center"
             android:layout_margin="8dp"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_weight="1"
             android:background="@null"
             android:adjustViewBounds="true"

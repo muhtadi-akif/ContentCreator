@@ -2,6 +2,7 @@ package multiplexer.contentcreator;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -17,10 +19,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 
 import multiplexer.contentcreator.Database.DatabaseHelper;
+import multiplexer.contentcreator.Helper.EndPoints;
+import multiplexer.contentcreator.Helper.JsonConstants;
 import multiplexer.contentcreator.Model.Brands;
 import multiplexer.contentcreator.Model.Campaign;
 
@@ -38,10 +46,14 @@ public class CampaignActivity extends AppCompatActivity {
     EditText headline, subHeader, finePrints,outcome,audience,callToActions;
     ImageView logo;
     DatabaseHelper db;
+    SharedPreferences.Editor editor;
+    SharedPreferences pref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_campaign);
+        pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        editor = pref.edit();
         db = new DatabaseHelper(CampaignActivity.this);
         spinnerHeadline = (Spinner) findViewById(R.id.spinnerHeadline);
         spinnerSubHeadline = (Spinner) findViewById(R.id.spinnerSubHeadline);
@@ -83,10 +95,14 @@ public class CampaignActivity extends AppCompatActivity {
             audience.append(getIntent().getStringExtra("audience"));
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(CampaignActivity.this, android.R.layout.simple_spinner_dropdown_item, arr);
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(CampaignActivity.this, android.R.layout.simple_spinner_dropdown_item, arr2);
-        ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(CampaignActivity.this, android.R.layout.simple_spinner_dropdown_item, arr3);
-        ArrayAdapter<String> adapter4 = new ArrayAdapter<String>(CampaignActivity.this, android.R.layout.simple_spinner_dropdown_item, arr4);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(CampaignActivity.this, android.R.layout.simple_spinner_dropdown_item,
+                ParseHeadlineJSON(pref.getString(new JsonConstants().JSON_HEADLINE,"")));
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(CampaignActivity.this, android.R.layout.simple_spinner_dropdown_item,
+                ParseSubHeadlineJSON(pref.getString(new JsonConstants().JSON_SUBHEADLINE,"")));
+        ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(CampaignActivity.this, android.R.layout.simple_spinner_dropdown_item,
+                ParseFrontLineJSON(pref.getString(new JsonConstants().JSON_FRONTLINE,"")));
+        ArrayAdapter<String> adapter4 = new ArrayAdapter<String>(CampaignActivity.this, android.R.layout.simple_spinner_dropdown_item,
+                ParseCallToActionJSON(pref.getString(new JsonConstants().JSON_CALL_TO_ACTION,"")));
         spinnerHeadline.setAdapter(adapter);
         spinnerSubHeadline.setAdapter(adapter2);
         spinnerFinePrints.setAdapter(adapter3);
@@ -175,6 +191,104 @@ public class CampaignActivity extends AppCompatActivity {
             }
         });
     }
+
+    private ArrayList<String> ParseHeadlineJSON(String json) {
+        if (json != null) {
+            try {
+                ArrayList<String> tempList = new ArrayList<String>();
+                JSONObject jsonObj = new JSONObject(json);
+                JSONArray templates = jsonObj.getJSONArray(new JsonConstants().SUGGESTION_HEADLINE_ARRAY);
+                tempList.add("Choose Headline");
+                for (int i = 0; i < templates.length(); i++) {
+                    JSONObject c = templates.getJSONObject(i);
+                    tempList.add(c.getString(new JsonConstants().SUGGESTION_HEADLINE));
+                }
+                return tempList;
+            } catch (JSONException e) {
+                e.printStackTrace();
+
+                return null;
+            }
+        } else {
+            Log.e("ServiceHandler", "No data received from HTTP Request");
+            new EndPoints().noInernetToast(this);
+            return null;
+        }
+    }
+
+    private ArrayList<String> ParseSubHeadlineJSON(String json) {
+        if (json != null) {
+            try {
+                ArrayList<String> tempList = new ArrayList<String>();
+                JSONObject jsonObj = new JSONObject(json);
+                JSONArray templates = jsonObj.getJSONArray(new JsonConstants().SUGGESTION_SUBHEADLINE_ARRAY);
+                tempList.add("Choose Sub-Headline");
+                for (int i = 0; i < templates.length(); i++) {
+                    JSONObject c = templates.getJSONObject(i);
+                    tempList.add(c.getString(new JsonConstants().SUGGESTION_SUBHEADLINE));
+                }
+                return tempList;
+            } catch (JSONException e) {
+                e.printStackTrace();
+
+                return null;
+            }
+        } else {
+            Log.e("ServiceHandler", "No data received from HTTP Request");
+            new EndPoints().noInernetToast(this);
+            return null;
+        }
+    }
+
+    private ArrayList<String> ParseFrontLineJSON(String json) {
+        if (json != null) {
+            try {
+                ArrayList<String> tempList = new ArrayList<String>();
+                JSONObject jsonObj = new JSONObject(json);
+                JSONArray templates = jsonObj.getJSONArray(new JsonConstants().SUGGESTION_FRONT_LINE_ARRAY);
+                tempList.add("Choose Front Line");
+                for (int i = 0; i < templates.length(); i++) {
+                    JSONObject c = templates.getJSONObject(i);
+                    tempList.add(c.getString(new JsonConstants().SUGGESTION_FRONT_LINE));
+                }
+                return tempList;
+            } catch (JSONException e) {
+                e.printStackTrace();
+
+                return null;
+            }
+        } else {
+            Log.e("ServiceHandler", "No data received from HTTP Request");
+            new EndPoints().noInernetToast(this);
+            return null;
+        }
+    }
+
+    private ArrayList<String> ParseCallToActionJSON(String json) {
+        if (json != null) {
+            try {
+                ArrayList<String> tempList = new ArrayList<String>();
+                JSONObject jsonObj = new JSONObject(json);
+                JSONArray templates = jsonObj.getJSONArray(new JsonConstants().SUGGESTION_CALL_TO_ACTION_ARRAY);
+                tempList.add("Choose Call To Action");
+                for (int i = 0; i < templates.length(); i++) {
+                    JSONObject c = templates.getJSONObject(i);
+                    tempList.add(c.getString(new JsonConstants().SUGGESTION_CALL_TO_ACTION));
+                }
+                return tempList;
+            } catch (JSONException e) {
+                e.printStackTrace();
+
+                return null;
+            }
+        } else {
+            Log.e("ServiceHandler", "No data received from HTTP Request");
+            new EndPoints().noInernetToast(this);
+            return null;
+        }
+    }
+
+
 
     public void alertSuggestion(final String type, final String message){
         AlertDialog.Builder dialog = new AlertDialog.Builder(CampaignActivity.this);
